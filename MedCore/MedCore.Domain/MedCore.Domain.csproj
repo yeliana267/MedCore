@@ -1,0 +1,18 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Folder Include="Entities\appointments\" />
+    <Folder Include="Entities\Insurance\" />
+    <Folder Include="Entities\medical\" />
+    <Folder Include="Entities\users\" />
+    <Folder Include="Entities\system\" />
+    <Folder Include="Repository\" />
+  </ItemGroup>
+
+</Project>
