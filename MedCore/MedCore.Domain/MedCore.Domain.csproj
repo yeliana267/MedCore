@@ -10,7 +10,6 @@
     <Folder Include="Entities\appointments\" />
     <Folder Include="Entities\Insurance\" />
     <Folder Include="Entities\medical\" />
-    <Folder Include="Entities\users\" />
     <Folder Include="Entities\system\" />
     <Folder Include="Repository\" />
   </ItemGroup>
