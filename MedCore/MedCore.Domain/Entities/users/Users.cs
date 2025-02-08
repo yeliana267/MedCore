@@ -1,17 +1,19 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace MedCore.Domain.Entities.users
 {
-    public sealed class Users
+    public sealed class Users : Base.BaseEntity<int>
     {
-        public int UserID { get; set; }
+        [Column("UserID")]
+        [Key]
+        public override int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
         public short? RoleID { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
 
     }
 }
