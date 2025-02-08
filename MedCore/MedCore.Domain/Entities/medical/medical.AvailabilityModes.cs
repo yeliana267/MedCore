@@ -7,6 +7,6 @@ namespace MedCore.Domain.Entities.medical
     {
         public short SAvailabilityModelID { get; set; }
 
-        public string AvailabilityMode { get; set; } = string.Empty;
+        public string? AvailabilityMode { get; set; }
     }
 }
