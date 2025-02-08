@@ -13,7 +13,6 @@ namespace MedCore.Domain.Entities.medical
         public int DoctorID { get; set; }
         public required string Diagnosis { get; set; }
         public required string Prescription { get; set; }
-        
         public DateTime DateOfVisit { get; set; }
     }
     
