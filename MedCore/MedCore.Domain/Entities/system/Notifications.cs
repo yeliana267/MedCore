@@ -6,7 +6,7 @@ namespace MedCore.Domain.Entities.system
 {
     public sealed class Notifications : Base.BaseEntity<int>
     {
-        [Column("NotificationID")]
+[Column("NotificationID")]
         [Key]
         public override int Id { get; set; }
         public int UserId { get; set; }

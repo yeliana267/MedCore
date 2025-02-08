@@ -6,6 +6,7 @@ namespace MedCore.Domain.Entities.system
 {
     internal sealed class Roles : Base.BaseEntity<int>
     {
+
         [Column("RoleID")]
         [Key]
 
