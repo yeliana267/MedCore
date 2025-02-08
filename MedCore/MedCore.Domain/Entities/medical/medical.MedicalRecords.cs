@@ -3,7 +3,7 @@ using MedCore.Domain.Base;
 
 namespace MedCore.Domain.Entities.medical
 {
-    public class MedicalRecords : BaseEntity 
+    public sealed class MedicalRecords : BaseEntity 
     {
         public int RecordID { get; set; }
         public int PatientID { get; set; }
