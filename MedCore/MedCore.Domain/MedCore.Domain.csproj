@@ -9,7 +9,7 @@
   <ItemGroup>
     <Folder Include="Entities\Insurance\" />
     <Folder Include="Entities\medical\" />
-    <Folder Include="Entities\system\" />
+
     <Folder Include="Repository\" />
   </ItemGroup>
 
