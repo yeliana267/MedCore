@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Entities.users
 {
-    public sealed class UsersPatients : Base.BaseEntity<int>
+    public sealed class UsersPatients : Users
     {
         [Column("PatientID")]
         [Key]
