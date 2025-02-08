@@ -2,10 +2,11 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using MedCore.Domain.Base;
 
 namespace MedCore.Domain.Entities.users
 {
-    public sealed class UsersDoctors : Users
+    public sealed class UsersDoctors : Users<int>
     {
         [Column("DoctorID")]
         [Key]
