@@ -1,10 +1,15 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace MedCore.Domain.Entities.users
 {
-    public sealed class UsersDoctors
+    public sealed class UsersDoctors : Base.BaseEntity<int>
     {
-        public int DoctorID { get; set; }
+        [Column("DoctorID")]
+        [Key]
+        public override int Id { get; set; }
         public short SpecialtyID { get; set; }
         public string LicenseNumber { get; set; }
         public int PhoneNumber { get; set; }

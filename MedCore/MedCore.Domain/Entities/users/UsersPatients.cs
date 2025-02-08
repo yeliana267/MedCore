@@ -1,9 +1,14 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace MedCore.Domain.Entities.users
 {
-    public sealed class UsersPatients
+    public sealed class UsersPatients : Base.BaseEntity<int>
     {
-        public int PatientID { get; set; }
+        [Column("PatientID")]
+        [Key]
+        public override int Id { get; set; }
         public DateTime DateOfBirth { get; set; }
         public char Gender { get; set; }
         public int PhoneNumber { get; set; }
