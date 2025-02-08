@@ -1,10 +1,15 @@
-﻿using MedCore.Domain.Base;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 
 namespace MedCore.Domain.Entities.system
 {
-    internal sealed class Roles : BaseEntity
+    internal sealed class Roles : Base.BaseEntity<int>
     {
-        public int RoleID { get; set; }
+        [Column("Roleid")]
+        [Key]
+
+        public  override int Id { get; set; }
         public string RoleName { get; set; }
     }
 }
