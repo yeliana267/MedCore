@@ -1,10 +1,15 @@
 ﻿
 
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MedCore.Domain.Entities.system
 {
-    internal sealed class Status
+    internal sealed class Status : Base.BaseEntity<int>
     {
-        public int StatusID { get; set; }
+        [Column("StatusID ")]
+        [Key]
+        public override int Id { get; set; }
         public string StatusName { get; set; }
     }
 }
