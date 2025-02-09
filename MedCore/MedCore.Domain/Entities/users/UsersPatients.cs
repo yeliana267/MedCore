@@ -19,8 +19,6 @@ namespace MedCore.Domain.Entities.users
         public string BloodType { get; set; }
         public string Allergies { get; set; }
         public int InsuranceProviderID { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
+       
     }
 }

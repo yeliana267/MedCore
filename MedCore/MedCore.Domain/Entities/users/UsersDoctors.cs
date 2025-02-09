@@ -21,8 +21,6 @@ namespace MedCore.Domain.Entities.users
         public string? ClinicAddress { get; set; }
         public short? AvailabilityModeId { get; set; }
         public DateTime LicenseExpirationDate { get; set; }
-        public DateTime CreatedAt { get; set; }
-        public DateTime? UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
+        
     }
 }
