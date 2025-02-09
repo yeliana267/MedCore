@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Base
 {
-    public abstract class Users 
+    public abstract class Users<Ttype> : BaseEntity<Ttype>
     {
         public string FirstName { get; set; }
         public string LastName { get; set; }
