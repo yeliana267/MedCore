@@ -7,16 +7,16 @@ namespace MedCore.Domain.Repository
     public interface IBaseReporsitory <TEntity, TType> where TEntity : class 
     {
         Task<TEntity> GetEntityByIdAsync(TType id); 
-Task UpdateEntityAsync(TEntity entity);
+        Task UpdateEntityAsync(TEntity entity);
 
-Task DeleteEntityAsync(TEntity entity);
+        Task DeleteEntityAsync(TEntity entity);
         Task SaveEntityAsync(TEntity entity);
         Task<List<TEntity>> GetAllAsync();
 
-        Task<OperationResult> GetAll(Expression<Func<TEntity, bool>> filter);
+        Task<OperationResult> GetAllAsync(Expression<Func<TEntity, bool>> filter);
 
-        Task<OperationResult> GetEntityBy(int Id);
+        Task<OperationResult> GetEntityByAsync(int Id);
 
-        Task<bool> Exists(Expression<Func<TEntity, bool>> filter);
+        Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter);
     }
 }
