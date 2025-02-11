@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Interface\" />
     <Folder Include="Repositories\" />
   </ItemGroup>
 
