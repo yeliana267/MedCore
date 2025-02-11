@@ -8,7 +8,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.medical
 {
-    internal interface IMedicalRecordsRepository : IBaseReporsitory<MedicalRecords, int>
+    public interface IMedicalRecordsRepository : IBaseReporsitory<MedicalRecords, int>
     {
     }
 }

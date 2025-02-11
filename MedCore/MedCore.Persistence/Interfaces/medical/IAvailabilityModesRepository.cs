@@ -8,7 +8,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.medical
 {
-    internal interface IAvailabilityModesRepository : IBaseReporsitory<AvailabilityModes, short>
+    public interface IAvailabilityModesRepository : IBaseReporsitory<AvailabilityModes, short>
     {
     }
 }
