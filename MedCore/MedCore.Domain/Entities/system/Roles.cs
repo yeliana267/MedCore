@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedCore.Domain.Entities.system
 {
-    internal sealed class Roles : Base.BaseEntity<int>
+    public sealed class Roles : Base.BaseEntity<int>
     {
 
         [Column("RoleID")]
