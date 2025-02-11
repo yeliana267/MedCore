@@ -10,10 +10,6 @@
     <ProjectReference Include="..\MedCore.Domain\MedCore.Domain.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
   
 
 </Project>
