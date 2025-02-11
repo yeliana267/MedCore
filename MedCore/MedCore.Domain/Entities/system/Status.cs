@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedCore.Domain.Entities.system
 {
-    internal sealed class Status : Base.BaseEntity<int>
+    public sealed class Status : Base.BaseEntity<int>
     {
 
         [Column("StatusID")]
