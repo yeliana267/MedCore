@@ -1,6 +1,4 @@
-﻿
-
-using MedCore.Domain.Entities.medical;
+﻿using MedCore.Domain.Entities.medical;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.medical;
