@@ -1,11 +1,15 @@
 ﻿
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using MedCore.Domain.Base;
 
-namespace MedCore.Domain.Base
+namespace MedCore.Domain.Entities.Users
 {
-    public abstract class Users<Ttype> : BaseEntity<Ttype>
+    public class Users<Ttype> : BaseEntity<int>
     {
+        [Column("UserID")]
+        [Key]
+        public override int Id { get; set; }
         public string FirstName { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
