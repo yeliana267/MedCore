@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 using MedCore.Domain.Base;
 
-namespace MedCore.Domain.Entities.users
+namespace MedCore.Domain.Entities.Users
 {
     public sealed class UsersDoctors : Users<int>
     {
