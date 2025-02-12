@@ -1,5 +1,6 @@
 ﻿
 
+using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
 using Microsoft.EntityFrameworkCore;
 
