@@ -1,7 +1,9 @@
 ﻿
 
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities;
 using MedCore.Domain.Entities.appointments;
+using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Entities.system;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,5 +20,9 @@ namespace MedCore.Persistence.Context
         public DbSet<Notifications> Notifications { get; set; }
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Status> Status { get; set; }
+        public DbSet<AvailabilityModes> AvailabilityModes { get; set; }
+        public DbSet<MedicalRecords> MedicalRecords { get; set; }
+        public DbSet<Specialties> Specialties { get; set; }
+
     }
 }
