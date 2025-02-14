@@ -8,6 +8,7 @@ using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Entities.system;
 using Microsoft.EntityFrameworkCore;
+using MedCore.Domain.Entities.Insurance;
 
 namespace MedCore.Persistence.Context
 {
@@ -26,6 +27,8 @@ namespace MedCore.Persistence.Context
         public DbSet<AvailabilityModes> AvailabilityModes { get; set; }
         public DbSet<MedicalRecords> MedicalRecords { get; set; }
         public DbSet<Specialties> Specialties { get; set; }
+        public DbSet<InsuranceProviders> InsuranceProviders { get; set; }
+        public DbSet<NetworkType> NetworkType { get; set; }
 
     }
 }
