@@ -7,9 +7,9 @@ using MedCore.Persistence.Interfaces.appointments;
 
 namespace MedCore.Persistence.Repositories.appointments
 {
-    public class DoctorAvailabilityRespository : BaseRepository<DoctorAvailability, int>, IDoctorAvailabilityRepository
+    public class DoctorAvailabilityRepository : BaseRepository<DoctorAvailability, int>, IDoctorAvailabilityRepository
     {
-        public DoctorAvailabilityRespository(MedCoreContext context) : base(context)
+        public DoctorAvailabilityRepository(MedCoreContext context) : base(context)
         {
         }
     }
