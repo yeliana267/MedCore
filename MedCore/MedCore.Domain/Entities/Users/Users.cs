@@ -5,7 +5,7 @@ using MedCore.Domain.Base;
 
 namespace MedCore.Domain.Entities.Users
 {
-    public class Users<Ttype> : BaseEntity<int>
+    public class Users : Base.BaseEntity<int>
     {
         [Column("UserID")]
         [Key]

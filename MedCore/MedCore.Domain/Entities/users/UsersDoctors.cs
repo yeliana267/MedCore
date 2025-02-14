@@ -6,7 +6,7 @@ using MedCore.Domain.Base;
 
 namespace MedCore.Domain.Entities.Users
 {
-    public sealed class UsersDoctors : Users<int>
+    public sealed class UsersDoctors : Users
     {
         [Column("DoctorID")]
         [Key]

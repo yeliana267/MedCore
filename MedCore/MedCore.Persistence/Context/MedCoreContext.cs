@@ -1,8 +1,6 @@
 ﻿
 
-using System.Numerics;
 using MedCore.Domain.Entities.Users;
-using MedCore.Domain.Base;
 using MedCore.Domain.Entities;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.medical;
