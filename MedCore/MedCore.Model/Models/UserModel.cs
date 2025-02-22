@@ -7,9 +7,7 @@ namespace MedCore.Model.Models
 {
     public class UserModel
     {
-        [Column("UserID")]
-        [Key]
-        public override int Id { get; set; }
+        public int UserID { get; set; }
 
         [Required]
         [MaxLength(100)]
@@ -18,6 +16,15 @@ namespace MedCore.Model.Models
         [Required]
         [MaxLength(100)]
         public string LastName { get; set; }
+
+        [Required]
+        [EmailAddress]
+        [MaxLength(255)]
+        public string Email { get; set; }
+
+        [MaxLength(15)]
+        public string? PhoneNumber { get; set; }
+
         public short? RoleID { get; set; }
     }
 }

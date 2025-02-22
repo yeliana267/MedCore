@@ -21,7 +21,8 @@ namespace MedCore.Persistence.Interfaces.Users
         //Método para guardar el token de reseteo de contraseña
         Task<OperationResult> UpdateResetPasswordTokenAsync(User user);
 
-      
+        //Método para actualizar la información de contacto
+        Task<OperationResult> UpdateContactInfoAsync(User user);
 
     }
 }

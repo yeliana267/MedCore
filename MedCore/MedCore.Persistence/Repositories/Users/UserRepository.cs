@@ -55,5 +55,10 @@ namespace MedCore.Persistence.Repositories.Users
 
             return base.SaveEntityAsync(entity);
         }
+
+        public async Task<OperationResult> UpdateContactInfoAsync(User user)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
