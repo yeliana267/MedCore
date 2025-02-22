@@ -17,9 +17,6 @@ namespace MedCore.Persistence.Context
         }
         public DbSet<Appointments> Appointments { get; set; }
         public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
-        public DbSet<UsersDoctors> UsersDoctors { get; set; }
-        public DbSet<Users> Users { get; set; }
-        public DbSet<UsersPatients> UsersPatients { get; set; }
         public DbSet<Notifications> Notifications { get; set; }
         public DbSet<Roles> Roles { get; set; }
         public DbSet<Status> Status { get; set; }
