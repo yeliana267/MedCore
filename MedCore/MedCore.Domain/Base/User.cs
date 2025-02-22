@@ -29,8 +29,13 @@ namespace MedCore.Domain.Base
         [Phone]
         [MaxLength(15)]
         public int PhoneNumber { get; set; }
-        public string Password { get; set; }
+
+        [Required]
+        [MaxLength(255)]
+        public string Password { get; protected set; }
         public short? RoleID { get; set; }
+
+
 
 
     }
