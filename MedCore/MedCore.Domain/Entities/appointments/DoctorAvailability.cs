@@ -10,6 +10,7 @@ namespace MedCore.Domain.Entities.appointments
         [Column("AvailabilityID")]
         [Key]
         public override int Id { get; set; }
+        public int DoctorID { get; set; }   
         public DateTime AvailableDate { get; set; }
         public TimeOnly StartTime { get; set; }
         public TimeOnly? EndTime { get; set; }
