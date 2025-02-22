@@ -32,6 +32,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedCore.Api", "MedCore.Api\MedCore.Api.csproj", "{A8774022-46DE-462A-AE0E-296B70E3078F}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IOC", "IOC", "{85B4A5EF-61D1-4B89-B30C-36171AD57E3D}"
+	ProjectSection(SolutionItems) = preProject
+		MedCore.Persistence\Persistence.cs = MedCore.Persistence\Persistence.cs
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedCore.IOC", "MedCore.IOC\MedCore.IOC.csproj", "{B4CE209C-E103-49F4-AE1C-569BFD68BC37}"
 EndProject
