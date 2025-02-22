@@ -15,6 +15,5 @@ namespace MedCore.Domain.Repository
         Task<OperationResult> GetAllAsync(Expression<Func<TEntity, bool>> filter);
 
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter);
-        Task<OperationResult> GetPendingAppointmentsAsync();
     }
 }
