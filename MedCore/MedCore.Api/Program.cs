@@ -19,7 +19,10 @@ namespace MedCore.Api
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MedCoreDbContext"));
             });
 
+            // dependencias medical
             builder.Services.AddScoped<IAvailabilityModesRepository , AvailabilityModesRepository>();
+            builder.Services.AddScoped<IMedicalRecordsRepository, MedicalRecordsRepository>();
+            builder.Services.AddScoped<ISpecialtiesRepository, SpecialtiesRepository>();
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
