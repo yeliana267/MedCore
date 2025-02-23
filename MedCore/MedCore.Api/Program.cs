@@ -1,8 +1,7 @@
 
 using MedCore.Persistence.Context;
-using MedCore.Persistence.Interfaces.medical;
-using MedCore.Persistence.Repositories.medical;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
 
 namespace MedCore.Api
 {
@@ -14,13 +13,6 @@ namespace MedCore.Api
 
             // Add services to the container.
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
-            builder.Services.AddControllers();
-
-            // dependencias medical
-            builder.Services.AddScoped<IAvailabilityModesRepository , AvailabilityModesRepository>();
-            builder.Services.AddScoped<IMedicalRecordsRepository, MedicalRecordsRepository>();
-            builder.Services.AddScoped<ISpecialtiesRepository, SpecialtiesRepository>();
-
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
