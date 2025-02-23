@@ -2,31 +2,54 @@
 
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.Insurance;
+using MedCore.Model.Models.Insurance;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.Insurance;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MedCore.Persistence.Repositories.Insurance
 {
     public class InsuranceProvidersRepository : BaseRepository<InsuranceProviders, int> , IInsuranceProvidersRepository
     {
-        private readonly MedCoreContext context;
-        public InsuranceProvidersRepository(MedCoreContext context) : base(context) { 
+        private readonly MedCoreContext _context;
+        private readonly ILogger<InsuranceProvidersRepository> _logger;
+        private readonly IConfiguration _configuration;
+        public InsuranceProvidersRepository(MedCoreContext context, 
+                                            ILogger<InsuranceProvidersRepository> logger, 
+                                            IConfiguration configuration) : base(context) 
+        { 
             
-            this.context = context;
-        
+           this._context = context;
+           this._logger = logger;
+           this._configuration = configuration;
         }
-        public override Task<OperationResult> SaveEntityAsync(InsuranceProviders entity)
+
+        public async Task<OperationResult> CountInsuranceProvidersByNetworkTypeId(int id)
         {
-            // validados
+            OperationResult result = new OperationResult();
 
+            try
+            {
+                int count = await _context.InsuranceProviders
+                    .Where(ip => ip.NetworkTypeId == id)
+                    .CountAsync();
 
-            return base.SaveEntityAsync(entity);
+                result.Data = count;
+                result.Success = true;
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = this._configuration["ErrorInsuranceProvidersRepository:CountInsuranceProvidersByNetworkTypeId"]!;
+                this._logger.LogError(result.Message, ex);
+            }
+
+            return result;
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(InsuranceProviders entity)
-        {
-            return base.UpdateEntityAsync(entity);
-        }
     }
 }
