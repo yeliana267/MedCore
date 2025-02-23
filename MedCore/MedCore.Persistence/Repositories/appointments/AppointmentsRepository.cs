@@ -2,6 +2,7 @@
 
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
+using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.appointments;
@@ -32,16 +33,26 @@ namespace MedCore.Persistence.Repositories.appointments
             OperationResult result = new OperationResult();
             try
             {
-                var appointments = await _context.Appointments
-                    .Where(a => a.DoctorID == doctorId)
-                    .ToListAsync();
-                result.Data = appointments;
+                var querys = await ( from Appointments in _context.Appointments where Appointments.DoctorID == doctorId orderby
+                                     Appointments.AppointmentDate descending select new AppointmentsModel() { 
+                                         AppointmentID = Appointments.Id,
+                                         PatientID = Appointments.PatientID,    
+                                         DoctorID = Appointments.DoctorID,  
+                                         AppointmentDate = Appointments.AppointmentDate,    
+                                         StatusID = Appointments.StatusID,  
+                                         CreatedAt  = Appointments.CreatedAt,   
+                    }).ToListAsync();
+
+
+                result.Data = querys;
                 result.Success = true;
-            }
+                result.Message = "Citas obtenidas exitosamente.";
+
+            }   
             catch (Exception ex)
             {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetAppointmentsByDoctor"] ?? "Error desconocido al obtener citas del doctor.";
-                result.Success = false;
+                result.Message = _configuration["ErrorAppointmentsRepository:GetAppointmentsByDoctor"]
+                                 ?? "Error desconocido al obtener citas del doctor."; result.Success = false;
                 _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
 
             }
@@ -49,173 +60,7 @@ namespace MedCore.Persistence.Repositories.appointments
 
 
         }
-        public async Task<OperationResult> GetAppointmentsByPatientIdAsync(int patientId)
-        {
-            OperationResult result = new OperationResult();
-            try
-            {
-                var appointments = await _context.Appointments
-                    .Where(a => a.PatientID == patientId)
-                    .ToListAsync();
-
-                result.Data = appointments;
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetAppointmentsByPatient"] ?? "Error desconocido al obtener citas del paciente.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-            return result;
-        }
-
-
-
-        public async Task<OperationResult> GetAppointmentsByDateAsync(DateTime date)
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointments = await _context.Appointments
-                    .Where(a => a.AppointmentDate.Date == date.Date)
-                    .ToListAsync();
-
-                result.Data = appointments;
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetAppointmentsByDate"] ?? "Error desconocido al obtener citas por fecha.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
-        public async Task<OperationResult> CancelAppointmentAsync(int appointmentId)
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointment = await _context.Appointments.FindAsync(appointmentId);
-                if (appointment == null)
-                {
-                    result.Message = "Cita no encontrada.";
-                    result.Success = false;
-                    return result;
-                }
-
-                appointment.StatusID = 3;
-                await _context.SaveChangesAsync();
-
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:CancelAppointment"] ?? "Error desconocido al cancelar la cita.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
-        public async Task<OperationResult> ConfirmAppointmentAsync(int appointmentId)
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointment = await _context.Appointments.FindAsync(appointmentId);
-                if (appointment == null)
-                {
-                    result.Message = "Cita no encontrada.";
-                    result.Success = false;
-                    return result;
-                }
-
-                appointment.StatusID = 2;
-                await _context.SaveChangesAsync();
-
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:ConfirmAppointment"] ?? "Error desconocido al confirmar la cita.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
-        public async Task<OperationResult> GetPendingAppointmentsAsync()
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointments = await _context.Appointments
-                    .Where(a => a.StatusID == 1) 
-                    .ToListAsync();
-
-                result.Data = appointments;
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetPendingAppointments"] ?? "Error desconocido al obtener citas pendientes.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
-        public async Task<OperationResult> GetConfirmedAppointmentsAsync()
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointments = await _context.Appointments
-                    .Where(a => a.StatusID == 2) 
-                    .ToListAsync();
-
-                result.Data = appointments;
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetConfirmedAppointments"] ?? "Error desconocido al obtener citas confirmadas.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
-        public async Task<OperationResult> GetCancelledAppointmentsAsync()
-        {
-            OperationResult result = new OperationResult();
-
-            try
-            {
-                var appointments = await _context.Appointments
-                    .Where(a => a.StatusID == 3)
-                    .ToListAsync();
-
-                result.Data = appointments;
-                result.Success = true;
-            }
-            catch (Exception ex)
-            {
-                result.Message = _configuration["ErrorAppointmentsRepository:GetCancelledAppointments"] ?? "Error desconocido al obtener citas canceladas.";
-                result.Success = false;
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", result.Message, ex);
-            }
-
-            return result;
-        }
+        
         public override Task<OperationResult> SaveEntityAsync(Appointments entity)
         {
             return base.SaveEntityAsync(entity);
