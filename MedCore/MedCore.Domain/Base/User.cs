@@ -8,6 +8,8 @@ namespace MedCore.Domain.Base
 {
     public abstract class User : BaseEntity<int>
     {
+        public object UserID;
+
         [Column("UserID")]
         [Key]
         public override int Id { get; set; }
