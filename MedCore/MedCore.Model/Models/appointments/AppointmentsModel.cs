@@ -18,6 +18,9 @@ namespace MedCore.Model.Models.appointments
         [Required]
         public DateTime AppointmentDate { get; set; }
 
+        public string FirstName  { get; set;}
+        public string LastName  {get;set;}
+
         [Required]
         public int StatusID { get; set; }
 
