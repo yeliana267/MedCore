@@ -10,26 +10,23 @@ namespace MedCore.Api.Controllers.appointments
     [ApiController]
     public class DoctorAvailabilityController : ControllerBase
     {
-        private readonly IDoctorAvailabilityRepository _doctorAvailabilityRepository;
         public readonly ILogger<DoctorAvailabilityController> _logger;
         public readonly IConfiguration _configuration;
-        public DoctorAvailabilityController(IDoctorAvailabilityRepository doctorAvailabilityRepository, ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
+        public readonly IDoctorAvailabilityRepository _doctorAvailabilityRepository;
+        public DoctorAvailabilityController(ILogger<DoctorAvailabilityController> logger, IConfiguration configuration, IDoctorAvailabilityRepository doctorAvailabilityRepository)
         {
-
-            _doctorAvailabilityRepository = doctorAvailabilityRepository;
             _logger = logger;
             _configuration = configuration;
+            _doctorAvailabilityRepository = doctorAvailabilityRepository;
         }
 
 
-
-
         // GET: api/<DoctorAvailabilityController>
-        [HttpGet("GetdoctorAvailabities")]
+        [HttpGet("GetDoctorDisponible")]
         public async Task<IActionResult> Get()
         {
-            var doctorAvailabilities = await _doctorAvailabilityRepository.GetAllAsync();
-            return Ok(doctorAvailabilities);
+            var doctorAvailability = await _doctorAvailabilityRepository.GetAllAsync();
+            return Ok(doctorAvailability);
         }
 
         // GET api/<DoctorAvailabilityController>/5

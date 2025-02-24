@@ -3,6 +3,8 @@ using MedCore.Domain.Base;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
@@ -22,7 +24,7 @@ namespace MedCore.Persistence.Base
             return await Entity.FindAsync(id);
         }
 
-        public virtual async Task<OperationResult> UpdateEntityAsync(TEntity entity)
+        public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
         {
             OperationResult result = new OperationResult();
 
@@ -86,5 +88,6 @@ namespace MedCore.Persistence.Base
         {
             return await Entity.AnyAsync(filter);
         }
+
     }
 }

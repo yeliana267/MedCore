@@ -1,6 +1,9 @@
 
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
+
+using MedCore.Persistence.Interfaces.appointments;
+using MedCore.Persistence.Repositories.appointments;
 using MedCore.Persistence.Interfaces.Insurance;
 using MedCore.Persistence.Repositories.Insurance;
 
@@ -21,8 +24,6 @@ namespace MedCore.Api
            builder.Services.AddScoped<IInsuranceProvidersRepository, InsuranceProvidersRepository>();
             builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
-
-
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
