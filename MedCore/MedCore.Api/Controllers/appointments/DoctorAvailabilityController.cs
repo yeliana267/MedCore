@@ -1,4 +1,5 @@
 ﻿using MedCore.Persistence.Interfaces.appointments;
+using MedCore.Persistence.Repositories.appointments;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,12 +10,13 @@ namespace MedCore.Api.Controllers.appointments
     [ApiController]
     public class DoctorAvailabilityController : ControllerBase
     {
-        private readonly IBaseAppointments _baseAppointments;
+        private readonly IDoctorAvailabilityRepository _doctorAvailabilityRepository;
         public readonly ILogger<DoctorAvailabilityController> _logger;
         public readonly IConfiguration _configuration;
-        public DoctorAvailabilityController(IBaseAppointments baseAppointments, ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
+        public DoctorAvailabilityController(IDoctorAvailabilityRepository doctorAvailabilityRepository, ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
         {
-            _baseAppointments = baseAppointments;
+
+            _doctorAvailabilityRepository = doctorAvailabilityRepository;
             _logger = logger;
             _configuration = configuration;
         }
@@ -23,10 +25,11 @@ namespace MedCore.Api.Controllers.appointments
 
 
         // GET: api/<DoctorAvailabilityController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("GetdoctorAvailabities")]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var doctorAvailabilities = await _doctorAvailabilityRepository.GetAllAsync();
+            return Ok(doctorAvailabilities);
         }
 
         // GET api/<DoctorAvailabilityController>/5
