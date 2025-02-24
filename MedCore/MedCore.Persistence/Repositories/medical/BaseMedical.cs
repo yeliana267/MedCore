@@ -27,10 +27,10 @@ namespace MedCore.Persistence.Repositories.medical
 
         public void Dispose()
         {
-            if (!_disposed)
+            if (!_disposable)
             {
                 _context.Dispose();
-                _disposed = true;
+                _disposable = true;
             }
 
         }
