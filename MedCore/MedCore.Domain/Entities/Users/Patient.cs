@@ -7,9 +7,6 @@ namespace MedCore.Domain.Entities.Users
 {
     public sealed class Patient : User
     {
-        [Column("PatientID")]
-        [Key]
-        public int PatientID { get; set; }
 
         [Required]
         public DateTime DateOfBirth { get; set; }

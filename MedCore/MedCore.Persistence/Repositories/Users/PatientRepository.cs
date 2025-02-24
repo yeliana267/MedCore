@@ -13,11 +13,11 @@ namespace MedCore.Persistence.Repositories.Users
     public class PatientRepository : BaseRepository<Patient, int>, IPatientRepository
     {
         private readonly MedCoreContext _context;
-        private readonly ILogger<UserRepository> _logger;
+        private readonly ILogger<PatientRepository> _logger;
         private readonly IConfiguration _configuration;
 
         public PatientRepository(MedCoreContext context,
-                              ILogger<UserRepository> logger,
+                              ILogger<PatientRepository> logger,
                               IConfiguration configuration) : base(context)
         {
             _context = context;

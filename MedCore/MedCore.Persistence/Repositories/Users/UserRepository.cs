@@ -1,6 +1,7 @@
 ﻿
 
 using MedCore.Domain.Base;
+using MedCore.Model.Models.Users;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.Users;
@@ -26,6 +27,17 @@ namespace MedCore.Persistence.Repositories.Users
 
         public async Task<User?> GetByEmailAsync(string email)
         {
+            //OperationResult result = new OperationResult();
+            //try
+            //{
+            //    var querys = await (from user in _context.Users
+            //                        where user.Email == email
+            //                        select new UserModel{
+            //                            UserID = user.Id,
+            //                            Email = user.Email,
+            //                            FirstName = user.FirstName,
+            //                        }).ToListasync();
+            //}
             throw new NotImplementedException();
         }
 

@@ -2,6 +2,7 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using MedCore.Model.Models.Users;
 
 namespace MedCore.Model.Models.appointments
 {

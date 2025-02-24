@@ -3,7 +3,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MedCore.Model.Models
+namespace MedCore.Model.Models.Users
 {
     public class UserModel
     {

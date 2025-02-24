@@ -8,9 +8,7 @@ namespace MedCore.Domain.Entities.Users
 {
     public sealed class Doctor : User
     {
-        [Column("DoctorID")]
-        [Key]
-        public int IdDoctorID { get; set; }
+
         public short SpecialtyID { get; set; }
 
         [Required]
