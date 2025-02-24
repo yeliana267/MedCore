@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace MedCore.Api.Controllers
+namespace MedCore.Api.Controllers.medical
 {
     [Route("api/[controller]")]
     [ApiController]
@@ -17,7 +17,6 @@ namespace MedCore.Api.Controllers
             _availabilityModesRepository = availabilityModesRepository;
             _logger = logger;
             _configuration = configuration;
-
         }
 
         // GET: api/<AvailabilityModesController>
