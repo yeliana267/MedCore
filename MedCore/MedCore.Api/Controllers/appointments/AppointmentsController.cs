@@ -1,4 +1,7 @@
-﻿using MedCore.Persistence.Interfaces.appointments;
+﻿using MedCore.Domain.Entities.appointments;
+using MedCore.Domain.Entities.system;
+using MedCore.Persistence.Interfaces.appointments;
+using MedCore.Persistence.Repositories.appointments;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -28,21 +31,27 @@ namespace MedCore.Api.Controllers.appointments
 
         // GET api/<AppointmentsController>/5
         [HttpGet("{id}")]
-        public string Get(int id)
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var appointments = await _appointmentsRepository.GetAppointmentsByPatientIdAsync(id);
+            return Ok(appointments);
         }
 
         // POST api/<AppointmentsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("SaveAppointments")]
+        public async Task<IActionResult> Post([FromBody] Appointments appointments)
         {
+            var appointment = await _appointmentsRepository.SaveEntityAsync(appointments);
+            return Ok(appointments);
         }
 
-        // PUT api/<AppointmentsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+
+            // PUT api/<AppointmentsController>/5
+            [HttpPut("UpdateAppointments")]
+        public async Task<IActionResult> Put(int id, [FromBody] Appointments appointments)
         {
+            var appointment = await _appointmentsRepository.UpdateEntityAsync(id, appointments);
+            return Ok(appointments);
         }
 
         // DELETE api/<AppointmentsController>/5
