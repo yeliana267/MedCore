@@ -6,13 +6,13 @@ namespace MedCore.Persistence.Interfaces.Users
 {
     public interface IUserRepository : IBaseReporsitory<User, int>
     {
-        //Validar que el correo electrónico no esté asociado a una cuenta existente.
+        //Método para obtener un usuario por email
         Task<User?> GetByEmailAsync(string email);
 
         //Confirmación de correo electrónico
         Task<User?> GetByEmailConfirmationTokenAsync(string token);
 
-        //Recuperación de contraseña
+        //Método para obtener un usuario por token de reseteo de contraseña
         Task<User?> GetByPasswordResetTokenAsync(string token);
 
         //Método para guardar el token de confirmación

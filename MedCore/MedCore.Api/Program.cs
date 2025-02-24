@@ -1,7 +1,6 @@
 
 using MedCore.Persistence.Context;
-using MedCore.Persistence.Interfaces.appointments;
-using MedCore.Persistence.Repositories.appointments;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace MedCore.Api
@@ -15,7 +14,7 @@ namespace MedCore.Api
             // Add services to the container.
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             builder.Services.AddControllers();
-            builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
+
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();

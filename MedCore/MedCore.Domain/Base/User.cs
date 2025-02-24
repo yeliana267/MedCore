@@ -34,7 +34,7 @@ namespace MedCore.Domain.Base
 
         [Required]
         [MaxLength(255)]
-        public string Password { get; protected set; }
+        public string Password { get; set; }
         public short? RoleID { get; set; }
 
 
