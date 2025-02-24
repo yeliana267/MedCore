@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MedCore.Domain.Entities.appointments
 {
+    [Table("DoctorAvailability", Schema = "appointments")]
+
     public sealed class DoctorAvailability : Base.BaseEntity<int>
     {
         [Column("AvailabilityID")]

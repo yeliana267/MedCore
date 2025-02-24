@@ -12,7 +12,9 @@ namespace MedCore.Persistence.Interfaces.appointments
     public interface IAppointmentsRepository : IBaseReporsitory<Appointments, int>
     {
         Task<OperationResult> GetAppointmentsByDoctorIdAsync(int doctorId); //Obtiene todas las citas de un doctor específico
-       
+
+        Task<OperationResult> GetAppointmentsByPatientIdAsync(int patientId); //todas las citas de un paciente específico
+        Task<OperationResult> GetPendingAppointmentsAsync(); //Obtener citas pendientes
 
 
     }
