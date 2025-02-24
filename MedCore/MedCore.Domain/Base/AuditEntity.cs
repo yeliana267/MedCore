@@ -1,14 +1,20 @@
 ﻿
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace MedCore.Domain.Base
 {
-    public abstract  class AuditEntity
+    public abstract class AuditEntity
     {
         protected AuditEntity()
         {
             this.CreatedAt = DateTime.Now;
         }
-        public DateTime CreatedAt { get; set; }
+        [NotMapped]
+        public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        [NotMapped]
         public DateTime? UpdatedAt { get; set; }
-        public bool IsActive { get; set; }
+
+        [NotMapped]
+        public bool IsActive { get; set; } = true;
     }
 }

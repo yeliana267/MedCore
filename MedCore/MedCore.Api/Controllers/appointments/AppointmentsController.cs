@@ -1,29 +1,29 @@
 ﻿using MedCore.Persistence.Interfaces.appointments;
-using MedCore.Persistence.Repositories.appointments;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
-namespace MedCore.Api.Controllers
+namespace MedCore.Api.Controllers.appointments
 {
     [Route("api/[controller]")]
     [ApiController]
     public class AppointmentsController : ControllerBase
     {
-        public readonly IAppointmentsRepository _appointmentsRepository;
+        private readonly IAppointmentsRepository _appointmentsRepository;
         public readonly ILogger<AppointmentsController> _logger;
         public readonly IConfiguration _configuration;
-        public AppointmentsController(IAppointmentsRepository  appointmentsRepository, ILogger<AppointmentsController> logger, IConfiguration configuration) { 
-            _appointmentsRepository = appointmentsRepository; 
+        public AppointmentsController(IAppointmentsRepository appointmentsRepository, ILogger<AppointmentsController> logger, IConfiguration configuration)
+        {
+            _appointmentsRepository = appointmentsRepository;
             _logger = logger;
             _configuration = configuration;
         }
         // GET: api/<AppointmentsController>
-        [HttpGet]
+        [HttpGet("GetAppointments")]
         public async Task<IActionResult> Get()
         {
             var appointments = await _appointmentsRepository.GetAllAsync();
-            return Ok();
+            return Ok(appointments);
         }
 
         // GET api/<AppointmentsController>/5
@@ -50,5 +50,6 @@ namespace MedCore.Api.Controllers
         public void Delete(int id)
         {
         }
+
     }
 }
