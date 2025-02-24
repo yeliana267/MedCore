@@ -41,8 +41,8 @@ namespace MedCore.Persistence.Repositories.medical
             try
             {
                 var querys = await (from MedicalRecords in _context.MedicalRecords
-                                    join Patient in _context.Patients on MedicalRecords.PatientID equals Patient.PatientID
-                                    join Doctor in _context.Doctors on MedicalRecords.DoctorID equals Doctor.IdDoctorID
+                                    join Patient in _context.Patients on MedicalRecords.PatientID equals Patient.Id
+                                    join Doctor in _context.Doctors on MedicalRecords.DoctorID equals Doctor.Id
                                     where MedicalRecords.PatientID == patientId
                                     orderby MedicalRecords.DateOfVisit descending
                                     select new MedicalRecordsModel()
@@ -51,7 +51,7 @@ namespace MedCore.Persistence.Repositories.medical
                                         PatientId = MedicalRecords.PatientID,
                                         DoctorId = MedicalRecords.DoctorID,
                                         Diagnosis = MedicalRecords.Diagnosis,
-                                        Prescription = MedicalRecords.Prescription,
+                                        Treatment = MedicalRecords.Treatment,
                                         DateOfVisit = MedicalRecords.DateOfVisit
                                     }).ToListAsync();
 
@@ -125,7 +125,7 @@ namespace MedCore.Persistence.Repositories.medical
                                         PatientId = MedicalRecords.PatientID,
                                         DoctorId = MedicalRecords.DoctorID,
                                         Diagnosis = MedicalRecords.Diagnosis,
-                                        Prescription = MedicalRecords.Prescription,
+                                        Treatment = MedicalRecords.Treatment,
                                         DateOfVisit = MedicalRecords.DateOfVisit
                                     }).ToListAsync();
 
@@ -159,6 +159,18 @@ namespace MedCore.Persistence.Repositories.medical
             }
 
             return results;
+        }
+
+        public override Task<OperationResult> SaveEntityAsync(MedicalRecords entity)
+        {
+            _logger.LogInformation($"Guardando nuevo registro médico para el paciente {entity.PatientID}");
+            return base.SaveEntityAsync(entity);
+        }
+
+        public override Task<OperationResult> UpdateEntityAsync(MedicalRecords entity)
+        {
+            _logger.LogInformation($"Actualizando registro médico {entity.Id} para el paciente {entity.PatientID}");
+            return base.UpdateEntityAsync(entity);
         }
     }
 }

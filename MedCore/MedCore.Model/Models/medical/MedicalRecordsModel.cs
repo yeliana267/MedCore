@@ -19,7 +19,7 @@ namespace MedCore.Model.Models.medical
 
         [Required]
         [MaxLength(500)]
-        public string Prescription { get; set; }
+        public string Treatment { get; set; }
 
         [Required]
         public DateTime DateOfVisit { get; set; }

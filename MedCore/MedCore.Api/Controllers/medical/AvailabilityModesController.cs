@@ -20,7 +20,7 @@ namespace MedCore.Api.Controllers.medical
         }
 
         // GET: api/<AvailabilityModesController>
-        [HttpGet]
+        [HttpGet("GetAvailability")]
         public async Task<IActionResult> Get()
         {
             var availabilityModes = await _availabilityModesRepository.GetAllAsync();

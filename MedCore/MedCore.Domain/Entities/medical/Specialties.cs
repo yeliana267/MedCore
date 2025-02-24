@@ -5,6 +5,7 @@ using MedCore.Domain.Base;
 
 namespace MedCore.Domain.Entities
 {
+    [Table("Specialties", Schema = "medical")]
     public sealed class Specialties : Base.BaseEntity<short>
 
     {

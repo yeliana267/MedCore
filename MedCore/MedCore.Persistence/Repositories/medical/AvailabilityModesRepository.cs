@@ -80,5 +80,17 @@ namespace MedCore.Persistence.Repositories.medical
 
             return new OperationResult { Success = true, Data = mode };
         }
+
+        public override Task<OperationResult> SaveEntityAsync(AvailabilityModes entity)
+        {
+            _logger.LogInformation($"Guardando nuevo modo de disponibilidad {entity.AvailabilityMode}");
+            return base.SaveEntityAsync(entity);
+        }
+
+        public override Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)
+        {
+            _logger.LogInformation($"Actualizando modo de disponibilidad {entity.Id} - {entity.AvailabilityMode}");
+            return base.UpdateEntityAsync(entity);
+        }
     }
 }

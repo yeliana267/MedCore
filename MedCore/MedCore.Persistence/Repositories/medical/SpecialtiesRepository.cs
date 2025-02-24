@@ -148,5 +148,18 @@ namespace MedCore.Persistence.Repositories.medical
                 return result;
             }
         }
+
+        public override Task<OperationResult> SaveEntityAsync(Specialties entity)
+        {
+            _logger.LogInformation($"Guardando nueva especialidad {entity.SpecialtyName}");
+            return base.SaveEntityAsync(entity);
+        }
+
+        public override Task<OperationResult> UpdateEntityAsync(Specialties entity)
+        {
+            _logger.LogInformation($"Actualizando especialidad {entity.Id} - {entity.SpecialtyName}");
+            return base.UpdateEntityAsync(entity);
+        }
     }
 }
+

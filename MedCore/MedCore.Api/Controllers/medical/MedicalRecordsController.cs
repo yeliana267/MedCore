@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using MedCore.Persistence.Interfaces.medical;
+using MedCore.Persistence.Repositories.medical;
+using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -8,11 +10,22 @@ namespace MedCore.Api.Controllers.medical
     [ApiController]
     public class MedicalRecordsController : ControllerBase
     {
-        // GET: api/<MedicalRecordsController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        private readonly IMedicalRecordsRepository _medicalRecordsRepository;
+        private readonly ILogger<MedicalRecordsController> _logger;
+        private readonly IConfiguration _configuration;
+        public MedicalRecordsController(IMedicalRecordsRepository medicalRecordsRepository, ILogger<MedicalRecordsController> logger, IConfiguration configuration)
         {
-            return new string[] { "value1", "value2" };
+            _medicalRecordsRepository = medicalRecordsRepository;
+            _logger = logger;
+            _configuration = configuration;
+        }
+
+        // GET: api/<MedicalRecordsController>
+        [HttpGet("GetMedicalRecords")]
+        public async Task<IActionResult> Get()
+        {
+            var medicalRecords = await _medicalRecordsRepository.GetAllAsync();
+            return Ok();
         }
 
         // GET api/<MedicalRecordsController>/5
