@@ -14,6 +14,6 @@ namespace MedCore.Persistence.Interfaces.Users
         Task<OperationResult> UpdateDoctorInfoAsync(Doctor doctor);
 
         //Método para obtener los doctores por especialidad
-        Task<List<Doctor>> GetDoctorsBySpecialtyAsync(short specialtyId);
+        //Task<List<Doctor>> GetDoctorsBySpecialtyAsync(short specialtyId);
     }
 }

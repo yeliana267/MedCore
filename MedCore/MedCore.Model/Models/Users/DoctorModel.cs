@@ -3,7 +3,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MedCore.Model.Models
+namespace MedCore.Model.Models.Users
 {
     public class DoctorModel
     {
@@ -32,5 +32,8 @@ namespace MedCore.Model.Models
         public DateTime LicenseExpirationDate { get; set; }
 
         public int UserId { get; set; }
+        public object FirstName { get; set; }
+        public object LastName { get; set; }
+        public object SpecialtyName { get; set; }
     }
 }
