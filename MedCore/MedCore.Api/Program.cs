@@ -1,7 +1,12 @@
 
+using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
+
 using MedCore.Persistence.Interfaces.appointments;
 using MedCore.Persistence.Repositories.appointments;
+using MedCore.Persistence.Interfaces.Insurance;
+using MedCore.Persistence.Repositories.Insurance;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace MedCore.Api
@@ -15,6 +20,8 @@ namespace MedCore.Api
             // Add services to the container.
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             builder.Services.AddControllers();
+
+           builder.Services.AddScoped<IInsuranceProvidersRepository, InsuranceProvidersRepository>();
             builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
 
