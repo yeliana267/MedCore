@@ -12,6 +12,8 @@ namespace MedCore.Persistence.Interfaces.medical
         // Obtiene los registros médicos dentro de un rango de fechas determinado  
         Task<List<OperationResult>> GetMedicalRecordsByDateRangeAsync(DateTime startDate, DateTime endDate);
 
+        // Elimina un registro por su ID
+        Task<OperationResult> DeleteMedicalRecordAsync(int id);
 
     }
 }

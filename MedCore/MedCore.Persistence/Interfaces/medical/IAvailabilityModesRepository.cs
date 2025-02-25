@@ -11,5 +11,8 @@ namespace MedCore.Persistence.Interfaces.medical
 
         // Obtiene un modo de disponibilidad por su nombre  
         Task<OperationResult> GetAvailabilityModeByNameAsync(string name);
+
+        // Elimina un modo de disponibilidad por su ID
+        Task<OperationResult> DeleteAvailabilityModeAsync(short id);
     }
 }

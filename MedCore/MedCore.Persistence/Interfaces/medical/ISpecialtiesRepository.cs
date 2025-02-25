@@ -11,5 +11,8 @@ namespace MedCore.Persistence.Interfaces.medical
 
         // Obtiene una especialidad por su nombre  
         Task<OperationResult> GetSpecialtyByNameAsync(string name);
+
+        // Elimina una especialidad por su ID
+        Task<OperationResult> DeleteSpecialtyAsync(short id);
     }
 }

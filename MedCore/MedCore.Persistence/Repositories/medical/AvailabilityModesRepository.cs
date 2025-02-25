@@ -25,7 +25,7 @@ namespace MedCore.Persistence.Repositories.medical
         {
             List<OperationResult> results = new List<OperationResult>();
 
-            // ✅ Validación 1: Verificar que "days" sea un número positivo
+            //Verificar que "days" sea un número positivo
             if (days <= 0)
             {
                 results.Add(new OperationResult
@@ -41,7 +41,7 @@ namespace MedCore.Persistence.Repositories.medical
                 .Where(am => am.UpdatedAt >= recentDate)
                 .ToListAsync();
 
-            // ✅ Validación 2: Verificar si hay resultados
+            //Verificar si hay resultados
             if (querys == null || querys.Count == 0)
             {
                 results.Add(new OperationResult
@@ -57,7 +57,7 @@ namespace MedCore.Persistence.Repositories.medical
 
         public async Task<OperationResult> GetAvailabilityModeByNameAsync(string name)
         {
-            // ✅ Validación 1: Verificar si el nombre es nulo o vacío
+            //Verificar si el nombre es nulo o vacío
             if (string.IsNullOrWhiteSpace(name))
             {
                 return new OperationResult
@@ -67,7 +67,7 @@ namespace MedCore.Persistence.Repositories.medical
                 };
             }
 
-            // ✅ Validación 2: Normalizar el nombre para evitar errores de formato
+            //Normalizar el nombre para evitar errores de formato
             name = name.Trim().ToLower();
 
             var mode = await _context.AvailabilityModes
@@ -79,6 +79,36 @@ namespace MedCore.Persistence.Repositories.medical
             }
 
             return new OperationResult { Success = true, Data = mode };
+        }
+
+        public async Task<OperationResult> DeleteAvailabilityModeAsync(short id)
+        {
+            //Validar si el ID es válido
+            if (id <= 0)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "El ID del modo de disponibilidad no es válido."
+                };
+            }
+
+            //Buscar el registro en la base de datos
+            var mode = await _context.AvailabilityModes.FindAsync(id);
+            if (mode == null)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Modo de disponibilidad no encontrado."
+                };
+            }
+
+            //Eliminar el registro
+            _context.AvailabilityModes.Remove(mode);
+            await _context.SaveChangesAsync();
+
+            return new OperationResult { Success = true, Message = "Modo de disponibilidad eliminado correctamente." };
         }
 
         public override Task<OperationResult> SaveEntityAsync(AvailabilityModes entity)

@@ -1,4 +1,5 @@
-﻿using MedCore.Persistence.Interfaces.medical;
+﻿using MedCore.Domain.Entities.medical;
+using MedCore.Persistence.Interfaces.medical;
 using MedCore.Persistence.Repositories.medical;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,32 +26,48 @@ namespace MedCore.Api.Controllers.medical
         public async Task<IActionResult> Get()
         {
             var medicalRecords = await _medicalRecordsRepository.GetAllAsync();
-            return Ok();
-        }
-
-        // GET api/<MedicalRecordsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            return Ok(medicalRecords);
         }
 
         // POST api/<MedicalRecordsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("SaveMedicalRecords")]
+        public async Task<IActionResult> Post([FromBody] MedicalRecords medicalRecord)
         {
+            var medicalRecords = await _medicalRecordsRepository.SaveEntityAsync(medicalRecord);
+            return Ok();
         }
 
         // PUT api/<MedicalRecordsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateMedicalRecords")]
+        public async Task<IActionResult> Put(short id, [FromBody] MedicalRecords medicalRecord)
         {
+            var medicalRecords = await _medicalRecordsRepository.UpdateEntityAsync(medicalRecord);
+            return NoContent();
+        }
+        
+        // DELETE api/<MedicalRecordsController>/5
+        [HttpDelete("DeleteMedicalRecords")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var medicalRecord = await _medicalRecordsRepository.DeleteMedicalRecordAsync(id);
+            return Ok();
+        }
+        
+        // GET api/<MedicalRecordsController>/5
+        [HttpGet("GetMedicalRecordsByPatientIdAsync")]
+        public async Task<IActionResult> Get(int patientId)
+        {
+            var medicalRecords = await _medicalRecordsRepository.GetMedicalRecordsByPatientIdAsync(patientId);
+            return Ok(medicalRecords);
         }
 
-        // DELETE api/<MedicalRecordsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // GET api/<MedicalRecordsController>/5
+        [HttpGet("GetMedicalRecordsByDateRangeAsync")]
+        public async Task<IActionResult> Get(DateTime startDate, DateTime endDate)
         {
+            var medicalRecords = await _medicalRecordsRepository.GetMedicalRecordsByDateRangeAsync(startDate, endDate);
+            return Ok(medicalRecords);
         }
+
     }
 }

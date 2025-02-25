@@ -1,4 +1,6 @@
-﻿using MedCore.Persistence.Interfaces.medical;
+﻿using MedCore.Domain.Entities;
+using MedCore.Domain.Entities.medical;
+using MedCore.Persistence.Interfaces.medical;
 using MedCore.Persistence.Repositories.medical;
 using Microsoft.AspNetCore.Mvc;
 
@@ -24,33 +26,48 @@ namespace MedCore.Api.Controllers.medical
         [HttpGet("GetSpecialties")]
         public async Task<IActionResult> Get()
         {
-            var specialtiesRepository = await _specialtiesRepository.GetAllAsync();
-            return Ok();
-        }
-
-        // GET api/<SpecialtiesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            var Specialties = await _specialtiesRepository.GetAllAsync();
+            return Ok(Specialties);
         }
 
         // POST api/<SpecialtiesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("SaveSpecialties")]
+        public async Task<IActionResult> Post([FromBody] Specialties specialties)
         {
+            var Specialties = await _specialtiesRepository.SaveEntityAsync(specialties);
+            return Ok();
         }
 
         // PUT api/<SpecialtiesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateSpecialties")]
+        public async Task<IActionResult> Put(short id, [FromBody] Specialties specialties)
         {
+            var Specialties = await _specialtiesRepository.UpdateEntityAsync(specialties);
+            return NoContent();
         }
 
         // DELETE api/<SpecialtiesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteSpecialties")]
+        public async Task<IActionResult> Delete(short id)
         {
+            var Specialties = await _specialtiesRepository.DeleteSpecialtyAsync(id);
+            return NoContent();
+        }
+        
+        // GET api/<SpecialtiesController>/5
+        [HttpGet("GetActiveSpecialtiesAsync")]
+        public async Task<IActionResult> GetActiveSpecialtiesAsync()
+        {
+            var Specialties = await _specialtiesRepository.GetActiveSpecialtiesAsync();
+            return Ok(Specialties);
+        }
+
+        // GET api/<SpecialtiesController>/5
+        [HttpGet("GetSpecialtyByNameAsync")]
+        public async Task<IActionResult> GetSpecialtyByNameAsync(string name)
+        {
+            var Specialties = await _specialtiesRepository.GetSpecialtyByNameAsync(name);
+            return Ok(Specialties);
         }
     }
 }

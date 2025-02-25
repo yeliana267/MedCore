@@ -110,7 +110,7 @@ namespace MedCore.Persistence.Repositories.medical
                     return result;
                 }
 
-                // Buscar la especialidad con el nombre normalizado
+                //Buscar la especialidad con el nombre normalizado
                 var specialty = await _context.Specialties
                     .Where(s => s.SpecialtyName.ToLower() == name)
                     .ToListAsync();
@@ -147,6 +147,36 @@ namespace MedCore.Persistence.Repositories.medical
                 result.Message = errorMessage;
                 return result;
             }
+        }
+
+        public async Task<OperationResult> DeleteSpecialtyAsync(short id)
+        {
+            //Validar si el ID es válido
+            if (id <= 0)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "El ID de la especialidad no es válido."
+                };
+            }
+
+            //Buscar el registro en la base de datos
+            var specialty = await _context.Specialties.FindAsync(id);
+            if (specialty == null)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Especialidad no encontrada."
+                };
+            }
+
+            //Eliminar el registro
+            _context.Specialties.Remove(specialty);
+            await _context.SaveChangesAsync();
+
+            return new OperationResult { Success = true, Message = "Especialidad eliminada correctamente." };
         }
 
         public override Task<OperationResult> SaveEntityAsync(Specialties entity)

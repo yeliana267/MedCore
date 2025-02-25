@@ -1,4 +1,5 @@
-﻿using MedCore.Persistence.Interfaces.medical;
+﻿using MedCore.Domain.Entities.medical;
+using MedCore.Persistence.Interfaces.medical;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -24,32 +25,54 @@ namespace MedCore.Api.Controllers.medical
         public async Task<IActionResult> Get()
         {
             var availabilityModes = await _availabilityModesRepository.GetAllAsync();
-            return Ok();
-        }
-
-        // GET api/<AvailabilityModesController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
-        {
-            return "value";
+            return Ok(availabilityModes);
         }
 
         // POST api/<AvailabilityModesController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("SaveAvailability")]
+        public async Task<IActionResult> Post([FromBody] AvailabilityModes availability)
+
         {
+            var availabilityModes = await _availabilityModesRepository.SaveEntityAsync(availability);
+            return Ok(availabilityModes);
         }
 
         // PUT api/<AvailabilityModesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateAvailability")]
+        public async Task<IActionResult> Put(short id, [FromBody] AvailabilityModes availability)
         {
+            var availabilityModes = await _availabilityModesRepository.UpdateEntityAsync(availability);
+            return Ok(availabilityModes);
+        }
+        
+        // DELETE api/<AvailabilityModesController>/5
+        [HttpDelete("DeleteAvailability")]
+
+        public async Task<IActionResult> Delete(short id)
+        {
+            var availabilityMode = await _availabilityModesRepository.DeleteAvailabilityModeAsync(id);
+            return Ok();
+        }
+        
+        // GET api/<AvailabilityModesController>/5
+        [HttpGet("GetRecentlyUpdatedModesAsync")]
+        public async Task<IActionResult> Get(int days)
+        {
+            var availabilityModes = await _availabilityModesRepository.GetRecentlyUpdatedModesAsync(days);
+            return Ok(availabilityModes);
         }
 
-        // DELETE api/<AvailabilityModesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        // GET api/<AvailabilityModesController>/5
+        [HttpGet("GetAvailabilityModeByNameAsync")]
+        public async Task<IActionResult> Get(string name)
         {
+            var availabilityMode = await _availabilityModesRepository.GetAvailabilityModeByNameAsync(name);
+            return Ok(availabilityMode);
         }
     }
 }
+
+
+
+
+

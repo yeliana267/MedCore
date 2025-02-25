@@ -161,6 +161,36 @@ namespace MedCore.Persistence.Repositories.medical
             return results;
         }
 
+        public async Task<OperationResult> DeleteMedicalRecordAsync(int id)
+        {
+            //Validar si el ID es válido
+            if (id <= 0)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "El ID del historial médico no es válido."
+                };
+            }
+
+            //Buscar el registro en la base de datos
+            var record = await _context.MedicalRecords.FindAsync(id);
+            if (record == null)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = "Historial médico no encontrado."
+                };
+            }
+
+            //Eliminar el registro
+            _context.MedicalRecords.Remove(record);
+            await _context.SaveChangesAsync();
+
+            return new OperationResult { Success = true, Message = "Historial médico eliminado correctamente." };
+        }
+
         public override Task<OperationResult> SaveEntityAsync(MedicalRecords entity)
         {
             _logger.LogInformation($"Guardando nuevo registro médico para el paciente {entity.PatientID}");
