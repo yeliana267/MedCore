@@ -179,10 +179,22 @@ namespace MedCore.Persistence.Repositories.medical
             return new OperationResult { Success = true, Message = "Especialidad eliminada correctamente." };
         }
 
-        public override Task<OperationResult> SaveEntityAsync(Specialties entity)
+        public override async Task<OperationResult> SaveEntityAsync(Specialties entity)
         {
-            _logger.LogInformation($"Guardando nueva especialidad {entity.SpecialtyName}");
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.Specialties.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Especialidad guardada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error guardando la especialidad: {ex.Message}";
+            }
+            return result;
         }
 
         public override Task<OperationResult> UpdateEntityAsync(Specialties entity)

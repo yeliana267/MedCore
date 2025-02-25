@@ -34,7 +34,7 @@ namespace MedCore.Api.Controllers.medical
         public async Task<IActionResult> Post([FromBody] MedicalRecords medicalRecord)
         {
             var medicalRecords = await _medicalRecordsRepository.SaveEntityAsync(medicalRecord);
-            return Ok();
+            return Ok(medicalRecord);
         }
 
         // PUT api/<MedicalRecordsController>/5

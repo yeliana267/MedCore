@@ -111,10 +111,22 @@ namespace MedCore.Persistence.Repositories.medical
             return new OperationResult { Success = true, Message = "Modo de disponibilidad eliminado correctamente." };
         }
 
-        public override Task<OperationResult> SaveEntityAsync(AvailabilityModes entity)
+        public override async Task<OperationResult> SaveEntityAsync(AvailabilityModes entity)
         {
-            _logger.LogInformation($"Guardando nuevo modo de disponibilidad {entity.AvailabilityMode}");
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.AvailabilityModes.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Modo de disponibilidad guardado exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error guardando el modo de disponibilidad: {ex.Message}";
+            }
+            return result;
         }
 
         public override Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)

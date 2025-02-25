@@ -191,10 +191,22 @@ namespace MedCore.Persistence.Repositories.medical
             return new OperationResult { Success = true, Message = "Historial médico eliminado correctamente." };
         }
 
-        public override Task<OperationResult> SaveEntityAsync(MedicalRecords entity)
+        public override async Task<OperationResult> SaveEntityAsync(MedicalRecords entity)
         {
-            _logger.LogInformation($"Guardando nuevo registro médico para el paciente {entity.PatientID}");
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.MedicalRecords.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Registro médico guardado exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error guardando el registro médico: {ex.Message}";
+            }
+            return result;
         }
 
         public override Task<OperationResult> UpdateEntityAsync(MedicalRecords entity)
