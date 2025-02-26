@@ -24,5 +24,11 @@ namespace MedCore.Model.Models.medical
         [Required]
         public DateTime DateOfVisit { get; set; }
 
+        public string? Notes { get; set; }
+
+        [Required]
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
     }
 }

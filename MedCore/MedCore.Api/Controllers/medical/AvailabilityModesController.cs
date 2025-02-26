@@ -34,7 +34,7 @@ namespace MedCore.Api.Controllers.medical
 
         {
             var availabilityModes = await _availabilityModesRepository.SaveEntityAsync(availability);
-            return Ok(availabilityModes);
+            return Ok(availability);
         }
 
         // PUT api/<AvailabilityModesController>/5

@@ -23,36 +23,33 @@ namespace MedCore.Persistence.Repositories.medical
 
         public async Task<List<OperationResult>> GetRecentlyUpdatedModesAsync(int days)
         {
-            List<OperationResult> results = new List<OperationResult>();
-
-            //Verificar que "days" sea un número positivo
-            if (days <= 0)
+            try
             {
-                results.Add(new OperationResult
+                var recentDate = DateTime.Now.AddDays(-days);
+                var modes = await _context.AvailabilityModes
+                                          .Where(am => am.UpdatedAt >= recentDate)
+                                          .ToListAsync();
+
+                var results = modes.Select(mode => new OperationResult
                 {
-                    Success = false,
-                    Message = "El número de días debe ser mayor que cero."
-                });
+                    Success = true,
+                    Data = mode
+                }).ToList();
+
                 return results;
             }
-
-            var recentDate = DateTime.Now.AddDays(-days);
-            var querys = await _context.AvailabilityModes
-                .Where(am => am.UpdatedAt >= recentDate)
-                .ToListAsync();
-
-            //Verificar si hay resultados
-            if (querys == null || querys.Count == 0)
+            catch (Exception ex)
             {
-                results.Add(new OperationResult
+                _logger.LogError(ex, "Error retrieving recently updated availability modes.");
+                return new List<OperationResult>
                 {
-                    Success = false,
-                    Message = "No se encontraron modos de disponibilidad actualizados en los últimos días."
-                });
-                return results;
+                    new OperationResult
+                    {
+                        Success = false,
+                        Message = "Error retrieving recently updated availability modes."
+                    }
+                };
             }
-
-            return querys.Select(am => new OperationResult { Success = true, Data = am }).ToList();
         }
 
         public async Task<OperationResult> GetAvailabilityModeByNameAsync(string name)
