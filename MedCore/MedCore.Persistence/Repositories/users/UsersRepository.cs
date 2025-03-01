@@ -1,4 +1,4 @@
-﻿
+
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Base;
@@ -20,11 +20,49 @@ namespace MedCore.Persistence.Repositories.users
             _logger = loger;
             _configuration = configuration;
         }
-        public async Task<OperationResult> GetByEmailAsync(int Id)
+
+
+        public async Task<OperationResult> ConfirmUserEmailAsync(int userId)
         {
             throw new NotImplementedException();
         }
+        public async Task<OperationResult> DeleteUsersByIdAsync(int userId)
+        {
+            OperationResult result = new OperationResult();
 
+            try
+            {
+                var querys = await _context.Database.ExecuteSqlRawAsync(
+            "DELETE FROM [MedicalAppointment].[users].[Users] WHERE UserID = {0}", userId);
+
+                if (querys > 0)
+                {
+                    result.Success = true;
+                    result.Message = "User eliminado exitosamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontró ningún user con ese ID.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al eliminar el user.";
+                _logger.LogError($"Error al eliminar el user con ID {userId}: {ex.Message}", ex);
+            }
+            return result;
+
+        }
+        public async Task<Users> GetUserByEmailAsync(string email)
+        {
+            throw new NotImplementedException();
+        }
+        public async Task<OperationResult> ResetPasswordAsync(int userId, string newPassword)
+        {
+            throw new NotImplementedException();
+        }
         public async Task<OperationResult> UpdateUserAsync(int id, Users entity)
         {
             OperationResult result = new OperationResult();
@@ -52,12 +90,11 @@ namespace MedCore.Persistence.Repositories.users
 
                 _logger.LogInformation($"Antes de actualizar: {user.FirstName}, {user.Email}");
 
-                // Guardar cambios en la BD
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Después de actualizar: Se guardaron los cambios correctamente.");
+                _logger.LogInformation("Después de actualizar: Se guardaron los cambios correctamente.");
 
-                // Retornar éxito
+                
                 result.Success = true;
                 result.Message = $"Usuario con ID {id} actualizado correctamente.";
             }
@@ -70,8 +107,10 @@ namespace MedCore.Persistence.Repositories.users
 
             return result;
         }
-
-
-
+      public async Task<bool> ValidateUserCredentialsAsync(string email, string password)
+        {
+            throw new NotImplementedException();
+        }
     }
-    }
+
+}

@@ -4,6 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Entities.users
 {    [Table("Users", Schema = "users")]
+
     public sealed class Users : Base.BaseEntity<int>
     {
         [Column("UserID")]
@@ -14,6 +15,7 @@ namespace MedCore.Domain.Entities.users
         public string Email { get; set; }
         public string Password { get; set; }
         public int? RoleID { get; set; } 
+
 
     }
 }

@@ -18,5 +18,6 @@ namespace MedCore.Model.Models.users
             public string Password { get; set; }
             public int? RoleID { get; set; }
 
+
     }
 }

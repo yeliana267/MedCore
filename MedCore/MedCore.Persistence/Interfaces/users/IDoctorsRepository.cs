@@ -10,5 +10,6 @@ namespace MedCore.Persistence.Interfaces.users
     public interface IDoctorsRepository : IBaseReporsitory<Doctors, int>
     {
         Task<OperationResult> UpdateDoctorProfileAsync(Doctors doctor);
+
     }
 }
