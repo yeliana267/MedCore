@@ -201,18 +201,44 @@ namespace MedCore.Persistence.Repositories.medical
                 result.Success = true;
                 result.Message = "Registro médico guardado exitosamente.";
             }
+            catch (DbUpdateException dbEx)
+            {
+                result.Success = false;
+                result.Message = $"Error de actualización de la base de datos: {dbEx.Message}";
+                _logger.LogError(dbEx, "Error de actualización de la base de datos al guardar el registro médico.");
+            }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Ocurrió un error guardando el registro médico: {ex.Message}";
+                result.Message = $"Ocurrió un error inesperado: {ex.Message}";
+                _logger.LogError(ex, "Error inesperado al guardar el registro médico.");
             }
             return result;
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(MedicalRecords entity)
+        public override async Task<OperationResult> UpdateEntityAsync(MedicalRecords entity)
         {
-            _logger.LogInformation($"Actualizando registro médico {entity.Id} para el paciente {entity.PatientID}");
-            return base.UpdateEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.MedicalRecords.Update(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Registro médico actualizado exitosamente.";
+            }
+            catch (DbUpdateException dbEx)
+            {
+                result.Success = false;
+                result.Message = $"Error de actualización de la base de datos: {dbEx.Message}";
+                _logger.LogError(dbEx, "Error de actualización de la base de datos al actualizar el registro médico.");
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error inesperado: {ex.Message}";
+                _logger.LogError(ex, "Error inesperado al actualizar el registro médico.");
+            }
+            return result;
         }
     }
 }

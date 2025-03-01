@@ -34,7 +34,7 @@ namespace MedCore.Api.Controllers.medical
         public async Task<IActionResult> Post([FromBody] MedicalRecords medicalRecord)
         {
             var medicalRecords = await _medicalRecordsRepository.SaveEntityAsync(medicalRecord);
-            return Ok(medicalRecord);
+            return Ok(medicalRecords);
         }
 
         // PUT api/<MedicalRecordsController>/5
@@ -42,30 +42,14 @@ namespace MedCore.Api.Controllers.medical
         public async Task<IActionResult> Put(short id, [FromBody] MedicalRecords medicalRecord)
         {
             var medicalRecords = await _medicalRecordsRepository.UpdateEntityAsync(medicalRecord);
-            return NoContent();
+            return Ok(medicalRecords);
         }
         
         // DELETE api/<MedicalRecordsController>/5
         [HttpDelete("DeleteMedicalRecords")]
         public async Task<IActionResult> Delete(int id)
         {
-            var medicalRecord = await _medicalRecordsRepository.DeleteMedicalRecordAsync(id);
-            return Ok();
-        }
-        
-        // GET api/<MedicalRecordsController>/5
-        [HttpGet("GetMedicalRecordsByPatientIdAsync")]
-        public async Task<IActionResult> Get(int patientId)
-        {
-            var medicalRecords = await _medicalRecordsRepository.GetMedicalRecordsByPatientIdAsync(patientId);
-            return Ok(medicalRecords);
-        }
-
-        // GET api/<MedicalRecordsController>/5
-        [HttpGet("GetMedicalRecordsByDateRangeAsync")]
-        public async Task<IActionResult> Get(DateTime startDate, DateTime endDate)
-        {
-            var medicalRecords = await _medicalRecordsRepository.GetMedicalRecordsByDateRangeAsync(startDate, endDate);
+            var medicalRecords = await _medicalRecordsRepository.DeleteMedicalRecordAsync(id);
             return Ok(medicalRecords);
         }
 

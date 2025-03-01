@@ -192,7 +192,7 @@ namespace MedCore.Persistence.Repositories.medical
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Ocurrió un error guardando la especialidad: {ex.Message}";
+                result.Message = $"Ocurrió un error {ex.Message} guardando la especialidad.";
             }
             return result;
         }

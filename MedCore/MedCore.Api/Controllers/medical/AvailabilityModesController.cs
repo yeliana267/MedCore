@@ -34,7 +34,7 @@ namespace MedCore.Api.Controllers.medical
 
         {
             var availabilityModes = await _availabilityModesRepository.SaveEntityAsync(availability);
-            return Ok(availability);
+            return Ok(availabilityModes);
         }
 
         // PUT api/<AvailabilityModesController>/5
@@ -52,14 +52,6 @@ namespace MedCore.Api.Controllers.medical
         {
             var availabilityMode = await _availabilityModesRepository.DeleteAvailabilityModeAsync(id);
             return Ok();
-        }
-        
-        // GET api/<AvailabilityModesController>/5
-        [HttpGet("GetRecentlyUpdatedModesAsync")]
-        public async Task<IActionResult> Get(int days)
-        {
-            var availabilityModes = await _availabilityModesRepository.GetRecentlyUpdatedModesAsync(days);
-            return Ok(availabilityModes);
         }
 
         // GET api/<AvailabilityModesController>/5

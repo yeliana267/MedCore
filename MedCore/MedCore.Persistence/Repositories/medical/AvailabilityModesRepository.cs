@@ -1,4 +1,5 @@
 ﻿using MedCore.Domain.Base;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.medical;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
@@ -23,6 +24,7 @@ namespace MedCore.Persistence.Repositories.medical
 
         public async Task<List<OperationResult>> GetRecentlyUpdatedModesAsync(int days)
         {
+            List<OperationResult> results = new List<OperationResult>();
             try
             {
                 var recentDate = DateTime.Now.AddDays(-days);
@@ -30,52 +32,72 @@ namespace MedCore.Persistence.Repositories.medical
                                           .Where(am => am.UpdatedAt >= recentDate)
                                           .ToListAsync();
 
-                var results = modes.Select(mode => new OperationResult
+                if (modes == null || modes.Count == 0)
                 {
-                    Success = true,
-                    Data = mode
-                }).ToList();
+                    results.Add(new OperationResult
+                    {
+                        Success = false,
+                        Message = "No se encontraron modos de disponibilidad actualizados recientemente."
+                    });
+                    return results;
+                }
 
-                return results;
+                results.Add(new OperationResult
+                {
+                    Data = modes,
+                    Success = true,
+                    Message = "Modos de disponibilidad actualizados recientemente obtenidos exitosamente."
+                });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error retrieving recently updated availability modes.");
-                return new List<OperationResult>
+                results.Add(new OperationResult
                 {
-                    new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error retrieving recently updated availability modes."
-                    }
-                };
+                    Message = _configuration["ErrorAvailabilityModesRepository:GetRecentlyUpdatedModes"]
+                             ?? "Error desconocido al obtener modos de disponibilidad actualizados recientemente.",
+                    Success = false
+                });
+                _logger.LogError($"Error al obtener modos de disponibilidad actualizados recientemente", ex);
             }
+            return results;
         }
 
         public async Task<OperationResult> GetAvailabilityModeByNameAsync(string name)
         {
-            //Verificar si el nombre es nulo o vacío
-            if (string.IsNullOrWhiteSpace(name))
+            OperationResult result = new OperationResult();
+            try
             {
-                return new OperationResult
+                if (string.IsNullOrWhiteSpace(name))
                 {
-                    Success = false,
-                    Message = "El nombre del modo de disponibilidad no puede estar vacío."
-                };
+                    result.Success = false;
+                    result.Message = "El nombre del modo de disponibilidad no puede estar vacío.";
+                    return result;
+                }
+
+                name = name.Trim().ToLower();
+
+                var mode = await _context.AvailabilityModes
+                                         .FirstOrDefaultAsync(am => am.AvailabilityMode.ToLower() == name);
+
+                if (mode == null)
+                {
+                    result.Success = false;
+                    result.Message = "Modo de disponibilidad no encontrado.";
+                    return result;
+                }
+
+                result.Data = mode;
+                result.Success = true;
+                result.Message = "Modo de disponibilidad obtenido exitosamente.";
             }
-
-            //Normalizar el nombre para evitar errores de formato
-            name = name.Trim().ToLower();
-
-            var mode = await _context.AvailabilityModes
-                .FirstOrDefaultAsync(am => am.AvailabilityMode.ToLower() == name);
-
-            if (mode == null)
+            catch (Exception ex)
             {
-                return new OperationResult { Success = false, Message = "Modo de disponibilidad no encontrado." };
+                result.Message = _configuration["ErrorAvailabilityModesRepository:GetAvailabilityModeByName"]
+                                 ?? "Error desconocido al obtener el modo de disponibilidad por nombre.";
+                result.Success = false;
+                _logger.LogError($"Error al obtener el modo de disponibilidad por nombre: {name}", ex);
             }
-
-            return new OperationResult { Success = true, Data = mode };
+            return result;
         }
 
         public async Task<OperationResult> DeleteAvailabilityModeAsync(short id)
@@ -116,15 +138,16 @@ namespace MedCore.Persistence.Repositories.medical
                 _context.AvailabilityModes.Add(entity);
                 await _context.SaveChangesAsync();
                 result.Success = true;
-                result.Message = "Modo de disponibilidad guardado exitosamente.";
+                result.Message = "Entidad guardada exitosamente.";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Ocurrió un error guardando el modo de disponibilidad: {ex.Message}";
+                result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
             }
             return result;
         }
+
 
         public override Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)
         {

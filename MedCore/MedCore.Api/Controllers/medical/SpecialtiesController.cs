@@ -53,14 +53,6 @@ namespace MedCore.Api.Controllers.medical
             var Specialties = await _specialtiesRepository.DeleteSpecialtyAsync(id);
             return NoContent();
         }
-        
-        // GET api/<SpecialtiesController>/5
-        [HttpGet("GetActiveSpecialtiesAsync")]
-        public async Task<IActionResult> GetActiveSpecialtiesAsync()
-        {
-            var Specialties = await _specialtiesRepository.GetActiveSpecialtiesAsync();
-            return Ok(Specialties);
-        }
 
         // GET api/<SpecialtiesController>/5
         [HttpGet("GetSpecialtyByNameAsync")]
