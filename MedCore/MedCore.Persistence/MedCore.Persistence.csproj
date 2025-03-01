@@ -7,10 +7,6 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.Graph" Version="5.70.0" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\MedCore.Domain\MedCore.Domain.csproj" />
     <ProjectReference Include="..\MedCore.Model\MedCore.Model.csproj" />
   </ItemGroup>
