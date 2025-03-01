@@ -6,7 +6,6 @@ using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace MedCore.Persistence.Repositories.appointments
 {
@@ -45,7 +44,7 @@ namespace MedCore.Persistence.Repositories.appointments
 
             return result;
         }
-        public async Task<OperationResult> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate, TimeOnly startTime, TimeOnly endTime)
+        public async Task<OperationResult> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate, TimeSpan startTime, TimeSpan endTime)
         {
             OperationResult result = new OperationResult();
 
@@ -87,6 +86,47 @@ namespace MedCore.Persistence.Repositories.appointments
             }
             return result;
         }
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, DoctorAvailability entity)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var doctorAvailability = await _context.DoctorAvailabilities.FindAsync(id);
+
+                if (doctorAvailability == null)
+                {
+                    result.Success = false;
+                    result.Message = $"No se encontraron medicos disponibles del ID {id}.";
+                    _logger.LogWarning($"Intento de actualización fallido: Disponibilidad medica {id} no encontrada.");
+                    return result;
+                }
+
+                _logger.LogInformation($"Actualizando cita medica {id}");
+
+                doctorAvailability.AvailableDate = entity.AvailableDate;
+                doctorAvailability.DoctorID = entity.DoctorID;
+                doctorAvailability.StartTime = entity.StartTime;
+                doctorAvailability.EndTime = entity.EndTime;
+
+                _context.DoctorAvailabilities.Update(doctorAvailability);
+                await _context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = $"Cita con ID {id} actualizada correctamente.";
+                _logger.LogInformation($"Cita {id} actualizada exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al actualizar la cita: {ex.Message}";
+                _logger.LogError($"Error en UpdateEntityAsync para la cita {id}: {ex.Message}", ex);
+            }
+
+            return result;
+        }
+
     }
 }
 

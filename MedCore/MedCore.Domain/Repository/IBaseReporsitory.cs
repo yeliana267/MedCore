@@ -11,10 +11,10 @@ namespace MedCore.Domain.Repository
 
         Task<OperationResult> SaveEntityAsync(TEntity entity);
         Task<List<TEntity>> GetAllAsync();
+        Task<OperationResult> DeleteEntityByIdAsync(TType id);
 
         Task<OperationResult> GetAllAsync(Expression<Func<TEntity, bool>> filter);
 
         Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter);
-        //Task<OperationResult> DeleteEntityByIdAsync(TType id);
     }
 }

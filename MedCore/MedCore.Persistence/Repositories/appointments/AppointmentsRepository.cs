@@ -3,7 +3,6 @@
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.system;
-using MedCore.Domain.Entities.Users;
 using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
@@ -11,7 +10,6 @@ using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MedCore.Persistence.Repositories.appointments
 {
@@ -34,8 +32,8 @@ namespace MedCore.Persistence.Repositories.appointments
             try
             {
                 var querys = await (from Appointments in _context.Appointments
-                                    join Doctor in _context.Doctors on Appointments.DoctorID equals Doctor.UserID
-                                    join User in _context.Users on Doctor.Id equals User.UserID
+                                    join Doctor in _context.Doctors on Appointments.DoctorID equals Doctor.Id
+                                    join User in _context.Users on Doctor.Id equals User.Id
                                     join Status in _context.Status on Appointments.StatusID equals Status.Id
                                     where Appointments.DoctorID == doctorId
                                     orderby Appointments.AppointmentDate descending
@@ -99,6 +97,8 @@ namespace MedCore.Persistence.Repositories.appointments
 
         public async Task<OperationResult> GetPendingAppointmentsAsync()
         {
+            throw new NotImplementedException();
+
             OperationResult result = new OperationResult();
             try
             {
@@ -110,25 +110,24 @@ namespace MedCore.Persistence.Repositories.appointments
                     return result;
                 }
 
-                var querys = await(from Appointments in _context.Appointments
-                                  join Patient in _context.Patients on Appointments.PatientID equals Patient.UserID
-                                  join User in _context.Users on Patient.Id equals User.UserID
-                                  join Doctor in _context.Doctors on Appointments.DoctorID equals Doctor.UserID
-                                  join DoctorUser in _context.Users on Doctor.Id equals DoctorUser.UserID
-                                  join Status in _context.Status on Appointments.StatusID equals Status.Id
-                                  where Appointments.StatusID == 1
-                                  orderby Appointments.AppointmentDate ascending
-                                  select new AppointmentsModel()
-                                  {
-                                      AppointmentID = Appointments.Id,
-                                      PatientID = Appointments.PatientID,
-                                      DoctorID = Appointments.DoctorID,
-                                      FirstName = User.FirstName,
-                                      LastName = User.LastName,
-                                      StatusID = Appointments.StatusID,
-                                      AppointmentDate = Appointments.AppointmentDate,
-                                    
-                                  }).ToListAsync();
+                var querys = await (from Appointments in _context.Appointments
+                                    join Patient in _context.Patients on Appointments.PatientID equals Patient.Id
+                                    join User in _context.Users on Patient.Id equals User.Id
+                                    join Doctor in _context.Doctors on Appointments.DoctorID equals Doctor.Id
+                                    join Status in _context.Status on Appointments.StatusID equals Status.Id
+                                    where Appointments.StatusID == 1
+                                    orderby Appointments.AppointmentDate ascending
+                                    select new AppointmentsModel()
+                                    {
+                                        AppointmentID = Appointments.Id,
+                                        PatientID = Appointments.PatientID,
+                                        DoctorID = Appointments.DoctorID,
+                                        FirstName = User.FirstName,
+                                        LastName = User.LastName,
+                                        StatusID = Appointments.StatusID,
+                                        AppointmentDate = Appointments.AppointmentDate,
+
+                                    }).ToListAsync();
 
                 if (querys.Count == 0)
                 {
@@ -153,14 +152,24 @@ namespace MedCore.Persistence.Repositories.appointments
 
         }
 
-
-
-
-        public override Task<OperationResult> SaveEntityAsync(Appointments entity)
+        public override async Task<OperationResult> SaveEntityAsync(Appointments entity)
         {
-            _logger.LogInformation($"Guardando nueva cita para el paciente {entity.PatientID}");
-            return base.SaveEntityAsync(entity);
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.Appointments.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad guardada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
+            }
+            return result;
         }
+
 
         public override async Task<OperationResult> UpdateEntityAsync(int id, Appointments entity)
         {
@@ -178,14 +187,15 @@ namespace MedCore.Persistence.Repositories.appointments
                     return result;
                 }
 
-                _logger.LogInformation($"Actualizando cita {entity.Id} para el paciente {entity.PatientID}");
+                _logger.LogInformation($"Actualizando cita {id} para el paciente {entity.PatientID}");
 
                 appointment.PatientID = entity.PatientID;
                 appointment.DoctorID = entity.DoctorID;
                 appointment.AppointmentDate = entity.AppointmentDate;
                 appointment.StatusID = entity.StatusID;
-                appointment.UpdatedAt = DateTime.Now; 
+                appointment.UpdatedAt = DateTime.Now;
 
+                _context.Appointments.Update(appointment);
                 await _context.SaveChangesAsync();
 
                 result.Success = true;
@@ -195,11 +205,41 @@ namespace MedCore.Persistence.Repositories.appointments
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = "Error al actualizar la cita.";
+                result.Message = $"Error al actualizar la cita: {ex.Message}";
                 _logger.LogError($"Error en UpdateEntityAsync para la cita {id}: {ex.Message}", ex);
             }
 
             return result;
+        }
+
+        public async Task<OperationResult> DeleteEntityByIdAsync(int appointmentId)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var querys = await _context.Database.ExecuteSqlRawAsync(
+            "DELETE FROM [MedicalAppointment].[appointments].[Appointments] WHERE AppointmentID = {0}", appointmentId);
+
+                if (querys > 0)
+                {
+                    result.Success = true;
+                    result.Message = "Cita eliminada exitosamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontró ninguna cita con ese ID.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al eliminar la cita.";
+                _logger.LogError($"Error al eliminar la cita con ID {appointmentId}: {ex.Message}", ex);
+            }
+            return result;
+
         }
 
     }

@@ -1,5 +1,6 @@
 ﻿using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.system;
+using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Interfaces.appointments;
 using MedCore.Persistence.Repositories.appointments;
 using Microsoft.AspNetCore.Mvc;
@@ -25,15 +26,15 @@ namespace MedCore.Api.Controllers.appointments
         [HttpGet("GetAppointments")]
         public async Task<IActionResult> Get()
         {
-            var appointments = await _appointmentsRepository.GetAllAsync();
-            return Ok(appointments);
+            var result = await _appointmentsRepository.GetAllAsync();
+            return Ok(result);
         }
 
         // GET api/<AppointmentsController>/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> Get(int id)
-        {
-            var appointments = await _appointmentsRepository.GetAppointmentsByPatientIdAsync(id);
+        [HttpGet("obtenerID")]
+            public async Task<IActionResult> Get(int id)
+            {
+            var appointments = await _appointmentsRepository.GetEntityByIdAsync(id);
             return Ok(appointments);
         }
 
@@ -42,13 +43,13 @@ namespace MedCore.Api.Controllers.appointments
         public async Task<IActionResult> Post([FromBody] Appointments appointments)
         {
             var appointment = await _appointmentsRepository.SaveEntityAsync(appointments);
-            return Ok(appointments);
+            return Ok(appointment);
         }
 
 
             // PUT api/<AppointmentsController>/5
             [HttpPut("UpdateAppointments")]
-        public async Task<IActionResult> Put(int id, [FromBody] Appointments appointments)
+        public async Task<IActionResult> Put( int id,[FromBody] Appointments appointments)
         {
             var appointment = await _appointmentsRepository.UpdateEntityAsync(id, appointments);
             return Ok(appointments);
@@ -56,8 +57,10 @@ namespace MedCore.Api.Controllers.appointments
 
         // DELETE api/<AppointmentsController>/5
         [HttpDelete("{id}")]
-        public void Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
+            var appointment = await _appointmentsRepository.DeleteEntityByIdAsync(id);
+            return Ok(appointment);
         }
 
     }

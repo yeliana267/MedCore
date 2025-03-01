@@ -1,4 +1,5 @@
-﻿using MedCore.Persistence.Interfaces.Users;
+﻿using MedCore.Domain.Entities.users;
+using MedCore.Persistence.Interfaces.users;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -9,21 +10,23 @@ namespace MedCore.Api.Controllers.users
     [ApiController]
     public class UserController : ControllerBase
     {
-        public readonly IBaseUsers _baseUsers;
+        public readonly  IUsersRepository _usersRepository;
         public readonly ILogger<UserController> _logger;
         public readonly IConfiguration _configuration;
-        public UserController(IBaseUsers baseUsers, ILogger<UserController> logger, IConfiguration configuration)
+        public UserController(IUsersRepository usersRepository, ILogger<UserController> logger, IConfiguration configuration)
         {
             _logger = logger;
             _configuration = configuration;
-            _baseUsers = baseUsers;
+            _usersRepository = usersRepository;
+
         }
 
         // GET: api/<UserController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var user = await _usersRepository.GetAllAsync();
+            return Ok(user);
         }
 
         // GET api/<UserController>/5
@@ -40,11 +43,13 @@ namespace MedCore.Api.Controllers.users
         }
 
         // PUT api/<UserController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("Update")]
+        public async Task<IActionResult> Put(int id, [FromBody] Users users)
         {
+            var user = await _usersRepository.UpdateEntityAsync(id, users);
+            return Ok(user);
         }
-
+      
         // DELETE api/<UserController>/5
         [HttpDelete("{id}")]
         public void Delete(int id)

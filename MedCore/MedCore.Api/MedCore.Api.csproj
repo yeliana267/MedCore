@@ -15,4 +15,8 @@
     <ProjectReference Include="..\MedCore.Persistence\MedCore.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Controllers\users\" />
+  </ItemGroup>
+
 </Project>
