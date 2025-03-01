@@ -1,12 +1,10 @@
 ﻿
-
-using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Entities.users
-{
-    [Table("Users", Schema = "users")]
-  
+{    [Table("Users", Schema = "users")]
+
     public sealed class Users : Base.BaseEntity<int>
     {
         [Column("UserID")]
@@ -16,7 +14,8 @@ namespace MedCore.Domain.Entities.users
         public string LastName { get; set; }
         public string Email { get; set; }
         public string Password { get; set; }
-        public int? RoleID { get; set; }
+        public int? RoleID { get; set; } 
+
 
     }
 }

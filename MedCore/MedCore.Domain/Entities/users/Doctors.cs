@@ -1,4 +1,5 @@
-﻿
+
+
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
@@ -21,7 +22,8 @@ namespace MedCore.Domain.Entities.users
         public decimal? ConsultationFee { get; set; }
         public string? ClinicAddress { get; set; }
 
-        public short? AvailabilityModeId { get; set; }
-        public DateOnly LicenseExpirationDate { get; set; }
+        public string? AvailabilityModeId { get; set; }
+        public DateOnly LicenseExpirationDate { get; set; } 
     }
 }
+

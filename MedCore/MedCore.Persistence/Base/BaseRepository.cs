@@ -3,13 +3,12 @@ using MedCore.Domain.Base;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+
 using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
 {
-    public abstract class BaseRepository<TEntity, TType> : IBaseReporsitory<TEntity, TType> where TEntity : class 
+    public abstract class BaseRepository<TEntity, TType> : IBaseReporsitory<TEntity, TType> where TEntity : class
     {
         private readonly MedCoreContext _context;
         private DbSet<TEntity> Entity { get; set; }
@@ -54,9 +53,7 @@ namespace MedCore.Persistence.Base
             {
                 result.Success = false;
                 result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
-
             }
-
             return result;
         }
         public virtual async Task<List<TEntity>> GetAllAsync()
@@ -89,5 +86,21 @@ namespace MedCore.Persistence.Base
             return await Entity.AnyAsync(filter);
         }
 
+        public virtual async Task<OperationResult> DeleteEntityByIdAsync(TType id)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                var entity = await Entity.FindAsync(id);
+                Entity.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error {ex.Message} eliminando la entidad.";
+            }
+            return result;
+        }
     }
 }

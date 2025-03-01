@@ -1,13 +1,12 @@
 ﻿
 
-using System.Numerics;
 using MedCore.Domain.Base;
-using MedCore.Domain.Entities.appointments;
+
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.users;
-using Microsoft.EntityFrameworkCore;
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -24,7 +23,6 @@ namespace MedCore.Persistence.Repositories.users
             _logger = loger;
             _configuration = configuration;
         }
-
         public async Task<OperationResult> AssignSpecialtyAsync(int doctorId, int specialtyId)
         {
             throw new NotImplementedException();
