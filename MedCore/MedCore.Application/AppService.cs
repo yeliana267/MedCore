@@ -1,6 +1,6 @@
 ﻿namespace MedCore.Application
 {
-    public class Class1
+    public class AppService
     {
 
     }
