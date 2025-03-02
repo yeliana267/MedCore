@@ -52,9 +52,7 @@ namespace MedCore.Persistence.Base
             {
                 result.Success = false;
                 result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
-
             }
-
             return result;
         }
         public virtual async Task<List<TEntity>> GetAllAsync()

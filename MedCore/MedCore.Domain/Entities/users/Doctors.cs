@@ -1,39 +1,27 @@
 ﻿
-
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace MedCore.Model.Models.Users
+namespace MedCore.Domain.Entities.users
 {
-    public class DoctorModel
+    [Table("Doctors", Schema = "users")]
+
+    public sealed class Doctors : Base.BaseEntity<int>
     {
-        public int DoctorID { get; set; }
+        [Column("DoctorID")]
+        [Key]
+        public override int Id { get; set; }
 
-        [Required]
         public short SpecialtyID { get; set; }
-
-        [MaxLength(50)]
         public string LicenseNumber { get; set; }
-
+        public string PhoneNumber { get; set; }
         public int YearsOfExperience { get; set; }
-
         public string Education { get; set; }
-
-        [MaxLength(1000)]
         public string? Bio { get; set; }
-
         public decimal? ConsultationFee { get; set; }
-
-        [MaxLength(255)]
         public string? ClinicAddress { get; set; }
 
         public short? AvailabilityModeId { get; set; }
-
-        public DateTime LicenseExpirationDate { get; set; }
-
-        public int UserId { get; set; }
-        public object FirstName { get; set; }
-        public object LastName { get; set; }
-        public object SpecialtyName { get; set; }
+        public DateOnly LicenseExpirationDate { get; set; }
     }
 }

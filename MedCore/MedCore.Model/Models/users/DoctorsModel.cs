@@ -2,39 +2,34 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using MedCore.Domain.Base;
 
-namespace MedCore.Domain.Entities.Users
+namespace MedCore.Model.Models.users
 {
-    public sealed class Doctor : User
+    public class DoctorsModel
     {
-
+        [Key]
+        public int DoctorID { get; set; }
         public short SpecialtyID { get; set; }
-
         [Required]
         [MaxLength(50)]
         public string LicenseNumber { get; set; }
-
+        [Phone]
+        [MaxLength(15)]
+        public string PhoneNumber { get; set; }
         [Required]
         public int YearsOfExperience { get; set; }
-
         [Required]
         public string Education { get; set; }
         public string? Bio { get; set; }
-
-        [Range(0, 9999999.99)]
+        [Column(TypeName = "decimal(10,2)")]
         public decimal? ConsultationFee { get; set; }
-
         [MaxLength(255)]
         public string? ClinicAddress { get; set; }
         public short? AvailabilityModeId { get; set; }
-
         [Required]
-        public DateTime LicenseExpirationDate { get; set; }
-
-        [ForeignKey("User")]
-        public int UserId { get; set; }
-        public User User { get; set; }
-
+        public DateTime LicenseExpirationDate
+        {
+            get; set;
+        }
     }
 }
