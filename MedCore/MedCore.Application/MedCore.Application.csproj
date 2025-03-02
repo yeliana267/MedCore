@@ -11,7 +11,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Base\" />
     <Folder Include="Dtos\" />
     <Folder Include="Interfaces\" />
     <Folder Include="Services\" />
