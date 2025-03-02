@@ -6,7 +6,7 @@ namespace MedCore.Model.Models.Insurance
     public class NetworkTypeModel
     {
         [Key]
-        public int Id { get; set; }
+        public int NetworkTypeId { get; set; }
 
         [Required]
         [StringLength(50)]

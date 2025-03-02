@@ -1,6 +1,9 @@
-﻿using MedCore.Persistence.Interfaces.appointments;
+﻿using MedCore.Domain.Base;
+using MedCore.Domain.Entities.Insurance;
+using MedCore.Persistence.Interfaces.appointments;
 using MedCore.Persistence.Interfaces.Insurance;
 using MedCore.Persistence.Repositories.appointments;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 
@@ -17,7 +20,8 @@ namespace MedCore.Api.Controllers.Insurance
         public readonly IConfiguration _configuration;
        
       
-       public InsuranceProvidersController(IInsuranceProvidersRepository insuranceProvidersRepository,IConfiguration configuration, ILogger<InsuranceProvidersController> logger) 
+       public InsuranceProvidersController(IInsuranceProvidersRepository insuranceProvidersRepository,
+                                           IConfiguration configuration, ILogger<InsuranceProvidersController> logger) 
         {
             _logger = logger;
             _configuration = configuration;
@@ -26,35 +30,45 @@ namespace MedCore.Api.Controllers.Insurance
             
         }
         // GET: api/<InsuranceProvidersController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("GetInsuranceProviders")]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var insuranceProviders = await _insuranceProvidersRepository.GetAllAsync();
+            return Ok(insuranceProviders);
         }
 
         // GET api/<InsuranceProvidersController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetInsuranceProvidersById")]
+        public async Task<IActionResult> Get(int id)
+            
         {
-            return "value";
+            var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(id);
+            return Ok(insuranceProviders);
         }
 
         // POST api/<InsuranceProvidersController>
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [HttpPost("SaveInsuranceProviders")]
+        public async Task<IActionResult> Post([FromBody] InsuranceProviders insuranceProviders)
         {
+            var insuranceProvider =await  _insuranceProvidersRepository.SaveEntityAsync(insuranceProviders);
+            return Ok(insuranceProvider);
         }
 
         // PUT api/<InsuranceProvidersController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("UpdateInsuranceProviders")]
+        public async Task<IActionResult> Put(int id, [FromBody] InsuranceProviders insuranceProviders)
         {
+            var insuranceProvider = await _insuranceProvidersRepository.UpdateEntityAsync(id, insuranceProviders);
+            return Ok(insuranceProvider);
+
         }
 
         // DELETE api/<InsuranceProvidersController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteInsuranceProviders")]
+        public async Task<IActionResult> Delete(int id)
         {
+            var insuranceProvider = await _insuranceProvidersRepository.DeleteEntityByIdAsync(id);
+            return Ok(insuranceProvider);
         }
     }
 }

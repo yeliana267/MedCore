@@ -1,5 +1,9 @@
-﻿using MedCore.Persistence.Interfaces.Insurance;
+﻿using MedCore.Domain.Entities.Insurance;
+using MedCore.Persistence.Interfaces.Insurance;
+using MedCore.Persistence.Repositories.Insurance;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
@@ -9,39 +13,60 @@ namespace MedCore.Api.Controllers.Insurance
     [ApiController]
     public class NetworkTypeController : ControllerBase
     {
-        public NetworkTypeController(INetworkTypeRepository networkTypeRepository) 
-        { 
+        public readonly INetworkTypeRepository _networkTypeRepository;
+        public readonly ILogger<NetworkTypeController> _logger;
+        public readonly IConfiguration _configuration;
+        public NetworkTypeController(INetworkTypeRepository networkTypeRepository, 
+                                     IConfiguration configuration, ILogger<NetworkTypeController> logger) 
+        {
+            _logger = logger;
+            _configuration = configuration;
+            _networkTypeRepository = networkTypeRepository;
+
         }
         // GET: api/<NetworkTypeController>
-        [HttpGet]
-        public IEnumerable<string> Get()
+        [HttpGet("GetNeworkType")]
+        public async Task<IActionResult> Get()
         {
-            return new string[] { "value1", "value2" };
+            var networkTypes = await _networkTypeRepository.GetAllAsync();
+            return Ok(networkTypes);
         }
 
         // GET api/<NetworkTypeController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetNetworkTypeById")]
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var networkType = await _networkTypeRepository.GetEntityByIdAsync(id);
+            return Ok(networkType);
+
         }
 
         // POST api/<NetworkTypeController>
-        [HttpPost]
-        public void Post([FromBody]string value)
+        [HttpPost("SaveNetworType")]
+        public async Task<IActionResult> Post([FromBody] NetworkType networkType)
         {
+            var network= await _networkTypeRepository.SaveEntityAsync(networkType);
+            return Ok(network);
         }
+
 
         // PUT api/<NetworkTypeController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody]string value)
+        [HttpPut("UpdateNetworType")]
+        public async Task<IActionResult> Put(int id, [FromBody] NetworkType networkTypes)
         {
+            var networktype = await _networkTypeRepository.UpdateEntityAsync(id, networkTypes);
+            return Ok(networktype);
+
         }
 
+
         // DELETE api/<NetworkTypeController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteNetworkType")]
+        public async Task<IActionResult> Delete(int NetworkTypeId)
         {
+            var result = await _networkTypeRepository.DeleteEntityByIdAsync(NetworkTypeId);
+            return Ok(result);
         }
     }
+
 }
