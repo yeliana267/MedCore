@@ -1,6 +1,7 @@
 ﻿
 
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Model.Models.Insurance;
 using MedCore.Persistence.Base;
@@ -82,6 +83,101 @@ namespace MedCore.Persistence.Repositories.Insurance
             }
 
             return result;
+
         }
+
+        public override async Task<OperationResult> SaveEntityAsync(NetworkType entity)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.NetworkType.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad guardada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
+            }
+            return result;
+        }
+
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, NetworkType entity)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var networkType = await _context.NetworkType.FindAsync(id);
+
+                if (networkType == null)
+                {
+                    result.Success = false;
+                    result.Message = $"No se encontró NetworkType por ID {id}.";
+                    _logger.LogWarning($"Intento de actualización fallido: NetworkType {id} no encontrada.");
+                    return result;
+                }
+
+                _logger.LogInformation($"Actualizando NetworkType {entity.Id}");
+
+                networkType.Name = entity.Name;
+                networkType.Description = entity.Description;
+                networkType.UpdatedAt = DateTime.Now;
+
+                _context.NetworkType.Update(networkType);
+                await _context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = $"NetworkType con ID {id} actualizada correctamente.";
+                _logger.LogInformation($"NetworkType {id} actualizada exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al actualizar NetworkType: {ex.Message}";
+                _logger.LogError($"Error en UpdateEntityAsync para NetworkType {id}: {ex.Message}", ex);
+            }
+
+            return result;
+        }
+
+
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int NetworkTypeId)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var querys = await _context.Database.ExecuteSqlRawAsync("DELETE FROM [MedicalAppointment].[Insurance].[NetworkType] Where NetworkTypeId = {0}", NetworkTypeId);
+
+
+
+                if (querys > 0)
+                {
+                    result.Success = true;
+                    result.Message = "Tipo de Red de Seguro borrada exitosamente";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontró Tipo de Red de Seguro con ese Id";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al eliminar Red de Seguro.";
+                _logger.LogError($"Error al eliminar Tipo de Red de Seguro por ID {NetworkTypeId}: {ex.Message}", ex);
+            }
+            return result;
+
+        }
+
     }
+
+
 }
+

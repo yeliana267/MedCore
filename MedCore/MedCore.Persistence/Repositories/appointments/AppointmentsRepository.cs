@@ -165,10 +165,6 @@ namespace MedCore.Persistence.Repositories.appointments
             return base.SaveEntityAsync(entity);
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(Appointments entity)
-        {
-            _logger.LogInformation($"Actualizando cita {entity.Id} para el paciente {entity.PatientID}");
-            return base.UpdateEntityAsync(entity);
-        }
+    
     }
 }

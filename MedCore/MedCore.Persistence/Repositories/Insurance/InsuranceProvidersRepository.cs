@@ -1,6 +1,7 @@
 ﻿
 
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Model.Models.Insurance;
 using MedCore.Persistence.Base;
@@ -50,6 +51,125 @@ namespace MedCore.Persistence.Repositories.Insurance
 
             return result;
         }
+        
+        public async Task<OperationResult> GetInsuranceProvidersById(int id)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var insuranceProviders = await _context.NetworkType.FindAsync(id);
+
+                if (insuranceProviders == null)
+                {
+                    result.Success = false;
+                    result.Message = "Insurance Providers not found.";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Data = insuranceProviders;
+            }
+            catch (Exception ex)
+            {
+                this._logger.LogError(ex, "Error retrieving Insurance Providers with ID {Id}", id);
+                result.Success = false;
+                result.Message = this._configuration["An error occurred while fetching the Insurance Providers."]!;
+            }
+
+            return result;
+
+        }
+
+        public override async Task<OperationResult> SaveEntityAsync(InsuranceProviders entity)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                _context.InsuranceProviders.Add(entity);
+                await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad guardada exitosamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
+            }
+            return result;
+        }
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, InsuranceProviders entity)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var insuranceProviders = await _context.InsuranceProviders.FindAsync(id);
+
+                if (insuranceProviders == null)
+                {
+                    result.Success = false;
+                    result.Message = $"No se encontró InsuranceProviders por ID {id}.";
+                    _logger.LogWarning($"Intento de actualización fallido: InsuranceProviders {id} no encontrada.");
+                    return result;
+                }
+
+                _logger.LogInformation($"Actualizando InsuranceProviders {entity.Id}");
+
+                insuranceProviders.Name = entity.Name;
+                insuranceProviders.UpdatedAt = DateTime.Now;
+
+                _context.InsuranceProviders.Update(insuranceProviders);
+                await _context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = $"InsuranceProviders con ID {id} actualizada correctamente.";
+                _logger.LogInformation($"InsuranceProviders {id} actualizada exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al actualizar InsuranceProviders: {ex.Message}";
+                _logger.LogError($"Error en UpdateEntityAsync para InsuranceProviders {id}: {ex.Message}", ex);
+            }
+
+            return result;
+        }
+
+
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int InsuranceProviderID)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var querys = await _context.Database.ExecuteSqlRawAsync("DELETE FROM [MedicalAppointment].[Insurance].[InsuranceProviders] WHERE [InsuranceProviderID] = {0}", InsuranceProviderID);
+
+                if (querys > 0)
+                {
+                    result.Success = true;
+                    result.Message = "Proveedor eliminado exitosamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontró Proveedor de Seguros con ese ID.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = "Error al eliminar un Proveedor de Seguros.";
+                _logger.LogError($"Error al eliminar Proveedor de Seguros con ID {InsuranceProviderID}: {ex.Message}", ex);
+            }
+            return result;
+
+        }
 
     }
+
+
+
 }
+
