@@ -5,6 +5,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Entities.Insurance
 {
+    [Table("NetworkType", Schema = "Insurance")]
+
     public sealed class NetworkType: Base.BaseEntity<int>
     {
         [Column("NetworkTypeId")]
