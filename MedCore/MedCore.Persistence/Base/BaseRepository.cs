@@ -22,7 +22,7 @@ namespace MedCore.Persistence.Base
             return await Entity.FindAsync(id);
         }
 
-        public virtual async Task<OperationResult> UpdateEntityAsync(TEntity entity)
+        public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
         {
             OperationResult result = new OperationResult();
 
@@ -86,5 +86,22 @@ namespace MedCore.Persistence.Base
         {
             return await Entity.AnyAsync(filter);
         }
+        public virtual async Task<OperationResult> DeleteEntityByIdAsync(TType id)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                var entity = await Entity.FindAsync(id);
+                Entity.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error {ex.Message} eliminando la entidad.";
+            }
+            return result;
+        }
     }
 }
+

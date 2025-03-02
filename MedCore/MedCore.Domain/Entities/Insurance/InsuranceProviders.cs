@@ -5,6 +5,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Domain.Entities.Insurance
 {
+    [Table("InsuranceProviders", Schema = "Insurance")]
     public class InsuranceProviders: Base.BaseEntity<int>
     {
         [Column("InsuranceProviderID")]
