@@ -3,7 +3,6 @@
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.system;
-using MedCore.Domain.Entities.Users;
 using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
@@ -11,7 +10,6 @@ using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace MedCore.Persistence.Repositories.appointments
 {
