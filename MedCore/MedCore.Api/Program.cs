@@ -24,6 +24,7 @@ namespace MedCore.Api
             builder.Services.AddScoped<IMedicalRecordsRepository, MedicalRecordsRepository>();
 
 
+
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
             builder.Services.AddEndpointsApiExplorer();
             builder.Services.AddSwaggerGen();
