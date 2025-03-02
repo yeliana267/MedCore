@@ -1,6 +1,5 @@
 ﻿
 
-using MedCore.Domain.Entities.Users;
 using MedCore.Domain.Entities;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.medical;
@@ -8,6 +7,7 @@ using MedCore.Domain.Entities.system;
 using Microsoft.EntityFrameworkCore;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.users;
 
 namespace MedCore.Persistence.Context
 {
@@ -26,8 +26,8 @@ namespace MedCore.Persistence.Context
         public DbSet<Specialties> Specialties { get; set; }
         public DbSet<InsuranceProviders> InsuranceProviders { get; set; }
         public DbSet<NetworkType> NetworkType { get; set; }
-        public DbSet<User> Users { get; set; }
-        public DbSet<Doctor> Doctors { get; set; }
-        public DbSet<Patient> Patients { get; set; }
+        public DbSet<Users> Users { get; set; }
+        public DbSet<Doctors> Doctors { get; set; }
+        public DbSet<Patients> Patients { get; set; }
     }
 }
