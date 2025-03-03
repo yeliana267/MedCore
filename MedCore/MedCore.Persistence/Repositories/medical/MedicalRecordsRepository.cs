@@ -216,7 +216,7 @@ namespace MedCore.Persistence.Repositories.medical
             return result;
         }
 
-        public override async Task<OperationResult> UpdateEntityAsync(MedicalRecords entity)
+        public override async Task<OperationResult> UpdateEntityAsync(int Id, MedicalRecords entity)
         {
             OperationResult result = new OperationResult();
             try

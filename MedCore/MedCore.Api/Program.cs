@@ -11,6 +11,8 @@ using MedCore.Persistence.Interfaces.medical;
 using MedCore.Persistence.Repositories.medical;
 
 using Microsoft.EntityFrameworkCore;
+using MedCore.Persistence.Interfaces.System;
+using MedCore.Persistence.Repositories.System;
 
 namespace MedCore.Api
 {
@@ -24,10 +26,11 @@ namespace MedCore.Api
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             builder.Services.AddControllers();
 
-
-            builder.Services.AddScoped<IInsuranceProvidersRepository, InsuranceProvidersRepository>();
+            builder.Services.AddScoped<IRolesRepository, RolesRepository>();
+            builder.Services.AddScoped<INotificationsRepository, NotificationsRepository>();
+             builder.Services.AddScoped<IStatusRepository, StatusRepository>();
+             builder.Services.AddScoped<IInsuranceProvidersRepository, InsuranceProvidersRepository>();
             builder.Services.AddScoped<INetworkTypeRepository, NetworkTypeRepository>();
-
             builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
             builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
             builder.Services.AddScoped<IAvailabilityModesRepository, AvailabilityModesRepository>();

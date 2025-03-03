@@ -197,10 +197,10 @@ namespace MedCore.Persistence.Repositories.medical
             return result;
         }
 
-        public override Task<OperationResult> UpdateEntityAsync(Specialties entity)
+        public override Task<OperationResult> UpdateEntityAsync(short Id, Specialties entity)
         {
             _logger.LogInformation($"Actualizando especialidad {entity.Id} - {entity.SpecialtyName}");
-            return base.UpdateEntityAsync(entity);
+            return base.UpdateEntityAsync(Id, entity);
         }
     }
 }
