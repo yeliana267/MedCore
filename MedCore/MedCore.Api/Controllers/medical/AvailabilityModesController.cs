@@ -41,7 +41,7 @@ namespace MedCore.Api.Controllers.medical
         [HttpPut("UpdateAvailability")]
         public async Task<IActionResult> Put(short id, [FromBody] AvailabilityModes availability)
         {
-            var availabilityModes = await _availabilityModesRepository.UpdateEntityAsync(availability);
+            var availabilityModes = await _availabilityModesRepository.UpdateEntityAsync(id, availability);
             return Ok(availabilityModes);
         }
         
