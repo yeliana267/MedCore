@@ -9,12 +9,13 @@ namespace MedCore.Api.Controllers.appointments
     [ApiController]
     public class DoctorAvailabilityController : ControllerBase
     {
-        private readonly IBaseAppointments _baseAppointments;
+        IDoctorAvailabilityRepository _doctorAvailabilityRepository;
         public readonly ILogger<DoctorAvailabilityController> _logger;
         public readonly IConfiguration _configuration;
-        public DoctorAvailabilityController(IBaseAppointments baseAppointments, ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
+        public DoctorAvailabilityController( IDoctorAvailabilityRepository doctorAvailabilityRepository 
+            , ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
         {
-            _baseAppointments = baseAppointments;
+            _doctorAvailabilityRepository = doctorAvailabilityRepository;
             _logger = logger;
             _configuration = configuration;
         }

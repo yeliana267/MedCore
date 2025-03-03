@@ -1,5 +1,4 @@
 ﻿using MedCore.Domain.Entities.system;
-using MedCore.Domain.Entities.System;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.System;
