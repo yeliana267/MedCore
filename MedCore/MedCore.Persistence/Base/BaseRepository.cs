@@ -1,5 +1,7 @@
 ﻿
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities;
+using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
@@ -99,6 +101,16 @@ namespace MedCore.Persistence.Base
                 result.Message = $"Ocurrió un error {ex.Message} eliminando la entidad.";
             }
             return result;
+        }
+
+        internal async Task<OperationResult> UpdateEntityAsync(Specialties entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        internal async Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)
+        {
+            throw new NotImplementedException();
         }
     }
 }
