@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+
+
   <ItemGroup>
     <Folder Include="Dependencies\" />
   </ItemGroup>
@@ -17,5 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\MedCore.Application\MedCore.Application.csproj" />
   </ItemGroup>
+
 
 </Project>
