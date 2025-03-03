@@ -4,7 +4,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.System
 {
-    public interface INotificationRepository : IBaseReporsitory<Notifications, int>
+    public interface INotificationsRepository : IBaseReporsitory<Notifications, int>
 
     {
     }
