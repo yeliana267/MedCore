@@ -7,9 +7,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedCore.Persistence.Repositories.System
 {
-    public class NotificationRepository : BaseRepository<Notifications, int>, INotificationRepository
+    public class NotificationsRepository : BaseRepository<Notifications, int>, INotificationsRepository
     {
-        public NotificationRepository(MedCoreContext context) : base(context)
+        public NotificationsRepository(MedCoreContext context) : base(context)
         {
 
         }

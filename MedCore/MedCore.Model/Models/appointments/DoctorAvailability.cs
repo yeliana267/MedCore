@@ -2,11 +2,10 @@
 
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
-using MedCore.Model.Models.Users;
 
 namespace MedCore.Model.Models.appointments
 {
-    public class AvailabilityModel
+    public class DoctorAvailability
     {
         [Key]
         public int AvailabilityID { get; set; }
@@ -27,6 +26,6 @@ namespace MedCore.Model.Models.appointments
         public TimeSpan EndTime { get; set; }
 
         [ForeignKey("DoctorID")]
-        public virtual DoctorModel Doctor { get; set; }
+        public int Doctor {get; set; }
     }
 }

@@ -1,5 +1,4 @@
 ﻿using MedCore.Domain.Base;
-using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.medical;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
@@ -149,10 +148,10 @@ namespace MedCore.Persistence.Repositories.medical
         }
 
 
-        public override Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)
+        public override async Task<OperationResult> UpdateEntityAsync(short Id, AvailabilityModes entity)
         {
             _logger.LogInformation($"Actualizando modo de disponibilidad {entity.Id} - {entity.AvailabilityMode}");
-            return base.UpdateEntityAsync(entity);
+            return await base.UpdateEntityAsync(Id, entity);
         }
     }
 }
