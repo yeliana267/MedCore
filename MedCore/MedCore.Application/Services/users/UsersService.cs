@@ -1,12 +1,11 @@
-﻿
-using MedCore.Application.Dtos.users.Users;
-using MedCore.Application.Interfaces;
+﻿using MedCore.Application.Dtos.users.Users;
+using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
 using MedCore.Persistence.Interfaces.users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-namespace MedCore.Application.Services
+namespace MedCore.Application.Services.users
 {
     public class UsersService : IUsersService
     {
