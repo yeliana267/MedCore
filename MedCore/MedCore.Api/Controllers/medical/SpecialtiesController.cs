@@ -42,7 +42,7 @@ namespace MedCore.Api.Controllers.medical
         [HttpPut("UpdateSpecialties")]
         public async Task<IActionResult> Put(short id, [FromBody] Specialties specialties)
         {
-            var Specialties = await _specialtiesRepository.UpdateEntityAsync(specialties);
+            var Specialties = await _specialtiesRepository.UpdateEntityAsync(id, specialties);
             return NoContent();
         }
 

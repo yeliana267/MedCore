@@ -41,7 +41,7 @@ namespace MedCore.Api.Controllers.medical
         [HttpPut("UpdateMedicalRecords")]
         public async Task<IActionResult> Put(short id, [FromBody] MedicalRecords medicalRecord)
         {
-            var medicalRecords = await _medicalRecordsRepository.UpdateEntityAsync(medicalRecord);
+            var medicalRecords = await _medicalRecordsRepository.UpdateEntityAsync(id, medicalRecord);
             return Ok(medicalRecords);
         }
         
