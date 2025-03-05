@@ -5,6 +5,7 @@ using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
@@ -32,6 +33,8 @@ namespace MedCore.Persistence.Base
             {
                 Entity.Update(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                    result.Message = "Entidad actualizada correctamente.";
             }
             catch (Exception ex)
             {
@@ -49,6 +52,8 @@ namespace MedCore.Persistence.Base
             {
                 Entity.Add(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad guardada correctamente.";
             }
             catch (Exception ex)
             {
@@ -94,6 +99,8 @@ namespace MedCore.Persistence.Base
                 var entity = await Entity.FindAsync(id);
                 Entity.Remove(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad eliminada correctamente.";
             }
             catch (Exception ex)
             {
@@ -103,15 +110,7 @@ namespace MedCore.Persistence.Base
             return result;
         }
 
-        internal async Task<OperationResult> UpdateEntityAsync(Specialties entity)
-        {
-            throw new NotImplementedException();
-        }
-
-        internal async Task<OperationResult> UpdateEntityAsync(AvailabilityModes entity)
-        {
-            throw new NotImplementedException();
-        }
+   
     }
 }
 
