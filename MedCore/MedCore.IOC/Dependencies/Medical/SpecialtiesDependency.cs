@@ -6,7 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MedCore.IOC.Dependencies.Medical
 {
-    public class SpecialtiesDpendency
+    public class SpecialtiesDependency
     {
         public static void AddSpecialtiesDependency(IServiceCollection services)
         {
