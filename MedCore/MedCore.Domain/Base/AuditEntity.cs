@@ -9,9 +9,7 @@ namespace MedCore.Domain.Base
         {
             this.CreatedAt = DateTime.Now;
         }
-        [NotMapped]
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-        [NotMapped]
         public DateTime? UpdatedAt { get; set; }
 
         [NotMapped]
