@@ -1,15 +1,11 @@
 
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.appointments;
-
 using MedCore.Persistence.Interfaces.Insurance;
 using MedCore.Persistence.Repositories.appointments;
 using MedCore.Persistence.Repositories.Insurance;
-
-
 using MedCore.Persistence.Interfaces.medical;
 using MedCore.Persistence.Repositories.medical;
-
 using Microsoft.EntityFrameworkCore;
 using MedCore.Persistence.Interfaces.System;
 using MedCore.Persistence.Repositories.System;
@@ -32,11 +28,10 @@ namespace MedCore.Api
              builder.Services.AddScoped<IInsuranceProvidersRepository, InsuranceProvidersRepository>();
             builder.Services.AddScoped<INetworkTypeRepository, NetworkTypeRepository>();
             builder.Services.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
-            builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
             builder.Services.AddScoped<IAvailabilityModesRepository, AvailabilityModesRepository>();
             builder.Services.AddScoped<ISpecialtiesRepository, SpecialtiesRepository>();
             builder.Services.AddScoped<IMedicalRecordsRepository, MedicalRecordsRepository>();
-
+            builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

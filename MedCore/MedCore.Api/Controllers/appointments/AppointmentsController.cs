@@ -1,4 +1,5 @@
-﻿using MedCore.Persistence.Interfaces.appointments;
+﻿using MedCore.Domain.Entities.appointments;
+using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -27,28 +28,49 @@ namespace MedCore.Api.Controllers.appointments
         }
 
         // GET api/<AppointmentsController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("GetAppointmentsById")]
+        public async Task<IActionResult> Get(int id)
         {
-            return "value";
+            var appointments = await _appointmentsRepository.GetEntityByIdAsync(id);
+            return Ok(appointments);
         }
 
         // POST api/<AppointmentsController>
-        [HttpPost]
-        public void Post([FromBody] string value)
+        [HttpPost("SaveAppointment")]
+        public async Task<IActionResult> Post([FromBody] Appointments appointments)
         {
+            var appointment = await _appointmentsRepository.SaveEntityAsync(appointments);
+            return Ok(appointment);
         }
 
         // PUT api/<AppointmentsController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPut("UpdateAppointment")]
+        public async Task<IActionResult> Put(int id, [FromBody] Appointments appointments)
         {
+            var appointment = await _appointmentsRepository.UpdateEntityAsync(id, appointments);
+            if (id == null)
+            {
+                return NotFound("Ingrese el Id de la cita que quiere actualizar");
+            }
+            else
+            {
+                return Ok(appointment);
+            }
         }
 
         // DELETE api/<AppointmentsController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpDelete("DeleteAppointment")]
+        public async Task<IActionResult> Delete(int id)
         {
+            var appointment = await _appointmentsRepository.DeleteEntityByIdAsync(id);
+            if (id == null)
+            {
+                return NotFound("Ingrese el Id de la cita que quiere borrar");
+            }
+            else
+            {
+                return Ok(appointment);
+            }
         }
 
     }

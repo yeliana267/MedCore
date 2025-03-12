@@ -87,6 +87,46 @@ namespace MedCore.Persistence.Repositories.appointments
             }
             return result;
         }
+        public override async Task<OperationResult> UpdateEntityAsync(int id, DoctorAvailability entity)
+        {
+            OperationResult result = new OperationResult();
+
+            try
+            {
+                var doctorAvailability = await _context.DoctorAvailabilities.FindAsync(id);
+
+                if (doctorAvailability == null)
+                {
+                    result.Success = false;
+                    result.Message = $"No se encontró doctor disponible con ID {id}.";
+                    _logger.LogWarning($"Intento de actualización fallido: disponibilidad medica {id} no encontrada.");
+                    return result;
+                }
+
+                _logger.LogInformation($"Actualizando disponibilidad medica{id}");
+
+                doctorAvailability.DoctorID = entity.DoctorID;
+                doctorAvailability.AvailableDate = entity.AvailableDate;
+                doctorAvailability.StartTime = entity.StartTime;
+                doctorAvailability.EndTime = entity.EndTime;    
+
+                _context.DoctorAvailabilities.Update(doctorAvailability);
+                await _context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = $"Disponibilidad medica con ID {id} actualizada correctamente.";
+                _logger.LogInformation($"Disponibilidad medica {id} actualizada exitosamente.");
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al actualizar {ex.Message}";
+                _logger.LogError($"Error en UpdateEntityAsync {id}: {ex.Message}", ex);
+            }
+
+            return result;
+        }
+
     }
 }
 
