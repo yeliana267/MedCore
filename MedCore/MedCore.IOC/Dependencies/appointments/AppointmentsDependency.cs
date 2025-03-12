@@ -5,7 +5,6 @@ using MedCore.Application.Services.appointments;
 using MedCore.Persistence.Interfaces.appointments;
 using MedCore.Persistence.Repositories.appointments;
 using Microsoft.Extensions.DependencyInjection;
-using System.ComponentModel.Design;
 
 namespace MedCore.IOC.Dependencies.appointments
 {
