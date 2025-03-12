@@ -1,12 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿
+
+using MedCore.Application.Interfaces.appointments;
+using MedCore.Application.Services.appointments;
+using MedCore.Persistence.Interfaces.appointments;
+using MedCore.Persistence.Repositories.appointments;
+using Microsoft.Extensions.DependencyInjection;
+using System.ComponentModel.Design;
 
 namespace MedCore.IOC.Dependencies.appointments
 {
-    internal class AppointmentsDependency
+    public static class AppointmentsDependency
     {
+        public static void AddAppointmentsDependency(this IServiceCollection service)
+        {
+            service.AddScoped<IAppointmentsRepository, AppointmentsRepository>();
+            service.AddTransient<IAppointmentsService, AppointmentsService>();
+        }
     }
 }
