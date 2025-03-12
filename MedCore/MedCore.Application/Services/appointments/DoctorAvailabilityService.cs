@@ -3,6 +3,7 @@ using MedCore.Application.Dtos.appointments.DoctorAvailability;
 using MedCore.Application.Interfaces.appointments;
 using MedCore.Domain.Base;
 using MedCore.Persistence.Interfaces.appointments;
+using MedCore.Persistence.Repositories.appointments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -22,9 +23,20 @@ namespace MedCore.Application.Services.appointments
             _logger = logger;
             _doctorAvailabilityRepository = doctorAvailabilityRepository;
         }
-        public Task<OperationResult> GetAll()
+        public async Task<OperationResult> GetAll()
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var doctorAvailabilities = await _doctorAvailabilityRepository.GetAllAsync();
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
         }
 
         public Task<OperationResult> GetById(int Id)
