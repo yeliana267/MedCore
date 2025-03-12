@@ -1,6 +1,7 @@
 ﻿using MedCore.Application.Dtos.Medical.SpecialtiesDto;
 using MedCore.Application.Interfaces.Medical;
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities;
 using MedCore.Persistence.Interfaces.medical;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -22,29 +23,115 @@ namespace MedCore.Application.Services.Medical
             _configuration = configuration;
         }
 
-        public Task<OperationResult> GetAll()
+        public async Task<OperationResult> GetAll()
         {
-            throw new NotImplementedException();
+            try
+            {
+                var result = await _specialtiesRepository.GetAllAsync();
+                return new OperationResult { Success = true, Data = result };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener todas las especialidades.");
+                return new OperationResult { Success = false, Message = "Error al obtener todas las especialidades." };
+            }
         }
 
-        public Task<OperationResult> GetById(int Id)
+        public async Task<OperationResult> GetById(int id)
         {
-            throw new NotImplementedException();
+            if (id <= 0)
+            {
+                return new OperationResult { Success = false, Message = "El ID debe ser un número positivo." };
+            }
+
+            try
+            {
+                var result = await _specialtiesRepository.GetEntityByIdAsync((short)id);
+                if (result == null)
+                {
+                    return new OperationResult { Success = false, Message = "Especialidad no encontrada." };
+                }
+                return new OperationResult { Success = true, Data = result };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la especialidad por ID.");
+                return new OperationResult { Success = false, Message = "Error al obtener la especialidad por ID." };
+            }
         }
 
-        public Task<OperationResult> Remove(RemoveSpecialtiesDto dto)
+        public async Task<OperationResult> Remove(RemoveSpecialtiesDto dto)
         {
-            throw new NotImplementedException();
+            if (dto.SpecialtiesId <= 0)
+            {
+                return new OperationResult { Success = false, Message = "El ID debe ser un número positivo." };
+            }
+
+            try
+            {
+                var result = await _specialtiesRepository.DeleteEntityByIdAsync(dto.SpecialtiesId);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar la especialidad.");
+                return new OperationResult { Success = false, Message = "Error al eliminar la especialidad." };
+            }
         }
 
-        public Task<OperationResult> Save(SaveSpecialtiesDto dto)
+        public async Task<OperationResult> Save(SaveSpecialtiesDto dto)
         {
-            throw new NotImplementedException();
+            if (string.IsNullOrWhiteSpace(dto.SpecialtyName))
+            {
+                return new OperationResult { Success = false, Message = "El nombre de la especialidad no puede estar vacío." };
+            }
+
+            try
+            {
+                var entity = new Specialties
+                {
+                    SpecialtyName = dto.SpecialtyName,
+                    CreatedAt = dto.CreatedAt,
+                    UpdatedAt = dto.UpdatedAt,
+                    IsActive = dto.IsActive
+                };
+
+                var result = await _specialtiesRepository.SaveEntityAsync(entity);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al guardar la especialidad.");
+                return new OperationResult { Success = false, Message = "Error al guardar la especialidad." };
+            }
         }
 
-        public Task<OperationResult> Update(UpdateSpecialtiesDto dto)
+        public async Task<OperationResult> Update(UpdateSpecialtiesDto dto)
         {
-            throw new NotImplementedException();
+            if (dto.SpecialtiesId <= 0)
+            {
+                return new OperationResult { Success = false, Message = "El ID debe ser un número positivo." };
+            }
+
+            try
+            {
+                var entity = new Specialties
+                {
+                    Id = dto.SpecialtiesId,
+                    SpecialtyName = dto.SpecialtyName,
+                    CreatedAt = dto.CreatedAt,
+                    UpdatedAt = dto.UpdatedAt,
+                    IsActive = dto.IsActive
+                };
+
+                var result = await _specialtiesRepository.UpdateEntityAsync(entity.Id, entity);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar la especialidad.");
+                return new OperationResult { Success = false, Message = "Error al actualizar la especialidad." };
+            }
         }
     }
 }
