@@ -12,8 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\MedCore.Infraestructure\MedCore.Infraestructure.csproj" />
-    <ProjectReference Include="..\MedCore.Persistence\MedCore.Persistence.csproj" />
+    <ProjectReference Include="..\MedCore.IOC\MedCore.IOC.csproj" />
   </ItemGroup>
 
 </Project>
