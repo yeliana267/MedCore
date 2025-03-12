@@ -1,8 +1,11 @@
 ﻿
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities;
+using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
@@ -30,6 +33,8 @@ namespace MedCore.Persistence.Base
             {
                 Entity.Update(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                    result.Message = "Entidad actualizada correctamente.";
             }
             catch (Exception ex)
             {
@@ -47,6 +52,8 @@ namespace MedCore.Persistence.Base
             {
                 Entity.Add(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad guardada correctamente.";
             }
             catch (Exception ex)
             {
@@ -92,6 +99,8 @@ namespace MedCore.Persistence.Base
                 var entity = await Entity.FindAsync(id);
                 Entity.Remove(entity);
                 await _context.SaveChangesAsync();
+                result.Success = true;
+                result.Message = "Entidad eliminada correctamente.";
             }
             catch (Exception ex)
             {
@@ -100,6 +109,8 @@ namespace MedCore.Persistence.Base
             }
             return result;
         }
+
+   
     }
 }
 
