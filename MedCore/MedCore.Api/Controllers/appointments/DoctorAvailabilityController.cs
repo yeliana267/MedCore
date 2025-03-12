@@ -28,16 +28,16 @@ namespace MedCore.Api.Controllers.appointments
         [HttpGet("GetDoctorAvailability")]
         public async Task<IActionResult> Get()
         {
-            var result = await _doctorAvailabilityRepository.GetAllAsync();
-            return Ok(result);
+            var doctorAvailabilities = await _doctorAvailabilityRepository.GetAllAsync();
+            return Ok(doctorAvailabilities);
         }
 
         // GET api/<DoctorAvailabilityController>/5
         [HttpGet("Doctor")]
         public async Task<IActionResult> Get(int id)
         {
-            var result = await _doctorAvailabilityRepository.GetEntityByIdAsync(id);
-            return Ok(result);
+            var doctorAvailabilities = await _doctorAvailabilityRepository.GetEntityByIdAsync(id);
+            return Ok(doctorAvailabilities);
 
         }
 
@@ -45,16 +45,16 @@ namespace MedCore.Api.Controllers.appointments
         [HttpPost("SaveDoctorAvailability")]
         public async Task<IActionResult> Post([FromBody] DoctorAvailability doctorAvailability)
         {
-            var result = await _doctorAvailabilityRepository.SaveEntityAsync(doctorAvailability);
-            return Ok(result);
+            var doctorAvailabilities = await _doctorAvailabilityRepository.SaveEntityAsync(doctorAvailability);
+            return Ok(doctorAvailabilities);
         }
 
         // PUT api/<DoctorAvailabilityController>/5
         [HttpPut("UpdateDoctorAvailability")]
         public async Task<IActionResult> Put(int id, [FromBody] DoctorAvailability doctorAvailability)
         {
-            var result = await _doctorAvailabilityRepository.UpdateEntityAsync(id, doctorAvailability);
-            return Ok(result);
+            var doctorAvailabilities = await _doctorAvailabilityRepository.UpdateEntityAsync(id, doctorAvailability);
+            return Ok(doctorAvailabilities);
         }
 
         // DELETE api/<DoctorAvailabilityController>/5
