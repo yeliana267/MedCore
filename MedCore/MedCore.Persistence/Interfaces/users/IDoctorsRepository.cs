@@ -7,7 +7,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IDoctorsRepository : IBaseReporsitory<Doctors, int>
+    public interface IDoctorsRepository : IBaseRepository<Doctors, int>
     {
         Task<Doctors> GetDoctorByUserIdAsync(int userId);
         Task<OperationResult> UpdateDoctorProfileAsync(Doctors doctor);

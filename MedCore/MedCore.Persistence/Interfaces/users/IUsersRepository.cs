@@ -7,7 +7,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IUsersRepository : IBaseReporsitory<Users, int>
+    public interface IUsersRepository : IBaseRepository<Users, int>
     {
         Task<Users> GetUserByEmailAsync(string email);
         Task<bool> ValidateUserCredentialsAsync(string email, string password);

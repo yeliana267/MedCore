@@ -4,7 +4,7 @@ using System.Linq.Expressions;
 
 namespace MedCore.Domain.Repository
 {
-    public interface IBaseReporsitory<TEntity, TType> where TEntity : class 
+    public interface IBaseRepository<TEntity, TType> where TEntity : class 
     {
         Task<TEntity> GetEntityByIdAsync(TType id); 
         Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity);
