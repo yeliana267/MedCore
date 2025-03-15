@@ -3,7 +3,9 @@ using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using MedCore.IOC.Dependencies.appointments;
 using MedCore.IOC.Dependencies.Insurance;
-    
+using MedCore.IOC.Dependencies.Medical;
+
+
 namespace MedCore.Api
 {
     public class Program
@@ -23,7 +25,10 @@ namespace MedCore.Api
             builder.Services.AddAppointmentsDependency();
             builder.Services.AddInsuranceProvidersDependency();
             builder.Services.AddNetworkTypeDependency();
-              
+            builder.Services.AddAvailabilityModesDependency();
+            builder.Services.AddMedicalRecordsDependency();
+            builder.Services.AddSpecialtiesDependency();
+
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

@@ -6,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MedCore.IOC.Dependencies.Medical
 {
-    public class MedicalRecordsDependency
+    public static class MedicalRecordsDependency
     {
-        public static void AddMedicalRecordsDependency(IServiceCollection services)
+        public static void AddMedicalRecordsDependency(this IServiceCollection services)
         {
             services.AddScoped<IMedicalRecordsRepository, MedicalRecordsRepository>();
-            services.AddScoped<IMedicalRecordsService, MedicalRecordsService>();
+            services.AddTransient<IMedicalRecordsService, MedicalRecordsService>();
         }
     }
 }
