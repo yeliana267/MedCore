@@ -4,7 +4,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.medical
 {
-    public interface IAvailabilityModesRepository : IBaseReporsitory<AvailabilityModes, short>
+    public interface IAvailabilityModesRepository : IBaseRepository<AvailabilityModes, short>
     {
         // Obtener modos actualizados en los últimos X días
         Task<List<OperationResult>> GetRecentlyUpdatedModesAsync(int days);
