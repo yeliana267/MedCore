@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using MedCore.IOC.Dependencies.appointments;
 using MedCore.IOC.Dependencies.Insurance;
 using MedCore.IOC.Dependencies.Medical;
+using MedCore.IOC.Dependencies.users;
 
 
 namespace MedCore.Api
@@ -20,7 +21,10 @@ namespace MedCore.Api
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             builder.Services.AddControllers();
 
-         
+            builder.Services.AddUsersDependency();
+            builder.Services.AddPatientsDependency();
+            builder.Services.AddDoctorsDependency();
+
             builder.Services.AddDoctorAvailabilityDependency();
             builder.Services.AddAppointmentsDependency();
             builder.Services.AddInsuranceProvidersDependency();
