@@ -6,7 +6,6 @@ using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Entities.system;
 using Microsoft.EntityFrameworkCore;
 using MedCore.Domain.Entities.Insurance;
-using MedCore.Domain.Base;
 using MedCore.Domain.Entities.users;
 
 namespace MedCore.Persistence.Context
