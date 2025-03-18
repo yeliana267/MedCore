@@ -1,5 +1,6 @@
 ﻿
 
+using System.Numerics;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.users;
@@ -9,13 +10,8 @@ namespace MedCore.Persistence.Interfaces.users
 {
     public interface IDoctorsRepository : IBaseRepository<Doctors, int>
     {
-        Task<Doctors> GetDoctorByUserIdAsync(int userId);
-        Task<OperationResult> UpdateDoctorProfileAsync(Doctors doctor);
-        Task<List<Appointments>> GetDoctorAppointmentsAsync(int doctorId);
-        Task<OperationResult> SetDoctorAvailabilityAsync(int doctorId, List<DoctorAvailability> availability);
-        Task<OperationResult> AssignSpecialtyAsync(int doctorId, int specialtyId);
-
-        Task<OperationResult> UpdateDoctorAsync(int id, Doctors entity);
-        Task<OperationResult> DeleteDoctorByIdAsync(int id);
+        Task<OperationResult> GetDoctorsBySpecialtyAsync(int specialtyId); // Obtener doctores por especialidad
+        Task<OperationResult> UpdateConsultationFeeAsync(int doctorId, decimal consultationFee); // Actualizar tarifa de consulta
+        Task<OperationResult> GetDoctorsWithExpiringLicenseAsync(DateTime expirationDate); // Obtener doctores con licencia próxima a expirar
     }
 }
