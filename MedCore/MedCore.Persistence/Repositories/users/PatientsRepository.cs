@@ -54,19 +54,68 @@ namespace MedCore.Persistence.Repositories.users
             return result;
         }
 
-        public Task<OperationResult> GetPatientsByBloodTypeAsync(string bloodType)
+        public async Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
         {
-            throw new NotImplementedException();
-        }
+            try
+            {
+             
+                if (patientId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Patient ID no valido."
+                    };
+                }
 
-        public Task<OperationResult> GetPatientsByDoctorIdAsync(int doctorId)
-        {
-            throw new NotImplementedException();
-        }
+                if (string.IsNullOrWhiteSpace(contactName))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Contact name no puede estar vacio."
+                    };
+                }
 
-        public Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
-        {
-            throw new NotImplementedException();
+                if (string.IsNullOrWhiteSpace(contactPhone))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Contact phone no pueder estar vacio."
+                    };
+                }
+
+                var patient = await _context.Patients.FindAsync(patientId);
+                if (patient == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Patient no encontrado."
+                    };
+                }
+
+                patient.EmergencyContactName = contactName;
+                patient.EmergencyContactPhone = contactPhone;
+                patient.UpdatedAt = DateTime.UtcNow; 
+                await _context.SaveChangesAsync();
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Emergency contact actualizado.",
+                    Data = patient 
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error actualizando emergency contact: {ex.Message}"
+                };
+            }
         }
 
         public override async Task<OperationResult> UpdateEntityAsync(int id, Patients entity)
