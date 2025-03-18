@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
-
 namespace MedCore.Persistence.Repositories.users
 {
     public class UsersRepository : BaseRepository<Users, int>, IUsersRepository
@@ -304,16 +303,6 @@ namespace MedCore.Persistence.Repositories.users
                     result.Success = false;
                     result.Message = "El formato del correo electrónico no es válido.";
                     _logger.LogWarning("Intento de actualización fallido: Formato de correo electrónico no válido.");
-                    return result;
-                }
-
-                // Validar que el RoleID exista en la base de datos
-                var roleExists = await _context.Roles.AnyAsync(r => r.RoleID == entity.RoleID); // Asegúrate de que sea "RoleID"
-                if (!roleExists)
-                {
-                    result.Success = false;
-                    result.Message = "El ID del rol no existe en la base de datos.";
-                    _logger.LogWarning("Intento de actualización fallido: Rol no encontrado.");
                     return result;
                 }
 
