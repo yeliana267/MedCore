@@ -8,7 +8,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IDoctorsRepository : IBaseReporsitory<Doctors, int>
+    public interface IDoctorsRepository : IBaseRepository<Doctors, int>
     {
         Task<OperationResult> GetDoctorsBySpecialtyAsync(int specialtyId); // Obtener doctores por especialidad
         Task<OperationResult> UpdateConsultationFeeAsync(int doctorId, decimal consultationFee); // Actualizar tarifa de consulta

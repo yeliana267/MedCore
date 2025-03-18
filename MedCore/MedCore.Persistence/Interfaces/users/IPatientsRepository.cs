@@ -7,7 +7,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IPatientsRepository : IBaseReporsitory<Patients, int>
+    public interface IPatientsRepository : IBaseRepository<Patients, int>
     {
         Task<OperationResult> GetPatientsByDoctorIdAsync(int doctorId); // Obtener pacientes por doctor
         Task<OperationResult> GetPatientsByBloodTypeAsync(string bloodType); // Obtener pacientes por tipo de sangre

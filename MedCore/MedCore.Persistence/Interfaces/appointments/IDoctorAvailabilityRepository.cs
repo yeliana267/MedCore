@@ -6,7 +6,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.appointments
 {
-    public interface IDoctorAvailabilityRepository : IBaseReporsitory<DoctorAvailability, int>
+    public interface IDoctorAvailabilityRepository : IBaseRepository<DoctorAvailability, int>
     {
         Task<OperationResult> GetAvailabilityByDoctorIdAsync(int doctorId, DateTime startDate, DateTime endDate); //disponibilidad de un doctor en un rango de fechas
         Task<OperationResult> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate, TimeOnly startTime, TimeOnly endTime); //Verificar si un doctor está disponible en una fecha y hora específica
