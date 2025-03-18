@@ -1,5 +1,6 @@
 ﻿
 
+using System.Text.RegularExpressions;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Base;
@@ -8,6 +9,7 @@ using MedCore.Persistence.Interfaces.users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+
 
 namespace MedCore.Persistence.Repositories.users
 {
@@ -231,23 +233,104 @@ namespace MedCore.Persistence.Repositories.users
 
         public override async Task<OperationResult> UpdateEntityAsync(int id, Users entity)
         {
+
             OperationResult result = new OperationResult();
 
             try
             {
+                // Validar que el ID sea válido
+                if (id <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del usuario no es válido.";
+                    _logger.LogWarning("Intento de actualización fallido: ID de usuario no válido.");
+                    return result;
+                }
+
+                // Validar que la entidad no sea nula
+                if (entity == null)
+                {
+                    result.Success = false;
+                    result.Message = "La entidad de usuario no puede ser nula.";
+                    _logger.LogWarning("Intento de actualización fallido: Entidad de usuario nula.");
+                    return result;
+                }
+
+                // Validar campos obligatorios
+                if (string.IsNullOrWhiteSpace(entity.FirstName))
+                {
+                    result.Success = false;
+                    result.Message = "El nombre del usuario no puede estar vacío.";
+                    _logger.LogWarning("Intento de actualización fallido: Nombre de usuario vacío.");
+                    return result;
+                }
+
+                if (string.IsNullOrWhiteSpace(entity.LastName))
+                {
+                    result.Success = false;
+                    result.Message = "El apellido del usuario no puede estar vacío.";
+                    _logger.LogWarning("Intento de actualización fallido: Apellido de usuario vacío.");
+                    return result;
+                }
+
+                if (string.IsNullOrWhiteSpace(entity.Email))
+                {
+                    result.Success = false;
+                    result.Message = "El correo electrónico del usuario no puede estar vacío.";
+                    _logger.LogWarning("Intento de actualización fallido: Correo electrónico de usuario vacío.");
+                    return result;
+                }
+
+                if (entity.RoleID == null || entity.RoleID <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del rol no es válido.";
+                    _logger.LogWarning("Intento de actualización fallido: ID de rol no válido.");
+                    return result;
+                }
+
+                if (string.IsNullOrWhiteSpace(entity.Password))
+                {
+                    result.Success = false;
+                    result.Message = "La contraseña del usuario no puede estar vacía.";
+                    _logger.LogWarning("Intento de actualización fallido: Contraseña de usuario vacía.");
+                    return result;
+                }
+
+                // Validar formato del correo electrónico 
+                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$"; 
+                if (!Regex.IsMatch(entity.Email, emailPattern))
+                {
+                    result.Success = false;
+                    result.Message = "El formato del correo electrónico no es válido.";
+                    _logger.LogWarning("Intento de actualización fallido: Formato de correo electrónico no válido.");
+                    return result;
+                }
+
+                // Validar que el RoleID exista en la base de datos
+                var roleExists = await _context.Roles.AnyAsync(r => r.RoleID == entity.RoleID); // Asegúrate de que sea "RoleID"
+                if (!roleExists)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del rol no existe en la base de datos.";
+                    _logger.LogWarning("Intento de actualización fallido: Rol no encontrado.");
+                    return result;
+                }
+
+                // Buscar el usuario en la base de datos
                 var user = await _context.Users.FindAsync(id);
 
                 if (user == null)
                 {
                     result.Success = false;
-                    result.Message = $"No se encontró el usuario con ID.";
-                    _logger.LogWarning($"Intento de actualización fallido: Usuario no encontrado.");
+                    result.Message = $"No se encontró el usuario con ID {id}.";
+                    _logger.LogWarning($"Intento de actualización fallido: Usuario no encontrado.");
                     return result;
                 }
 
-                _logger.LogInformation($"Actualizando usuario con ID");
+                _logger.LogInformation($"Actualizando usuario con ID {id}");
 
-                
+                // Actualizar los campos del usuario
                 user.FirstName = entity.FirstName ?? user.FirstName;
                 user.LastName = entity.LastName ?? user.LastName;
                 user.Email = entity.Email ?? user.Email;
@@ -256,12 +339,12 @@ namespace MedCore.Persistence.Repositories.users
 
                 _logger.LogInformation($"Antes de actualizar: {user.FirstName}, {user.Email}");
 
-                
+                // Guardar los cambios en la base de datos
                 await _context.SaveChangesAsync();
 
-                _logger.LogInformation("Después de actualizar: Se guardaron los cambios correctamente.");
+                _logger.LogInformation("Después de actualizar: Se guardaron los cambios correctamente.");
 
-                
+                // Devolver resultado exitoso
                 result.Success = true;
                 result.Message = $"Usuario con ID {id} actualizado correctamente.";
             }
@@ -269,7 +352,7 @@ namespace MedCore.Persistence.Repositories.users
             {
                 result.Success = false;
                 result.Message = $"Error al actualizar el usuario: {ex.Message}";
-                _logger.LogError($"Error en UpdateUserAsync para el usuario {id}: {ex.Message}", ex);
+                _logger.LogError($"Error en UpdateEntityAsync para el usuario {id}: {ex.Message}", ex);
             }
 
             return result;

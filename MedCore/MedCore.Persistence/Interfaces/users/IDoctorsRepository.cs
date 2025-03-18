@@ -5,6 +5,7 @@ using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.users;
 using MedCore.Domain.Repository;
+using MedCore.Persistence.Base;
 
 namespace MedCore.Persistence.Interfaces.users
 {
