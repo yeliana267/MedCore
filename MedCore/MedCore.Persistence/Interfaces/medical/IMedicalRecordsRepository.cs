@@ -4,7 +4,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.medical
 {
-    public interface IMedicalRecordsRepository : IBaseReporsitory<MedicalRecords, int>
+    public interface IMedicalRecordsRepository : IBaseRepository<MedicalRecords, int>
     {
         // Obtiene todos los registros médicos de un paciente específico por su ID
         Task<List<OperationResult>> GetMedicalRecordsByPatientIdAsync(int patientId);

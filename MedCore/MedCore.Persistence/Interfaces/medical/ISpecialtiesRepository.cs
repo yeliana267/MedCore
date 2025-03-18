@@ -4,7 +4,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.medical
 {
-    public interface ISpecialtiesRepository : IBaseReporsitory<Specialties, short>
+    public interface ISpecialtiesRepository : IBaseRepository<Specialties, short>
     {
         // Obtiene todas las especialidades que están activas en el sistema  
         Task<List<OperationResult>> GetActiveSpecialtiesAsync();

@@ -7,7 +7,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IUsersRepository : IBaseReporsitory<Users, int>
+    public interface IUsersRepository : IBaseRepository<Users, int>
     {
         Task<OperationResult> GetByEmailAsync(string email); // Obtener un usuario por email
         Task<OperationResult> GetUsersByRoleAsync(int roleId); // Obtener usuarios por rol

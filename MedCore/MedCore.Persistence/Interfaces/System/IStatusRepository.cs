@@ -4,7 +4,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.System
 {
-    public interface IStatusRepository : IBaseReporsitory<Status, int>
+    public interface IStatusRepository : IBaseRepository<Status, int>
     {
     }
 }
