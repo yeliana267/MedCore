@@ -25,27 +25,7 @@ namespace MedCore.Persistence.Repositories.users
             _configuration = configuration;
         }
 
-        public async Task<OperationResult> AssignSpecialtyAsync(int doctorId, int specialtyId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<List<Appointments>> GetDoctorAppointmentsAsync(int doctorId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<Doctors> GetDoctorByUserIdAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> SetDoctorAvailabilityAsync(int doctorId, List<DoctorAvailability> availability)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> UpdateDoctorProfileAsync(Doctors doctor)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> UpdateDoctorAsync(int id, Doctors entity)
+        public override async Task<OperationResult> UpdateEntityAsync(int id, Doctors entity)
         {
             OperationResult result = new OperationResult();
 
@@ -91,7 +71,7 @@ namespace MedCore.Persistence.Repositories.users
 
             return result;
         }
-        public async Task<OperationResult> DeleteDoctorByIdAsync(int id)
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int id)
         {
             OperationResult result = new OperationResult();
 
@@ -120,6 +100,147 @@ namespace MedCore.Persistence.Repositories.users
             return result;
         }
 
+        public async Task<OperationResult> GetDoctorsBySpecialtyAsync(int specialtyId)
+        {
+            try
+            {
+
+                if (specialtyId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Specialty ID invalido."
+                    };
+                }
+
+
+                var doctors = await _context.Doctors
+                    .Where(d => d.SpecialtyID == specialtyId)
+                    .ToListAsync();
+
+                if (doctors == null || !doctors.Any())
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Doctors no encontrado por especialidad."
+                    };
+                }
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Doctor encontrad.",
+                    Data = doctors
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error al buscar doctor: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<OperationResult> UpdateConsultationFeeAsync(int doctorId, decimal consultationFee)
+        {
+            try
+            {
+                if (doctorId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Doctor ID invalido."
+                    };
+                }
+
+                if (consultationFee < 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Consultation fee no puede ser negativa."
+                    };
+                }
+
+                var doctor = await _context.Doctors.FindAsync(doctorId);
+                if (doctor == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Doctor no encontrado."
+                    };
+                }
+
+                doctor.ConsultationFee = consultationFee;
+                doctor.UpdatedAt = DateTime.UtcNow;
+                await _context.SaveChangesAsync();
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Consultation fee actulizada.",
+                    Data = doctor 
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error actualizando consultation fee: {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<OperationResult> GetDoctorsWithExpiringLicenseAsync(DateTime expirationDate)
+        {
+            try
+            {
+
+                if (expirationDate < DateTime.UtcNow)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Expiration date cannot be in the past."
+                    };
+                }
+
+                var doctors = await _context.Doctors
+                    .Where(d => d.LicenseExpirationDate.ToDateTime(TimeOnly.MinValue) <= expirationDate)
+                    .ToListAsync();
+
+                if (doctors == null || !doctors.Any())
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "No doctors found with expiring licenses."
+                    };
+                }
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Doctors with expiring licenses retrieved successfully.",
+                    Data = doctors
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error retrieving doctors: {ex.Message}"
+                };
+            }
+        }
     }
 
 }

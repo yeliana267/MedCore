@@ -23,11 +23,99 @@ namespace MedCore.Persistence.Repositories.users
             _configuration = configuration;
         }
 
-        public async Task<OperationResult> ConfirmUserEmailAsync(int userId)
+        public async Task<OperationResult> ActivateUserAsync(int userId)
         {
-            throw new NotImplementedException();
+            try
+            {
+  
+                if (userId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "user ID no valido."
+                    };
+                }
+
+                // Buscar el usuario en la base de datos
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "User no existe."
+                    };
+                }
+
+                // Activar el usuario
+                user.IsActive = true;
+                user.UpdatedAt = DateTime.UtcNow; // Actualizar la fecha de modificación
+                await _context.SaveChangesAsync();
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "User Activado.",
+                    Data = user // Opcional: devolver el usuario actualizado
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error activando user: {ex.Message}"
+                };
+            }
         }
-        public async Task<OperationResult> DeleteUsersByIdAsync(int userId)
+
+        public async Task<OperationResult> DeactivateUserAsync(int userId)
+        {
+            try
+            {
+                if (userId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "user ID no valido."
+                    };
+                }
+
+                var user = await _context.Users.FindAsync(userId);
+                if (user == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "User no encontrado."
+                    };
+                }
+
+
+                user.IsActive = false;
+                user.UpdatedAt = DateTime.UtcNow; 
+                await _context.SaveChangesAsync();
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "User desactivado.",
+                    Data = user 
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error desactivando user: {ex.Message}"
+                };
+            }
+        }
+
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int userId)
         {
             OperationResult result = new OperationResult();
 
@@ -56,15 +144,92 @@ namespace MedCore.Persistence.Repositories.users
             return result;
 
         }
-        public async Task<Users> GetUserByEmailAsync(string email)
+
+        public async Task<OperationResult> GetByEmailAsync(string email)
         {
-            throw new NotImplementedException();
+            try
+            {
+
+                if (string.IsNullOrWhiteSpace(email))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Email no puede ser nulo."
+                    };
+                }
+
+                var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+                if (user == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "User no encontrado."
+                    };
+                }
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "User encontrado.",
+                    Data = user
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error obteniendo user: {ex.Message}"
+                };
+            }
         }
-        public async Task<OperationResult> ResetPasswordAsync(int userId, string newPassword)
+
+        public async Task<OperationResult> GetUsersByRoleAsync(int roleId)
         {
-            throw new NotImplementedException();
+            try
+            {
+                if (roleId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Role ID invalido."
+                    };
+                }
+
+                var users = await _context.Users
+                    .Where(u => u.RoleID == roleId)
+                    .ToListAsync();
+
+                if (users == null || !users.Any())
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "No users enontrados por el rol."
+                    };
+                }
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Usuario encontrado.",
+                    Data = users
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error buscando users: {ex.Message}"
+                };
+            }
         }
-        public async Task<OperationResult> UpdateUserAsync(int id, Users entity)
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, Users entity)
         {
             OperationResult result = new OperationResult();
 
@@ -108,10 +273,6 @@ namespace MedCore.Persistence.Repositories.users
             }
 
             return result;
-        }
-        public async Task<bool> ValidateUserCredentialsAsync(string email, string password)
-        {
-            throw new NotImplementedException();
         }
     }
 

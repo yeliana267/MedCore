@@ -24,11 +24,8 @@ namespace MedCore.Persistence.Repositories.users
             _configuration = configuration;
         }
 
-        public async Task<OperationResult> CancelAppointmentAsync(int appointmentId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> DeletePatientByIdAsync(int id)
+
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int id)
         {
             OperationResult result = new OperationResult();
 
@@ -56,19 +53,23 @@ namespace MedCore.Persistence.Repositories.users
             }
             return result;
         }
-        public async Task<List<Appointments>> GetPatientAppointmentsAsync(int patientId)
+
+        public Task<OperationResult> GetPatientsByBloodTypeAsync(string bloodType)
         {
             throw new NotImplementedException();
         }
-        public async Task<Patients> GetPatientByUserIdAsync(int userId)
+
+        public Task<OperationResult> GetPatientsByDoctorIdAsync(int doctorId)
         {
             throw new NotImplementedException();
         }
-        public async Task<OperationResult> ScheduleAppointmentAsync(Appointments appointment)
+
+        public Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
         {
             throw new NotImplementedException();
         }
-        public async Task<OperationResult> UpdatePatientAsync(int id, Patients entity)
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, Patients entity)
         {
             OperationResult result = new OperationResult();
 
@@ -112,9 +113,6 @@ namespace MedCore.Persistence.Repositories.users
 
             return result;
         }
-        public async Task<OperationResult> UpdatePatientProfileAsync(Patients patient)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

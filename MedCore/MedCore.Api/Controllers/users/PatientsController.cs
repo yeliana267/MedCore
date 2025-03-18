@@ -49,7 +49,7 @@ namespace MedCore.Api.Controllers.users
         [HttpPut("Update")]
         public async Task<IActionResult> Put(int id, [FromBody] Patients patients)
         {
-            var patient = await _patientsRepository.UpdatePatientAsync(id, patients);
+            var patient = await _patientsRepository.UpdateEntityAsync(id, patients);
             return Ok(patient);
         }
 
@@ -57,7 +57,7 @@ namespace MedCore.Api.Controllers.users
         [HttpDelete("Delete")]
         public async Task<IActionResult> Delete(int id)
         {
-            var patient = await _patientsRepository.DeletePatientByIdAsync(id);
+            var patient = await _patientsRepository.DeleteEntityByIdAsync(id);
             return Ok(patient);
         }
     }

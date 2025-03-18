@@ -9,12 +9,8 @@ namespace MedCore.Persistence.Interfaces.users
 {
     public interface IPatientsRepository : IBaseReporsitory<Patients, int>
     {
-        Task<Patients> GetPatientByUserIdAsync(int userId);
-        Task<OperationResult> UpdatePatientProfileAsync(Patients patient);
-        Task<List<Appointments>> GetPatientAppointmentsAsync(int patientId);
-        Task<OperationResult> ScheduleAppointmentAsync(Appointments appointment);
-        Task<OperationResult> CancelAppointmentAsync(int appointmentId);
-        Task<OperationResult> UpdatePatientAsync(int id, Patients entity);
-        Task<OperationResult> DeletePatientByIdAsync(int id);
+        Task<OperationResult> GetPatientsByDoctorIdAsync(int doctorId); // Obtener pacientes por doctor
+        Task<OperationResult> GetPatientsByBloodTypeAsync(string bloodType); // Obtener pacientes por tipo de sangre
+        Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone); // Actualizar contacto de emergencia
     }
 }

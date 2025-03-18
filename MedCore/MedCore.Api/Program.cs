@@ -24,7 +24,6 @@ namespace MedCore.Api
             builder.Services.AddUsersDependency();
             builder.Services.AddPatientsDependency();
             builder.Services.AddDoctorsDependency();
-
             builder.Services.AddDoctorAvailabilityDependency();
             builder.Services.AddAppointmentsDependency();
             builder.Services.AddInsuranceProvidersDependency();
