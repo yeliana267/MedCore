@@ -24,17 +24,47 @@ namespace MedCore.Application.Services.Insurance
         }
         public async Task<OperationResult> GetAll()
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                var networkTypes = await _networkTypeRepository.GetAllAsync();
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> GetById(int Id)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                var networkType = await _networkTypeRepository.GetEntityByIdAsync(Id);
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> Remove(RemoveNetwokTypeDto dto)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                operationResult = await _networkTypeRepository.DeleteEntityByIdAsync(dto.NetworkTypeId);
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> Save(SaveNetworkTypeDto dto)
