@@ -1,7 +1,9 @@
 ﻿using MedCore.Application.Dtos.users.Patients;
 using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Interfaces.users;
+using MedCore.Persistence.Repositories.users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -20,29 +22,407 @@ namespace MedCore.Application.Services.users
             _logger = logger;
             _configuration = configuration;
         }
-        public Task<OperationResult> GetAll()
+
+        public async Task<OperationResult> ActivatePatientAsync(int patientId)
         {
-            throw new NotImplementedException();
+            var result = new OperationResult();
+
+            try
+            {
+                // Validar que el ID del paciente sea válido
+                if (patientId <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    return result;
+                }
+
+                // Obtener el paciente existente
+                var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
+                if (existingPatient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    return result;
+                }
+
+                // Activar al paciente (asumiendo que hay una propiedad IsActive)
+                existingPatient.IsActive = true;
+
+                // Guardar los cambios en la base de datos
+                var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
+                if (!updateResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = $"Error al activar el paciente: {updateResult.Message}";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Message = "Paciente activado correctamente.";
+                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al activar el paciente.");
+                result.Success = false;
+                result.Message = $"Error inesperado al activar el paciente: {ex.Message}";
+            }
+
+            return result;
         }
 
-        public Task<OperationResult> GetById(int Id)
+        public async Task<OperationResult> DeactivatePatientAsync(int patientId)
         {
-            throw new NotImplementedException();
+            var result = new OperationResult();
+
+            try
+            {
+                // Validar que el ID del paciente sea válido
+                if (patientId <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    return result;
+                }
+
+                // Obtener el paciente existente
+                var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
+                if (existingPatient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    return result;
+                }
+
+                // Desactivar al paciente (asumiendo que hay una propiedad IsActive)
+                existingPatient.IsActive = false;
+
+                // Guardar los cambios en la base de datos
+                var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
+                if (!updateResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = $"Error al desactivar el paciente: {updateResult.Message}";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Message = "Paciente desactivado correctamente.";
+                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al desactivar el paciente.");
+                result.Success = false;
+                result.Message = $"Error inesperado al desactivar el paciente: {ex.Message}";
+            }
+
+            return result;
         }
 
-        public Task<OperationResult> Remove(RemovePatientsDto dto)
+        public async Task<OperationResult> GetAll()
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                var patients = await _patientsRepository.GetAllAsync();
+
+                // Validar si la lista de pacientes está vacía
+                if (patients == null || !patients.Any())
+                {
+                    result.Success = false;
+                    result.Message = "No se encontraron pacientes.";
+                    _logger.LogWarning("No se encontraron pacientes en la base de datos.");
+                }
+                else
+                {
+                    result.Data = patients;
+                    result.Success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.Success = false;
+                _logger.LogError($"Error al obtener todos los pacientes: {ex.Message}", ex);
+            }
+            return result;
         }
 
-        public Task<OperationResult> Save(SavePatientsDto dto)
+        public async Task<OperationResult> GetById(int id)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                // Validar que el ID sea válido
+                if (id <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    _logger.LogWarning("Intento de obtener paciente fallido: ID no válido.");
+                    return result;
+                }
+
+                var patient = await _patientsRepository.GetEntityByIdAsync(id);
+
+                // Validar si el paciente existe
+                if (patient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    _logger.LogWarning($"Paciente con ID {id} no encontrado.");
+                }
+                else
+                {
+                    result.Data = patient;
+                    result.Success = true;
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.Success = false;
+                _logger.LogError($"Error al obtener el paciente con ID {id}: {ex.Message}", ex);
+            }
+            return result;
         }
 
-        public Task<OperationResult> Update(UpdatePatientsDto dto)
+        public async Task<OperationResult> Remove(RemovePatientsDto dto)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {
+                // Validar que el ID sea válido
+                if (dto.PatientID <= 0) // Asegúrate de que la propiedad se llame PatientID
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    _logger.LogWarning("Intento de eliminación fallido: ID de paciente no válido.");
+                    return result;
+                }
+
+                // Verificar si el paciente existe
+                var patient = await _patientsRepository.GetEntityByIdAsync(dto.PatientID);
+                if (patient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    _logger.LogWarning($"Intento de eliminación fallido: Paciente con ID {dto.PatientID} no encontrado.");
+                    return result;
+                }
+
+                // Eliminar el paciente
+                var deleteResult = await _patientsRepository.DeleteEntityByIdAsync(dto.PatientID);
+                if (deleteResult.Success)
+                {
+                    result.Success = true;
+                    result.Message = "Paciente eliminado correctamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = deleteResult.Message;
+                    _logger.LogWarning($"Error al eliminar el paciente con ID {dto.PatientID}: {deleteResult.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Message = ex.Message;
+                result.Success = false;
+                _logger.LogError($"Error al eliminar el paciente con ID {dto.PatientID}: {ex.Message}", ex);
+            }
+            return result;
+        }
+
+        public async Task<OperationResult> Save(SavePatientsDto dto)
+        {
+            var result = new OperationResult();
+
+            try
+            {
+                // Validar que el DTO no sea nulo
+                if (dto == null)
+                {
+                    result.Success = false;
+                    result.Message = "El DTO no puede ser nulo.";
+                    return result;
+                }
+
+                // Validar campos obligatorios específicos de Patients
+                if (dto.DateOfBirth == default || dto.Gender == '\0' || string.IsNullOrEmpty(dto.PhoneNumber))
+                {
+                    result.Success = false;
+                    result.Message = "Fecha de nacimiento, género y número de teléfono son campos obligatorios.";
+                    return result;
+                }
+
+                // Crear la entidad Patients
+                var patient = new Patients
+                {
+                    DateOfBirth = dto.DateOfBirth,
+                    Gender = dto.Gender,
+                    PhoneNumber = dto.PhoneNumber,
+                    Address = dto.Address,
+                    EmergencyContactName = dto.EmergencyContactName,
+                    EmergencyContactPhone = dto.EmergencyContactPhone,
+                    BloodType = dto.BloodType,
+                    Allergies = dto.Allergies,
+                    InsuranceProviderID = dto.InsuranceProviderID
+                };
+
+                // Guardar el paciente en la base de datos
+                var saveResult = await _patientsRepository.SaveEntityAsync(patient);
+                if (!saveResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = $"Error al guardar el paciente: {saveResult.Message}";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Message = "Paciente guardado correctamente.";
+                result.Data = patient; 
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al guardar el paciente.");
+                result.Success = false;
+                result.Message = $"Error inesperado al guardar el paciente: {ex.Message}";
+            }
+
+            return result;
+        }
+
+        public async Task<OperationResult> Update(UpdatePatientsDto dto)
+        {
+            var result = new OperationResult();
+
+            try
+            {
+                // Validar que el DTO no sea nulo
+                if (dto == null)
+                {
+                    result.Success = false;
+                    result.Message = "El DTO no puede ser nulo.";
+                    return result;
+                }
+
+                // Validar que el PatientID sea válido
+                if (dto.PatientID <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    return result;
+                }
+
+                // Validar campos obligatorios
+                if (dto.DateOfBirth == default || dto.Gender == '\0' || string.IsNullOrEmpty(dto.PhoneNumber))
+                {
+                    result.Success = false;
+                    result.Message = "Fecha de nacimiento, género y número de teléfono son campos obligatorios.";
+                    return result;
+                }
+
+                // Obtener el paciente existente
+                var existingPatient = await _patientsRepository.GetEntityByIdAsync(dto.PatientID);
+                if (existingPatient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    return result;
+                }
+
+                // Actualizar los campos del paciente
+                existingPatient.DateOfBirth = dto.DateOfBirth;
+                existingPatient.Gender = dto.Gender;
+                existingPatient.PhoneNumber = dto.PhoneNumber;
+                existingPatient.Address = dto.Address;
+                existingPatient.EmergencyContactName = dto.EmergencyContactName;
+                existingPatient.EmergencyContactPhone = dto.EmergencyContactPhone;
+                existingPatient.BloodType = dto.BloodType;
+                existingPatient.Allergies = dto.Allergies;
+                existingPatient.InsuranceProviderID = dto.InsuranceProviderID;
+
+                // Guardar los cambios en la base de datos
+                var updateResult = await _patientsRepository.UpdateEntityAsync(dto.PatientID, existingPatient);
+                if (!updateResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = $"Error al actualizar el paciente: {updateResult.Message}";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Message = "Paciente actualizado correctamente.";
+                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar el paciente.");
+                result.Success = false;
+                result.Message = $"Error inesperado al actualizar el paciente: {ex.Message}";
+            }
+
+            return result;
+        }
+
+        public async Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
+        {
+            var result = new OperationResult();
+
+            try
+            {
+                // Validar que el ID del paciente sea válido
+                if (patientId <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "El ID del paciente no es válido.";
+                    return result;
+                }
+
+                // Validar que el nombre y el teléfono no estén vacíos
+                if (string.IsNullOrEmpty(contactName) || string.IsNullOrEmpty(contactPhone))
+                {
+                    result.Success = false;
+                    result.Message = "El nombre y el teléfono del contacto de emergencia son obligatorios.";
+                    return result;
+                }
+
+                // Obtener el paciente existente
+                var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
+                if (existingPatient == null)
+                {
+                    result.Success = false;
+                    result.Message = "Paciente no encontrado.";
+                    return result;
+                }
+
+                // Actualizar el contacto de emergencia
+                existingPatient.EmergencyContactName = contactName;
+                existingPatient.EmergencyContactPhone = contactPhone;
+
+                // Guardar los cambios en la base de datos
+                var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
+                if (!updateResult.Success)
+                {
+                    result.Success = false;
+                    result.Message = $"Error al actualizar el contacto de emergencia: {updateResult.Message}";
+                    return result;
+                }
+
+                result.Success = true;
+                result.Message = "Contacto de emergencia actualizado correctamente.";
+                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar el contacto de emergencia.");
+                result.Success = false;
+                result.Message = $"Error inesperado al actualizar el contacto de emergencia: {ex.Message}";
+            }
+
+            return result;
         }
     }
     }

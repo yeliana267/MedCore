@@ -9,6 +9,6 @@ namespace MedCore.Application.Dtos.users.Users
         public string Email { get; set; }
         public string Password { get; set; }
         public int RoleID { get; set; }
-        public char IsActive { get; set; }
+        public bool IsActive { get; set; }
     }
 }
