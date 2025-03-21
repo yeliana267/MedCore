@@ -57,7 +57,10 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
-                operationResult = await _networkTypeRepository.DeleteEntityByIdAsync(dto.NetworkTypeId);
+                if(dto.NetworkTypeId > 0)
+                {
+                    operationResult = await _networkTypeRepository.DeleteEntityByIdAsync(dto.NetworkTypeId);
+                }
             }
             catch (Exception ex)
             {

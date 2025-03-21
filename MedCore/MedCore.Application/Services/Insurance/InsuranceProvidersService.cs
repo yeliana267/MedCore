@@ -45,7 +45,11 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
-                var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(Id);
+                if (Id > 0)
+                {
+                    var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(Id);
+                }
+                
             }
             catch (Exception ex)
             {
