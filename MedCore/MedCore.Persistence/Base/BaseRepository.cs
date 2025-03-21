@@ -10,7 +10,7 @@ using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
 {
-    public abstract class BaseRepository<TEntity, TType> : IBaseReporsitory<TEntity, TType> where TEntity : class 
+    public abstract class BaseRepository<TEntity, TType> : IBaseRepository<TEntity, TType> where TEntity : class 
     {
         public readonly MedCoreContext _context;
         private DbSet<TEntity> Entity { get; set; }

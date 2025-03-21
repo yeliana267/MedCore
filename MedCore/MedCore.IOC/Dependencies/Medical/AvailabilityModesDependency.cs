@@ -6,12 +6,12 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MedCore.IOC.Dependencies.Medical
 {
-    public class AvailabilityModesDependency
+    public static class AvailabilityModesDependency
     {
-        public static void AddAvailabilityModesDependency(IServiceCollection services)
+        public static void AddAvailabilityModesDependency(this IServiceCollection services)
         {
             services.AddScoped<IAvailabilityModesRepository, AvailabilityModesRepository>();
-            services.AddScoped<IAvailabilityModesService, AvailabilityModesService>();
+            services.AddTransient<IAvailabilityModesService, AvailabilityModesService>();
         }
     }
 }

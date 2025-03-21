@@ -7,13 +7,11 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.users
 {
-    public interface IUsersRepository : IBaseReporsitory<Users, int>
+    public interface IUsersRepository : IBaseRepository<Users, int>
     {
-        Task<Users> GetUserByEmailAsync(string email);
-        Task<bool> ValidateUserCredentialsAsync(string email, string password);
-        Task<OperationResult> ConfirmUserEmailAsync(int userId);
-        Task<OperationResult> ResetPasswordAsync(int userId, string newPassword);
-        Task<OperationResult> UpdateUserAsync(int id, Users entity);
-        Task<OperationResult> DeleteUsersByIdAsync(int userId);
+        Task<OperationResult> GetByEmailAsync(string email); // Obtener un usuario por email
+        Task<OperationResult> GetUsersByRoleAsync(int roleId); // Obtener usuarios por rol
+        Task<OperationResult> DeactivateUserAsync(int userId); // Desactivar un usuario
+        Task<OperationResult> ActivateUserAsync(int userId); // Activar un usuario
     }
 }

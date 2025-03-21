@@ -24,11 +24,8 @@ namespace MedCore.Persistence.Repositories.users
             _configuration = configuration;
         }
 
-        public async Task<OperationResult> CancelAppointmentAsync(int appointmentId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> DeletePatientByIdAsync(int id)
+
+        public override async Task<OperationResult> DeleteEntityByIdAsync(int id)
         {
             OperationResult result = new OperationResult();
 
@@ -56,19 +53,72 @@ namespace MedCore.Persistence.Repositories.users
             }
             return result;
         }
-        public async Task<List<Appointments>> GetPatientAppointmentsAsync(int patientId)
+
+        public async Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
         {
-            throw new NotImplementedException();
+            try
+            {
+             
+                if (patientId <= 0)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Patient ID no valido."
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(contactName))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Contact name no puede estar vacio."
+                    };
+                }
+
+                if (string.IsNullOrWhiteSpace(contactPhone))
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Contact phone no pueder estar vacio."
+                    };
+                }
+
+                var patient = await _context.Patients.FindAsync(patientId);
+                if (patient == null)
+                {
+                    return new OperationResult
+                    {
+                        Success = false,
+                        Message = "Patient no encontrado."
+                    };
+                }
+
+                patient.EmergencyContactName = contactName;
+                patient.EmergencyContactPhone = contactPhone;
+                patient.UpdatedAt = DateTime.UtcNow; 
+                await _context.SaveChangesAsync();
+
+                return new OperationResult
+                {
+                    Success = true,
+                    Message = "Emergency contact actualizado.",
+                    Data = patient 
+                };
+            }
+            catch (Exception ex)
+            {
+                return new OperationResult
+                {
+                    Success = false,
+                    Message = $"Error actualizando emergency contact: {ex.Message}"
+                };
+            }
         }
-        public async Task<Patients> GetPatientByUserIdAsync(int userId)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> ScheduleAppointmentAsync(Appointments appointment)
-        {
-            throw new NotImplementedException();
-        }
-        public async Task<OperationResult> UpdatePatientAsync(int id, Patients entity)
+
+        public override async Task<OperationResult> UpdateEntityAsync(int id, Patients entity)
         {
             OperationResult result = new OperationResult();
 
@@ -112,9 +162,6 @@ namespace MedCore.Persistence.Repositories.users
 
             return result;
         }
-        public async Task<OperationResult> UpdatePatientProfileAsync(Patients patient)
-        {
-            throw new NotImplementedException();
-        }
+
     }
 }

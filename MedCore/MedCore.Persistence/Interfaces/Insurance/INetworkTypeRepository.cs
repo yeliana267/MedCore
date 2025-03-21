@@ -6,7 +6,7 @@ using MedCore.Domain.Repository;
 
 namespace MedCore.Persistence.Interfaces.Insurance
 {
-    public interface INetworkTypeRepository : IBaseReporsitory <NetworkType, int>
+    public interface INetworkTypeRepository : IBaseRepository <NetworkType, int>
     {
         //Obtener un tipo de red por ID
         Task<OperationResult> GetNetworkTypeById(int id);

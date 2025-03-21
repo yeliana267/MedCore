@@ -9,7 +9,7 @@ using System.Numerics;
 
 namespace MedCore.Persistence.Interfaces.appointments
 {
-    public interface IAppointmentsRepository : IBaseReporsitory<Appointments, int>
+    public interface IAppointmentsRepository : IBaseRepository<Appointments, int>
     {
         Task<OperationResult> GetAppointmentsByDoctorIdAsync(int doctorId); //Obtiene todas las citas de un doctor específico
 
