@@ -42,12 +42,32 @@ namespace MedCore.Application.Services.Insurance
 
         public async Task<OperationResult> GetById(int Id)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(Id);
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> Remove(RemoveInsuranceProvidersDto dto)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                operationResult = await _insuranceProvidersRepository.DeleteEntityByIdAsync(dto.InsuranceProviderID);
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> Save(SaveInsuranceProvidersDto dto)
