@@ -47,12 +47,22 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
+                
                 var networkType = await _networkTypeRepository.GetEntityByIdAsync(Id);
+                operationResult.Success = true;
+
+                if (networkType == null)
+                {
+                    operationResult.Success = false;
+                    operationResult.Message = "Insurance Providers not found.";
+                    return operationResult;
+                }
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Error NetworkType"]!;
+                _logger.LogError(operationResult.Message, ex);
             }
             return operationResult;
         }
@@ -69,8 +79,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Error NetworkType"]!;
+                _logger.LogError(operationResult.Message, ex);
             }
             return operationResult;
         }
@@ -87,8 +98,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["NetworkType not save"]!;
+                _logger.LogError(operationResult.Message, ex);
 
             }
             return operationResult;
