@@ -22,7 +22,7 @@ namespace MedCore.Persistence.Repositories.appointments
             this._configuration = configuration;
         }
 
-        public async Task<OperationResult> GetAvailabilityByDoctorIdAsync(int doctorId, DateTime startDate, DateTime endDate)
+        public async Task<OperationResult> GetAvailabilityByDoctorIdAsync(int doctorId, DateOnly startDate, DateOnly endDate)
         {
             OperationResult result = new OperationResult();
 
@@ -45,7 +45,7 @@ namespace MedCore.Persistence.Repositories.appointments
 
             return result;
         }
-        public async Task<OperationResult> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate, TimeOnly startTime, TimeOnly endTime)
+        public async Task<OperationResult> IsDoctorAvailableAsync(int doctorId, DateOnly appointmentDate, TimeSpan startTime, TimeSpan endTime)
         {
             OperationResult result = new OperationResult();
 
@@ -74,7 +74,7 @@ namespace MedCore.Persistence.Repositories.appointments
             try
             {
                 var availabilities = await _context.DoctorAvailabilities
-                    .Where(a => a.DoctorID == doctorId && a.AvailableDate >= DateTime.Now)
+                    .Where(a => a.DoctorID == doctorId && a.AvailableDate >= DateOnly.FromDateTime(DateTime.Now))
                     .ToListAsync();
                 result.Data = availabilities;
                 result.Success = true;

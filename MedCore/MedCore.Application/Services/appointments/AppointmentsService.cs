@@ -99,25 +99,25 @@ public class AppointmentsService : IAppointmentsService
         return await _appointmentsRepository.GetPendingAppointmentsAsync();
     }
 
-    public async Task<OperationResult> Save(SaveAppointmentsDto dto)
+    public async Task<OperationResult> Save(SaveAppointmentsDto appointmentsDto)
     {
         var result = new OperationResult();
 
-        if (dto == null)
+        if (appointmentsDto == null)
         {
             result.Success = false;
             result.Message = "Los datos de la cita no pueden estar vacíos.";
             return result;
         }
 
-        if (dto.PatientID <= 0 || dto.DoctorID <= 0)
+        if (appointmentsDto.PatientID <= 0 || appointmentsDto.DoctorID <= 0)
         {
             result.Success = false;
             result.Message = "El paciente y el doctor deben ser válidos.";
             return result;
         }
 
-        if (dto.AppointmentDate <= DateTime.Now)
+        if (appointmentsDto.AppointmentDate <= DateTime.Now)
         {
             result.Success = false;
             result.Message = "La fecha de la cita debe ser futura.";
@@ -128,10 +128,10 @@ public class AppointmentsService : IAppointmentsService
         {
             var appointment = new Appointments
             {
-                DoctorID = dto.DoctorID,
-                PatientID = dto.PatientID,
-                AppointmentDate = dto.AppointmentDate,
-                StatusID = dto.StatusID
+                DoctorID = appointmentsDto.DoctorID,
+                PatientID = appointmentsDto.PatientID,
+                AppointmentDate = appointmentsDto.AppointmentDate,
+                StatusID = appointmentsDto.StatusID
             };
 
             return await _appointmentsRepository.SaveEntityAsync(appointment);
@@ -144,11 +144,11 @@ public class AppointmentsService : IAppointmentsService
         }
     }
 
-    public async Task<OperationResult> Update(UpdateAppointmentsDto dto)
+    public async Task<OperationResult> Update(UpdateAppointmentsDto appointmentsDto)
     {
         var result = new OperationResult();
 
-        if (dto == null || dto.AppointmentID <= 0)
+        if (appointmentsDto == null || appointmentsDto.AppointmentID <= 0)
         {
             result.Success = false;
             result.Message = "Datos inválidos para la actualización.";
@@ -157,7 +157,7 @@ public class AppointmentsService : IAppointmentsService
 
         try
         {
-            var existing = await _appointmentsRepository.GetEntityByIdAsync(dto.AppointmentID);
+            var existing = await _appointmentsRepository.GetEntityByIdAsync(appointmentsDto.AppointmentID);
             if (existing == null)
             {
                 result.Success = false;
@@ -165,11 +165,11 @@ public class AppointmentsService : IAppointmentsService
                 return result;
             }
 
-            existing.AppointmentDate = dto.AppointmentDate;
+            existing.AppointmentDate = appointmentsDto.AppointmentDate;
           
-            existing.StatusID = dto.StatusID;
+            existing.StatusID = appointmentsDto.StatusID;
 
-            return await _appointmentsRepository.UpdateEntityAsync(dto.AppointmentID, existing);
+            return await _appointmentsRepository.UpdateEntityAsync(appointmentsDto.AppointmentID, existing);
         }
         catch (Exception ex)
         {
@@ -179,11 +179,11 @@ public class AppointmentsService : IAppointmentsService
         }
     }
 
-    public async Task<OperationResult> Remove(RemoveAppointmentsDto dto)
+    public async Task<OperationResult> Remove(RemoveAppointmentsDto appointmentsDto)
     {
         var result = new OperationResult();
 
-        if (dto == null || dto.AppointmentID <= 0)
+        if (appointmentsDto == null || appointmentsDto.AppointmentID <= 0)
         {
             result.Success = false;
             result.Message = "ID inválido para eliminar la cita.";
@@ -192,7 +192,7 @@ public class AppointmentsService : IAppointmentsService
 
         try
         {
-            return await _appointmentsRepository.DeleteEntityByIdAsync(dto.AppointmentID);
+            return await _appointmentsRepository.DeleteEntityByIdAsync(appointmentsDto.AppointmentID);
         }
         catch (Exception ex)
         {
