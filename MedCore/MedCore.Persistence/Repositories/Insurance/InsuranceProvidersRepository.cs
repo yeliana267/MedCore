@@ -45,8 +45,8 @@ namespace MedCore.Persistence.Repositories.Insurance
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = this._configuration["ErrorInsuranceProvidersRepository:CountInsuranceProvidersByNetworkTypeId"]!;
-                this._logger.LogError(result.Message, ex);
+                result.Message = _configuration["ErrorInsuranceProvidersRepository:CountInsuranceProvidersByNetworkTypeId"]!;
+                _logger.LogError(result.Message, ex);
             }
 
             return result;
@@ -86,10 +86,18 @@ namespace MedCore.Persistence.Repositories.Insurance
             OperationResult result = new OperationResult();
             try
             {
-                _context.InsuranceProviders.Add(entity);
-                await _context.SaveChangesAsync();
-                result.Success = true;
-                result.Message = "Entidad guardada exitosamente.";
+                if (entity == null)
+                {
+                    result.Success = false;
+                    result.Message = "La entidad no puede ser nula";
+                }
+                else
+                {
+                    _context.InsuranceProviders.Add(entity);
+                    await _context.SaveChangesAsync();
+                    result.Success = true;
+                    result.Message = "Entidad guardada exitosamente.";
+                }
             }
             catch (Exception ex)
             {
