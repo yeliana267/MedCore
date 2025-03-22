@@ -2,7 +2,6 @@
 using MedCore.Application.Interfaces.appointments;
 using MedCore.Domain.Base;
 using MedCore.Persistence.Interfaces.appointments;
-using MedCore.Persistence.Interfaces.users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -37,9 +36,23 @@ namespace MedCore.Application.Services.appointments
             return result;
         }
 
-        public Task<OperationResult> GetById(int Id)
+        public  async Task<OperationResult> GetById(int Id)
         {
-            throw new NotImplementedException();
+            OperationResult result = new OperationResult();
+            try
+            {   
+                var appointments = await _appointmentsRepository.GetEntityByIdAsync(Id);
+             
+
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = ex.Message;
+            }
+            return result;
+         
+
         }
 
         public Task<OperationResult> Remove(RemoveAppointmentsDto dto)

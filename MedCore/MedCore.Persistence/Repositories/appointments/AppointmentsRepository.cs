@@ -6,6 +6,7 @@ using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.appointments;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -23,24 +24,7 @@ namespace MedCore.Persistence.Repositories.appointments
             _logger = logger;
             _configuration = configuration;
         }
-            
-        public async Task<OperationResult> GetAppointmentsByDoctorIdAsync(int doctorId)
-        {
-            throw new NotImplementedException();
-
-        }
-
-        public async Task<OperationResult> GetAppointmentsByPatientIdAsync(int patientId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public async Task<OperationResult> GetPendingAppointmentsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-
+        
         public override Task<OperationResult> SaveEntityAsync(Appointments entity)
         {
             _logger.LogInformation($"Guardando nueva cita para el paciente {entity.PatientID}");
@@ -87,6 +71,92 @@ namespace MedCore.Persistence.Repositories.appointments
             return result;
         }
 
+        public async Task<OperationResult> GetAppointmentsByDoctorIdAsync(int doctorId)
+        {
+            var result = new OperationResult();
 
+            try
+            {
+                // Suponiendo que Appointment es la entidad que representa una cita
+                var appointments = await _context.Appointments
+                                                  .Where(a => a.DoctorID == doctorId)
+                                                  .ToListAsync();
+
+                if (appointments.Any())
+                {
+                    result.Data = appointments; // Asignamos las citas encontradas a los datos del resultado
+                    result.Success = true;
+                    result.Message = "Citas obtenidas correctamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontraron citas para este doctor.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error: {ex.Message}";
+            }
+
+            return result;
+        }
+
+        public async Task<OperationResult> GetAppointmentsByPatientIdAsync(int patientId)
+        {
+            var result = new OperationResult();
+            try
+            {
+             
+                var appointments = await _context.Appointments
+                                                  .Where(a => a.PatientID == patientId)
+                                                  .ToListAsync();
+                if (appointments.Any())
+                {
+                    result.Data = appointments; 
+                    result.Success = true;
+                    result.Message = "Citas obtenidas correctamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontraron citas para este paciente.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error: {ex.Message}";
+            }
+            return result;
+        }
+        public async Task<OperationResult> GetPendingAppointmentsAsync()
+        {
+            var result = new OperationResult();
+            try
+            {
+                var appointments = await _context.Appointments
+                                                  .Where(a => a.StatusID == 1)
+                                                  .ToListAsync();
+                if (appointments.Any())
+                {
+                    result.Data = appointments;
+                    result.Success = true;
+                    result.Message = "Citas pendientes obtenidas correctamente.";
+                }
+                else
+                {
+                    result.Success = false;
+                    result.Message = "No se encontraron citas pendientes.";
+                }
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error: {ex.Message}";
+            }
+            return result;
+        }
     }
 }
