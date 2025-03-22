@@ -18,11 +18,13 @@ namespace MedCore.Persistence.Test.appointments
 
         public UnitTestAppointments()
         {
-            
-
+            var options = new DbContextOptionsBuilder<MedCoreContext>().Usere(memoryCach)
+                .Options;
+          
             var mockLogger = new Mock<ILogger<AppointmentsRepository>>();
             var mockConfig = new Mock<IConfiguration>();
 
+            _context = new MedCoreContext(options);
             _repository = new AppointmentsRepository(_context, mockLogger.Object, mockConfig.Object);
         }
 
