@@ -47,7 +47,16 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
+                
                 var networkType = await _networkTypeRepository.GetEntityByIdAsync(Id);
+                operationResult.Success = true;
+
+                if (networkType == null)
+                {
+                    operationResult.Success = false;
+                    operationResult.Message = "Insurance Providers not found.";
+                    return operationResult;
+                }
             }
             catch (Exception ex)
             {
