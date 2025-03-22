@@ -1,4 +1,6 @@
-﻿using MedCore.Domain.Entities.appointments;
+﻿using MedCore.Application.Dtos.appointments.Appointments;
+using MedCore.Application.Interfaces.appointments;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,12 +12,12 @@ namespace MedCore.Api.Controllers.appointments
     [ApiController]
     public class AppointmentsController : ControllerBase
     {
-        private readonly IAppointmentsRepository _appointmentsRepository;
+        private readonly IAppointmentsService _appointmentsService;
         public readonly ILogger<AppointmentsController> _logger;
         public readonly IConfiguration _configuration;
-        public AppointmentsController(IAppointmentsRepository appointmentsRepository, ILogger<AppointmentsController> logger, IConfiguration configuration)
+        public AppointmentsController(IAppointmentsService appointmentsService, ILogger<AppointmentsController> logger, IConfiguration configuration)
         {
-            _appointmentsRepository = appointmentsRepository;
+            _appointmentsService = appointmentsService;
             _logger = logger;
             _configuration = configuration;
         }
@@ -23,7 +25,7 @@ namespace MedCore.Api.Controllers.appointments
         [HttpGet("GetAppointments")]
         public async Task<IActionResult> Get()
         {
-            var appointments = await _appointmentsRepository.GetAllAsync();
+            var appointments = await _appointmentsService.GetAll();
             return Ok(appointments);
         }
 
@@ -31,44 +33,44 @@ namespace MedCore.Api.Controllers.appointments
         [HttpGet("GetAppointmentsById")]
         public async Task<IActionResult> GetAppointmentsByDoctorIdAsync(int Id)
         {
-            var appointments = await _appointmentsRepository.GetEntityByIdAsync(Id);
+            var appointments = await _appointmentsService.GetAppointmentsByDoctorIdAsync(Id);
             return Ok(appointments);
         }
         [HttpGet("GetPending")]
         public async Task<IActionResult> GetPendingAppointmentsAsync()
         {
-            var appointments = await _appointmentsRepository.GetPendingAppointmentsAsync();
+            var appointments = await _appointmentsService.GetPendingAppointmentsAsync();
             return Ok(appointments);
         }
 
         [HttpGet("GetAppointmentsByPatientId")]
         public async Task<IActionResult> GetAppointmentsByPatientIdAsync(int patientId)
         {
-            var appointments = await _appointmentsRepository.GetAppointmentsByPatientIdAsync(patientId);
+            var appointments = await _appointmentsService.GetAppointmentsByPatientIdAsync(patientId);
             return Ok(appointments);
         }
 
         [HttpGet("GetAppointmentsByDoctorId")]
         public async Task<IActionResult> Get(int doctorId)
         {
-            var appointments = await _appointmentsRepository.GetAppointmentsByDoctorIdAsync(doctorId);
+            var appointments = await _appointmentsService.GetAppointmentsByDoctorIdAsync(doctorId);
             return Ok(appointments);
         }
 
 
         // POST api/<AppointmentsController>
         [HttpPost("SaveAppointment")]
-        public async Task<IActionResult> Post([FromBody] Appointments appointments)
+        public async Task<IActionResult> Post([FromBody] SaveAppointmentsDto appointmentsDto)
         {
-            var appointment = await _appointmentsRepository.SaveEntityAsync(appointments);
+            var appointment = await _appointmentsService.Save(appointmentsDto);
             return Ok(appointment);
         }
 
         // PUT api/<AppointmentsController>/5
         [HttpPut("UpdateAppointment")]
-        public async Task<IActionResult> Put(int id, [FromBody] Appointments appointments)
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateAppointmentsDto appointmentsDto)
         {
-            var appointment = await _appointmentsRepository.UpdateEntityAsync(id, appointments);
+            var appointment = await _appointmentsService.Update(appointmentsDto);
             if (id == null)
             {
                 return NotFound("Ingrese el Id de la cita que quiere actualizar");
@@ -81,17 +83,12 @@ namespace MedCore.Api.Controllers.appointments
 
         // DELETE api/<AppointmentsController>/5
         [HttpDelete("DeleteAppointment")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Delete(RemoveAppointmentsDto appointmentsDto)
         {
-            var appointment = await _appointmentsRepository.DeleteEntityByIdAsync(id);
-            if (id == null)
-            {
-                return NotFound("Ingrese el Id de la cita que quiere borrar");
-            }
-            else
-            {
+            var appointment = await _appointmentsService.Remove(appointmentsDto);
+        
                 return Ok(appointment);
-            }
+            
         }
 
     }
