@@ -5,6 +5,8 @@ using MedCore.IOC.Dependencies.appointments;
 using MedCore.IOC.Dependencies.Insurance;
 using MedCore.IOC.Dependencies.Medical;
 using MedCore.IOC.Dependencies.users;
+using MedCore.Application.Interfaces.users;
+using MedCore.Application.Services.users;
 
 
 namespace MedCore.Api
@@ -31,6 +33,11 @@ namespace MedCore.Api
             builder.Services.AddAvailabilityModesDependency();
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();
+
+            //Services
+            builder.Services.AddScoped<IPatientsService, PatientsService>();
+            builder.Services.AddScoped<IDoctorsService, DoctorsService>();
+            builder.Services.AddScoped<IUsersService, UsersService>();
 
 
 
