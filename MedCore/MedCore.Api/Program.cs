@@ -34,11 +34,7 @@ namespace MedCore.Api
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();
 
-            //Services
-            builder.Services.AddScoped<IPatientsService, PatientsService>();
-            builder.Services.AddScoped<IDoctorsService, DoctorsService>();
-            builder.Services.AddScoped<IUsersService, UsersService>();
-
+        
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
