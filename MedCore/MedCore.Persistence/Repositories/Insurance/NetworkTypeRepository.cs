@@ -91,10 +91,20 @@ namespace MedCore.Persistence.Repositories.Insurance
             OperationResult result = new OperationResult();
             try
             {
-                _context.NetworkType.Add(entity);
-                await _context.SaveChangesAsync();
-                result.Success = true;
-                result.Message = "Entidad guardada exitosamente.";
+                if(entity == null)
+                {
+                    result.Success = false;
+                    result.Message = "La entidad no puede ser nula.";
+                    return result;
+                }
+                else
+                {
+                    _context.NetworkType.Add(entity);
+                    await _context.SaveChangesAsync();
+                    result.Success = true;
+                    result.Message = "Entidad guardada exitosamente.";
+                }
+               
             }
             catch (Exception ex)
             {

@@ -3,7 +3,11 @@
 using MedCore.Application.Dtos.Insurance.NetworkType;
 using MedCore.Application.Interfaces.Insurance;
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.Insurance;
 using MedCore.Persistence.Interfaces.Insurance;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
@@ -31,8 +35,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Error NetworkType"]!;
+                _logger.LogError(operationResult.Message, ex);
             }
             return operationResult;
         }
@@ -72,12 +77,49 @@ namespace MedCore.Application.Services.Insurance
 
         public async Task<OperationResult> Save(SaveNetworkTypeDto dto)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                var network = await _networkTypeRepository.SaveEntityAsync(new NetworkType()
+                { Name = dto.Name,
+                  Description = dto.Description
+                });
+            }
+            catch (Exception ex)
+            {
+                operationResult.Message = "";
+                _logger.LogError("", ex.ToString());
+
+            }
+            return operationResult;
         }
 
         public async Task<OperationResult> Update(UpdateNetworkTypeDto dto)
         {
-            throw new NotImplementedException();
+            OperationResult operationResult = new OperationResult();
+            try
+            {
+                var networktype = await _networkTypeRepository.GetEntityByIdAsync(dto.NetworkTypeId);
+                if (networktype == null)
+                {
+                    operationResult.Message = "Network type not found.";
+                    operationResult.Success = false;
+                }
+                else
+                {
+                    networktype.Name = dto.Name;
+                    networktype.Description = dto.Description;
+                    await _networkTypeRepository.UpdateEntityAsync(dto.NetworkTypeId, networktype);
+                }
+                
+            }
+            catch (Exception ex)
+            {
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Network type not Update"]!;
+                _logger.LogError(operationResult.Message, ex);
+            }
+            return operationResult;
         }
     }
 }
