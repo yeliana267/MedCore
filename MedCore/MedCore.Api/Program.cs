@@ -5,6 +5,8 @@ using MedCore.IOC.Dependencies.appointments;
 using MedCore.IOC.Dependencies.Insurance;
 using MedCore.IOC.Dependencies.Medical;
 using MedCore.IOC.Dependencies.users;
+using MedCore.Application.Interfaces.users;
+using MedCore.Application.Services.users;
 
 
 namespace MedCore.Api
@@ -32,6 +34,7 @@ namespace MedCore.Api
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();
 
+        
 
 
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
