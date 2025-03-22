@@ -25,26 +25,7 @@ namespace MedCore.Persistence.Base
             return await Entity.FindAsync(id);
         }
 
-        //public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
-        //{
-        //    OperationResult result = new OperationResult();
-
-        //    try
-        //    {
-        //        Entity.Update(entity);
-        //        await _context.SaveChangesAsync();
-        //        result.Success = true;
-        //            result.Message = "Entidad actualizada correctamente.";
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Success = false;
-        //        result.Message = $"Ocurrió un error {ex.Message} actualizando la entidad.";
-
-        //    }
-
-        //    return result;
-        //}
+        
 
 
         public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
