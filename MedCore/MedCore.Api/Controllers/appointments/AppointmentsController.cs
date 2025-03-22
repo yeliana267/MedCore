@@ -29,11 +29,32 @@ namespace MedCore.Api.Controllers.appointments
 
         // GET api/<AppointmentsController>/5
         [HttpGet("GetAppointmentsById")]
-        public async Task<IActionResult> Get(int id)
+        public async Task<IActionResult> GetAppointmentsByDoctorIdAsync(int Id)
         {
-            var appointments = await _appointmentsRepository.GetEntityByIdAsync(id);
+            var appointments = await _appointmentsRepository.GetEntityByIdAsync(Id);
             return Ok(appointments);
         }
+        [HttpGet("GetPending")]
+        public async Task<IActionResult> GetPendingAppointmentsAsync()
+        {
+            var appointments = await _appointmentsRepository.GetPendingAppointmentsAsync();
+            return Ok(appointments);
+        }
+
+        [HttpGet("GetAppointmentsByPatientId")]
+        public async Task<IActionResult> GetAppointmentsByPatientIdAsync(int patientId)
+        {
+            var appointments = await _appointmentsRepository.GetAppointmentsByPatientIdAsync(patientId);
+            return Ok(appointments);
+        }
+
+        [HttpGet("GetAppointmentsByDoctorId")]
+        public async Task<IActionResult> Get(int doctorId)
+        {
+            var appointments = await _appointmentsRepository.GetAppointmentsByDoctorIdAsync(doctorId);
+            return Ok(appointments);
+        }
+
 
         // POST api/<AppointmentsController>
         [HttpPost("SaveAppointment")]

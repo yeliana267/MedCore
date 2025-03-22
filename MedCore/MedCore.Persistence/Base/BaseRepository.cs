@@ -25,26 +25,61 @@ namespace MedCore.Persistence.Base
             return await Entity.FindAsync(id);
         }
 
+        //public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
+        //{
+        //    OperationResult result = new OperationResult();
+
+        //    try
+        //    {
+        //        Entity.Update(entity);
+        //        await _context.SaveChangesAsync();
+        //        result.Success = true;
+        //            result.Message = "Entidad actualizada correctamente.";
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Success = false;
+        //        result.Message = $"Ocurrió un error {ex.Message} actualizando la entidad.";
+
+        //    }
+
+        //    return result;
+        //}
+
+
         public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
         {
-            OperationResult result = new OperationResult();
+            var result = new OperationResult();
 
             try
             {
-                Entity.Update(entity);
+                var existingEntity = await Entity.FindAsync(id);
+
+                if (existingEntity == null)
+                {
+                    result.Success = false;
+                    result.Message = "Entidad no encontrada.";
+                    return result;
+                }
+
+                _context.Entry(existingEntity).CurrentValues.SetValues(entity);
+
                 await _context.SaveChangesAsync();
+
                 result.Success = true;
-                    result.Message = "Entidad actualizada correctamente.";
+                result.Message = "Entidad actualizada correctamente.";
             }
             catch (Exception ex)
             {
                 result.Success = false;
-                result.Message = $"Ocurrió un error {ex.Message} actualizando la entidad.";
-
+                result.Message = $"Ocurrió un error actualizando la entidad: {ex.Message}";
             }
 
             return result;
         }
+
+
+
         public virtual async Task<OperationResult> SaveEntityAsync(TEntity entity)
         {
             OperationResult result = new OperationResult();
