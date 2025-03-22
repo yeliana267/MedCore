@@ -51,8 +51,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Error NetworkType"]!;
+                _logger.LogError(operationResult.Message, ex);
             }
             return operationResult;
         }
@@ -69,8 +70,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["Error NetworkType"]!;
+                _logger.LogError(operationResult.Message, ex);
             }
             return operationResult;
         }
@@ -87,8 +89,9 @@ namespace MedCore.Application.Services.Insurance
             }
             catch (Exception ex)
             {
-                operationResult.Message = "";
-                _logger.LogError("", ex.ToString());
+                operationResult.Success = false;
+                operationResult.Message = _configuration["NetworkType not save"]!;
+                _logger.LogError(operationResult.Message, ex);
 
             }
             return operationResult;
