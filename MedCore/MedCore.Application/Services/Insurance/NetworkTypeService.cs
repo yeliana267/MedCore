@@ -91,6 +91,7 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
+
                 var network = await _networkTypeRepository.SaveEntityAsync(new NetworkType()
                 { Name = dto.Name,
                   Description = dto.Description
@@ -112,17 +113,30 @@ namespace MedCore.Application.Services.Insurance
             try
             {
                 var networktype = await _networkTypeRepository.GetEntityByIdAsync(dto.NetworkTypeId);
+
+                
                 if (networktype == null)
                 {
-                    operationResult.Message = "Network type not found.";
                     operationResult.Success = false;
+                    operationResult.Message = $"No se encontró NetworkType por ID {dto.NetworkTypeId}.";
+                    _logger.LogWarning($"Intento de actualización fallido: NetworkType {dto.NetworkTypeId} no encontrada.");
+                    return operationResult;
                 }
-                else
+
+                if (networktype.Name == null)
                 {
-                    networktype.Name = dto.Name;
-                    networktype.Description = dto.Description;
-                    await _networkTypeRepository.UpdateEntityAsync(dto.NetworkTypeId, networktype);
+                    operationResult.Success = false;
+                    operationResult.Message = "El nombre no puede ser null";
+                    _logger.LogWarning($"Intento de actualización fallido: Coloque el Nombre");
                 }
+
+
+                networktype.Name = dto.Name;
+                networktype.Description = dto.Description;
+                networktype.UpdatedAt = DateTime.Now;
+                _logger.LogInformation($"Actualizando NetworkType {dto.NetworkTypeId}");
+                await _networkTypeRepository.UpdateEntityAsync(dto.NetworkTypeId, networktype);
+                
                 
             }
             catch (Exception ex)
