@@ -2,7 +2,7 @@
 
 namespace MedCore.Application.Dtos.Insurance.InsuranceProviders
 {
-    public class RemoveInsuranceProvidersDto : InsuranceProvidersDto
+    public class RemoveInsuranceProvidersDto : DtoBase
     {
         public int InsuranceProviderID { get; set; }
     }
