@@ -1,13 +1,8 @@
-﻿
-using MedCore.Domain.Entities.Insurance;
-using System.Net;
-using System.Reflection.Emit;
-
-namespace MedCore.Application.Dtos.Insurance.InsuranceProviders
+﻿namespace MedCore.Web.Models.Insurance
 {
-    public class InsuranceProvidersDto : DtoBase
+    public class InsuranceProvidersModel
     {
-        public int InsuranceProviderID { get; set; }
+        public int insuranceProviderID { get; set; }
         public string Name { get; set; }
         public string ContactNumber { get; set; }
         public string Email { get; set; }
@@ -24,6 +19,5 @@ namespace MedCore.Application.Dtos.Insurance.InsuranceProviders
         public string? CustomerSupportContact { get; set; }
         public string? AcceptedRegions { get; set; }
         public decimal? MaxCoverageAmount { get; set; }
-
     }
 }
