@@ -23,7 +23,7 @@ namespace MedCore.Api.Controllers.appointments
         }
         // GET: api/<AppointmentsController>
         [HttpGet("GetAppointments")]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
             var appointments = await _appointmentsService.GetAll();
             return Ok(appointments);
@@ -31,11 +31,12 @@ namespace MedCore.Api.Controllers.appointments
 
         // GET api/<AppointmentsController>/5
         [HttpGet("GetAppointmentsById")]
-        public async Task<IActionResult> GetAppointmentsByDoctorIdAsync(int Id)
+        public async Task<IActionResult> GetById(int Id)
         {
-            var appointments = await _appointmentsService.GetAppointmentsByDoctorIdAsync(Id);
+            var appointments = await _appointmentsService.GetById(Id);
             return Ok(appointments);
         }
+
         [HttpGet("GetPending")]
         public async Task<IActionResult> GetPendingAppointmentsAsync()
         {
@@ -68,17 +69,11 @@ namespace MedCore.Api.Controllers.appointments
 
         // PUT api/<AppointmentsController>/5
         [HttpPut("UpdateAppointment")]
-        public async Task<IActionResult> Put(int id, [FromBody] UpdateAppointmentsDto appointmentsDto)
+        public async Task<IActionResult> Put([FromBody] UpdateAppointmentsDto appointmentsDto)
         {
             var appointment = await _appointmentsService.Update(appointmentsDto);
-            if (id == null)
-            {
-                return NotFound("Ingrese el Id de la cita que quiere actualizar");
-            }
-            else
-            {
-                return Ok(appointment);
-            }
+         return Ok(appointment);
+            
         }
 
         // DELETE api/<AppointmentsController>/5

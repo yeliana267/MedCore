@@ -1,7 +1,7 @@
-using MedCore.IOC.Dependencies.Insurance;
+using MedCore.IOC.Dependencies.appointments;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using MedCore.IOC.Dependencies;
+
 
 namespace MedCore.Web
 {
@@ -13,9 +13,12 @@ namespace MedCore.Web
 
             // Add services to the container.
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+            builder.Services.AddAppointmentsDependency();
+            builder.Services.AddDoctorAvailabilityDependency();
+
+
             builder.Services.AddControllersWithViews();
-            builder.Services.AddInsuranceProvidersDependency();
-            builder.Services.AddNetworkTypeDependency();
+            
 
 
             var app = builder.Build();
