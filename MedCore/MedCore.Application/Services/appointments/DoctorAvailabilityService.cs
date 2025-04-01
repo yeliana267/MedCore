@@ -110,7 +110,7 @@ public class DoctorAvailabilityService : IDoctorAvailabilityService
 
         return result;
     }
-    public async Task<OperationResult> Update(UpdateDoctorAvailabilityDto doctorAvailabilityDto)
+    public async Task<OperationResult> Update( UpdateDoctorAvailabilityDto doctorAvailabilityDto)
     {
         OperationResult result = new OperationResult();
 

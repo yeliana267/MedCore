@@ -1,29 +1,22 @@
-﻿
+﻿using System.ComponentModel.DataAnnotations;
 
-using System.ComponentModel.DataAnnotations;
-
-namespace MedCore.Model.Models.appointments
+namespace MedCore.Web.Models.appointments
 {
-    public class AppointmentsModel 
+    public class AppointmentModel
     {
-        [Key]
-        public int AppointmentID { get; set; }
+        public int Id { get; set; }
 
-        [Required]
         public int PatientID { get; set; }
 
-        [Required]
         public int DoctorID { get; set; }
 
-        [Required]
         public DateTime AppointmentDate { get; set; }
 
-        [Required]
         public int StatusID { get; set; }
 
-        [Required]
         public DateTime CreatedAt { get; set; }
 
         public DateTime? UpdatedAt { get; set; }
     }
 }
+

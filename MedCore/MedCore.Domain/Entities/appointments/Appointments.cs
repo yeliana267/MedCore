@@ -14,6 +14,5 @@ namespace MedCore.Domain.Entities.appointments
         public int DoctorID { get; set; }
         public int StatusID { get; set; }
         public DateTime AppointmentDate { get; set; }
-
     }
 }
