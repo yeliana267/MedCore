@@ -2,6 +2,7 @@ using MedCore.IOC.Dependencies.appointments;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace MedCore.Web
 {
     public class Program
@@ -18,6 +19,7 @@ namespace MedCore.Web
 
             builder.Services.AddControllersWithViews();
             
+
 
             var app = builder.Build();
 
