@@ -66,7 +66,6 @@ namespace MedCore.Persistence.Base
         {
             return await Entity.ToListAsync();
         }
-
         public virtual async Task<OperationResult> GetAllAsync(Expression<Func<TEntity, bool>> filter)
         {
             OperationResult result = new OperationResult();
@@ -86,7 +85,6 @@ namespace MedCore.Persistence.Base
             return result;
 
         }
-
         public virtual async Task<bool> ExistsAsync(Expression<Func<TEntity, bool>> filter)
         {
             return await Entity.AnyAsync(filter);

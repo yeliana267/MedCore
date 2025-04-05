@@ -2,7 +2,9 @@
 using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.users;
+using MedCore.Model.Models.users;
 using MedCore.Persistence.Interfaces.users;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
@@ -14,10 +16,12 @@ namespace MedCore.Application.Services.users
         private readonly IDoctorsRepository _doctorsRepository ;
         private readonly ILogger<DoctorsService> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IUsersRepository _usersRepository;
 
-        public DoctorsService(IDoctorsRepository doctorsRepository, ILogger<DoctorsService> logger, IConfiguration configuration)
+        public DoctorsService(IDoctorsRepository doctorsRepository, IUsersRepository usersRepository, ILogger<DoctorsService> logger, IConfiguration configuration)
         {
             _doctorsRepository = doctorsRepository;
+            _usersRepository = usersRepository;
             _logger = logger;
             _configuration = configuration;
         }
@@ -255,8 +259,8 @@ namespace MedCore.Application.Services.users
                 // Crear la entidad Doctors
                 var doctor = new Doctors
                 {
-                    SpecialtyID = dto.SpecialtyID, // short
-                    LicenseNumber = dto.LicenseNumber, // string
+                    SpecialtyID = dto.SpecialtyID,
+                    LicenseNumber = dto.LicenseNumber,
                     PhoneNumber = dto.PhoneNumber,
                     YearsOfExperience = dto.YearsOfExperience,
                     Education = dto.Education,
@@ -284,6 +288,100 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
+
+
+
+            //    OperationResult result = new OperationResult();
+            //    try
+            //    {
+            //        // Validaciones básicas
+            //        if (string.IsNullOrWhiteSpace(dto.FirstName))
+            //        {
+            //            result.Success = false;
+            //            result.Message = "El nombre del doctor no puede estar vacío.";
+            //            _logger.LogWarning("Intento de guardado fallido: Nombre de doctor vacío.");
+            //            return result;
+            //        }
+
+            //        if (dto.SpecialtyID <= 0)
+            //        {
+            //            result.Success = false;
+            //            result.Message = "La especialidad no es válida.";
+            //            _logger.LogWarning("Intento de guardado fallido: Especialidad no válida.");
+            //            return result;
+            //        }
+
+            //        // 1. Primero creamos el usuario
+            //        var userResult = await _usersRepository.SaveEntityAsync(new Users
+            //        {
+            //            FirstName = dto.FirstName,
+            //            LastName = dto.LastName,
+            //            Email = dto.Email,
+            //            Password = dto.Password,
+            //            RoleID = dto.RoleID,
+            //            IsActive = true,
+            //            CreatedAt = DateTime.UtcNow
+            //        });
+
+            //        if (!userResult.Success)
+            //        {
+            //            result.Success = false;
+            //            result.Message = $"Error al crear usuario: {userResult.Message}";
+            //            _logger.LogWarning($"Error al crear usuario para doctor: {userResult.Message}");
+            //            return result;
+            //        }
+
+            //        var user = (Users)userResult.Data;
+
+            //        // 2. Luego creamos el doctor con el UserID generado
+            //        var doctor = new Doctors
+            //        {
+            //            DoctorID = user.UserID, 
+            //            SpecialtyID = dto.SpecialtyID,
+            //            LicenseNumber = dto.LicenseNumber,
+            //            PhoneNumber = dto.PhoneNumber,
+            //            YearsOfExperience = dto.YearsOfExperience,
+            //            Education = dto.Education,
+            //            Bio = dto.Bio,
+            //            ConsultationFee = dto.ConsultationFee,
+            //            ClinicAddress = dto.ClinicAddress,
+            //            AvailabilityModeId = dto.AvailabilityModeId,
+            //            LicenseExpirationDate = dto.LicenseExpirationDate,
+            //            CreatedAt = DateTime.UtcNow,
+            //            IsActive = true
+            //        };
+
+            //        var saveDoctorResult = await _doctorsRepository.SaveEntityAsync(doctor);
+
+            //        if (saveDoctorResult.Success)
+            //        {
+            //            result.Success = true;
+            //            result.Message = "Doctor guardado correctamente.";
+            //            result.Data = doctor;
+            //        }
+            //        else
+            //        {
+            //            // Si falla al guardar el doctor, podrías considerar eliminar el usuario creado
+            //            // Esto dependerá de tu lógica de negocio
+            //            result.Success = false;
+            //            result.Message = saveDoctorResult.Message;
+            //            _logger.LogWarning($"Error al guardar el doctor: {saveDoctorResult.Message}");
+            //        }
+            //    }
+            //    catch (Exception ex)
+            //    {
+            //        result.Message = $"Error inesperado: {ex.Message}";
+            //        result.Success = false;
+            //        _logger.LogError($"Error al guardar el doctor: {ex.Message}", ex);
+            //    }
+            //    return result;
+            //}
+
+
+
+
+
+
 
         public async Task<OperationResult> Update(UpdateDoctorsDto dto)
         {

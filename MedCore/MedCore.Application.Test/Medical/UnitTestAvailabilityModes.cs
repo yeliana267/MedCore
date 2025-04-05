@@ -14,6 +14,7 @@ namespace MedCore.Application.Test.Medical
 
         public UnitTestAvailabilityModes()
         {
-            
+
         }
     }
+}
