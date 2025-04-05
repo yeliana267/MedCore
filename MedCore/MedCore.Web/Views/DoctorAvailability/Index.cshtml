@@ -4,62 +4,38 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h2 class="text-center text-primary mb-4">Disponibilidad de Doctores</h2>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
+<div class="mb-3">
+    <a asp-action="Create" class="btn btn-success">+ Nueva Disponibilidad</a>
+</div>
+
+<table class="table table-hover table-bordered shadow-sm">
+    <thead class="table-dark">
         <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.AvailabilityID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DoctorID)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.AvailableDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndTime)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Doctor)
-            </th>
-            <th></th>
+            <th>@Html.DisplayNameFor(model => model.AvailabilityID)</th>
+            <th>@Html.DisplayNameFor(model => model.DoctorID)</th>
+            <th>@Html.DisplayNameFor(model => model.AvailableDate)</th>
+            <th>@Html.DisplayNameFor(model => model.StartTime)</th>
+            <th>@Html.DisplayNameFor(model => model.EndTime)</th>
+            <th class="text-center">Acciones</th>
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.AvailabilityID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DoctorID)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.AvailableDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndTime)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Doctor)
-            </td>
-            <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.AvailabilityID }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.AvailabilityID }) |
-                    @Html.ActionLink("Delete", "Delete", new { id = item.AvailabilityID })
-            </td>
-        </tr>
-}
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.AvailabilityID</td>
+                <td>@item.DoctorID</td>
+                <td>@item.AvailableDate.ToString("dd/MM/yyyy")</td>
+                <td>@item.StartTime.ToString(@"hh\:mm")</td>
+                <td>@item.EndTime.ToString(@"hh\:mm")</td>
+                <td class="text-center">
+                    <a asp-action="Edit" asp-route-id="@item.AvailabilityID" class="btn btn-sm btn-warning">Editar</a>
+                    <a asp-action="Details" asp-route-id="@item.AvailabilityID" class="btn btn-sm btn-info text-white">Detalles</a>
+                    <a asp-action="Delete" asp-route-id="@item.AvailabilityID" class="btn btn-sm btn-danger">Eliminar</a>
+                </td>
+            </tr>
+        }
     </tbody>
 </table>

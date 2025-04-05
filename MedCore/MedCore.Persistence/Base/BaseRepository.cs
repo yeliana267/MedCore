@@ -1,11 +1,8 @@
 ﻿
 using MedCore.Domain.Base;
-using MedCore.Domain.Entities;
-using MedCore.Domain.Entities.medical;
 using MedCore.Domain.Repository;
 using MedCore.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.IdentityModel.Tokens;
 using System.Linq.Expressions;
 
 namespace MedCore.Persistence.Base
@@ -24,9 +21,6 @@ namespace MedCore.Persistence.Base
         {
             return await Entity.FindAsync(id);
         }
-
-        
-
 
         public virtual async Task<OperationResult> UpdateEntityAsync(TType id, TEntity entity)
         {
@@ -58,8 +52,6 @@ namespace MedCore.Persistence.Base
 
             return result;
         }
-
-
 
         public virtual async Task<OperationResult> SaveEntityAsync(TEntity entity)
         {

@@ -68,23 +68,23 @@ namespace MedCore.Api.Controllers.appointments
         }
 
         // PUT api/<AppointmentsController>/5
-        [HttpPut("UpdateAppointment")]
+        [HttpPut("UpdateAppointment/{id}")]
         public async Task<IActionResult> Put([FromBody] UpdateAppointmentsDto appointmentsDto)
         {
             var appointment = await _appointmentsService.Update(appointmentsDto);
-         return Ok(appointment);
-            
+            return Ok(appointment);
         }
 
+
         // DELETE api/<AppointmentsController>/5
-        [HttpDelete("DeleteAppointment")]
-        public async Task<IActionResult> Delete(RemoveAppointmentsDto appointmentsDto)
+        [HttpPost("DeleteAppointmentById")]
+        public async Task<IActionResult> DeleteById(int id)
         {
-            var appointment = await _appointmentsService.Remove(appointmentsDto);
-        
-                return Ok(appointment);
-            
+            var dto = new RemoveAppointmentsDto { AppointmentID = id };
+            var result = await _appointmentsService.Remove(dto);
+            return Ok(result);
         }
+
 
     }
 }

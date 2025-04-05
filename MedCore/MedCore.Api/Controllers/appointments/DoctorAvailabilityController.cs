@@ -1,4 +1,5 @@
-﻿using MedCore.Application.Dtos.appointments.DoctorAvailability;
+﻿using MedCore.Application.Dtos.appointments.Appointments;
+using MedCore.Application.Dtos.appointments.DoctorAvailability;
 using MedCore.Application.Interfaces.appointments;
 using MedCore.Domain.Entities.appointments;
 using MedCore.Persistence.Interfaces.appointments;
@@ -36,13 +37,13 @@ namespace MedCore.Api.Controllers.appointments
         }
 
         // GET api/<DoctorAvailabilityController>/5
-        [HttpGet("Doctor")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("GetDoctorAvailabilityById")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var doctorAvailabilities = await _doctorAvailabilityService.GetById(id);
-            return Ok(doctorAvailabilities);
-
+            var availability = await _doctorAvailabilityService.GetById(id);
+            return Ok(availability);
         }
+
 
         // POST api/<DoctorAvailabilityController>
         [HttpPost("SaveDoctorAvailability")]
@@ -63,9 +64,10 @@ namespace MedCore.Api.Controllers.appointments
 
 
         // DELETE api/<DoctorAvailabilityController>/5
-        [HttpDelete("DeleteDoctorAvailability")]
-        public async Task<IActionResult> Delete(RemoveDoctorAvailabilityDto dto)
+        [HttpPost("DeleteDoctorAvailability")]
+        public async Task<IActionResult> Delete(int id)
         {
+            var dto = new RemoveDoctorAvailabilityDto{AvailabilityID = id };
             var result = await _doctorAvailabilityService.Remove(dto);
             return Ok(result);
         }
