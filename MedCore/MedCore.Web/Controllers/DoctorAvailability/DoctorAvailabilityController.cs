@@ -1,5 +1,6 @@
 ﻿using MedCore.Application.Interfaces.appointments;
 using MedCore.Domain.Base;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Web.Models.appointments;
 using MedCore.Web.Models.doctorAvailability;
 using Microsoft.AspNetCore.Http;
@@ -48,7 +49,7 @@ namespace MedCore.Web.Controllers.DoctorAvailability
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"DoctorAvailability/Doctor?id={id}");
+            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -66,7 +67,7 @@ namespace MedCore.Web.Controllers.DoctorAvailability
         }
 
         // GET: DoctorAvailabilityController/Create
-        public ActionResult Create()
+        public async Task<IActionResult> Create()
         {
             return View();
         }
@@ -93,7 +94,7 @@ namespace MedCore.Web.Controllers.DoctorAvailability
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"DoctorAvailability/Doctor?id={id}");
+            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -127,10 +128,30 @@ namespace MedCore.Web.Controllers.DoctorAvailability
         }
 
         // GET: DoctorAvailabilityController/Delete/5
-        public ActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return View();
+            DoctorAvailabilityModel doctorAvailability = new DoctorAvailabilityModel();
+
+            using var client = new HttpClient();
+            client.BaseAddress = new Uri("http://localhost:5266/api/");
+
+            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var data = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<OperationResult>(data);
+
+                if (result != null && result.Success && result.Data != null)
+                {
+                    doctorAvailability = JsonConvert.DeserializeObject<DoctorAvailabilityModel>(result.Data.ToString());
+                    return View(doctorAvailability);
+                }
+            }
+
+            return NotFound();
         }
+
 
         // POST: DoctorAvailabilityController/Delete/5
         [HttpPost]

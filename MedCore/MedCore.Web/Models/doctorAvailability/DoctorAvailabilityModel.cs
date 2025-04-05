@@ -14,6 +14,5 @@ namespace MedCore.Web.Models.doctorAvailability
 
         public TimeSpan EndTime { get; set; }
 
-        public int Doctor { get; set; }
     }
 }

@@ -4,51 +4,34 @@
     ViewData["Title"] = "Details";
 }
 
-<h1>Details</h1>
+<h2 class="text-primary mt-4">Detalles de Disponibilidad del Doctor</h2>
+<hr />
 
-<div>
-    <h4>DoctorAvailabilityModel</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailabilityID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailabilityID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DoctorID)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DoctorID)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.AvailableDate)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.AvailableDate)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.StartTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.StartTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.EndTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.EndTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Doctor)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Doctor)
-        </dd>
-    </dl>
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-info text-white">
+        Información de la Disponibilidad
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">ID de Disponibilidad</dt>
+            <dd class="col-sm-8">@Model.AvailabilityID</dd>
+
+            <dt class="col-sm-4">ID del Doctor</dt>
+            <dd class="col-sm-8">@Model.DoctorID</dd>
+
+            <dt class="col-sm-4">Fecha Disponible</dt>
+            <dd class="col-sm-8">@Model.AvailableDate.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Hora de Inicio</dt>
+            <dd class="col-sm-8">@Model.StartTime</dd>
+
+            <dt class="col-sm-4">Hora de Finalización</dt>
+            <dd class="col-sm-8">@Model.EndTime</dd>
+        </dl>
+    </div>
 </div>
-<div>
-    @Html.ActionLink("Edit", "Edit", new { id = Model.AvailabilityID }) |
-    <a asp-action="Index">Back to List</a>
+
+<div class="d-flex justify-content-between">
+    <a class="btn btn-warning" asp-action="Edit" asp-route-id="@Model.AvailabilityID">Editar</a>
+    <a class="btn btn-secondary" asp-action="Index">Volver a la Lista</a>
 </div>

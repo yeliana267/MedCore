@@ -1,63 +1,55 @@
-﻿@model MedCore.Web.Models.appointments.AppointmentModel
+﻿@model MedCore.Web.Models.appointments.EditAppointmentModel
 
 @{
     ViewData["Title"] = "Edit";
 }
 
-<h1>Edit</h1>
+<h2 class="mt-4 text-center text-primary">Editar Cita Médica</h2>
 
-<h4>AppointmentModel</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
+<div class="card shadow mt-4">
+    <div class="card-header bg-primary text-white">
+        Información de la Cita
+    </div>
+    <div class="card-body">
         <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Id" class="control-label"></label>
-                <input asp-for="Id" class="form-control" />
-                <span asp-validation-for="Id" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="PatientID" class="control-label"></label>
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <input type="hidden" asp-for="AppointmentID" />
+
+            <div class="mb-3">
+                <label asp-for="PatientID" class="form-label fw-bold">ID del Paciente</label>
                 <input asp-for="PatientID" class="form-control" />
                 <span asp-validation-for="PatientID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="DoctorID" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="DoctorID" class="form-label fw-bold">ID del Doctor</label>
                 <input asp-for="DoctorID" class="form-control" />
                 <span asp-validation-for="DoctorID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="AppointmentDate" class="control-label"></label>
-                <input asp-for="AppointmentDate" class="form-control" />
-                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="StatusID" class="control-label"></label>
+
+            <div class="mb-3">
+                <label asp-for="StatusID" class="form-label fw-bold">Estado</label>
                 <input asp-for="StatusID" class="form-control" />
                 <span asp-validation-for="StatusID" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
+
+            <div class="mb-3">
+                <label asp-for="AppointmentDate" class="form-label fw-bold">Fecha de la Cita</label>
+                <input asp-for="AppointmentDate" type="datetime-local" class="form-control" />
+                <span asp-validation-for="AppointmentDate" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <div class="d-flex justify-content-between">
+                <input type="submit" value="Guardar Cambios" class="btn btn-success" />
+                <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
             </div>
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
-
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
