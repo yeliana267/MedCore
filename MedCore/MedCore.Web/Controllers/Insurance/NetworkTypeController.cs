@@ -8,6 +8,7 @@ using MedCore.Persistence.Interfaces.Insurance;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using MedCore.Web.Models.appointments;
 
 namespace MedCore.Web.Controllers.Insurance
 {
@@ -46,13 +47,13 @@ namespace MedCore.Web.Controllers.Insurance
 
 
         // GET: NetworkTypeController/Details/5
-        public async Task<IActionResult> Details(int networkTypeId)
+        public async Task<IActionResult> Details(int Id)
         {
             NetworkTypeModel networktype = new NetworkTypeModel();
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"NetworkType/GetNetworkTypeById?Id={networkTypeId}");
+            var response = await client.GetAsync($"NetworkType/GetNetworkTypeById?Id={Id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -114,7 +115,7 @@ namespace MedCore.Web.Controllers.Insurance
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"NetworkType/UpdateNetworkType?Id={id}");
+            var response = await client.GetAsync($"NetworkType/UpdateNetworkType/{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -163,31 +164,33 @@ namespace MedCore.Web.Controllers.Insurance
             }
         }
 
-        // GET: NetworkTypeController/Delete/5
-        //public ActionResult Delete(int id)
-        //{
-        //    return View();
-        //}
+
 
         public async Task<IActionResult> Delete(int id)
         {
-            if (id <= 0)
-            {
-                return RedirectToAction("Index");
-            }
+            NetworkTypeModel networkType = new NetworkTypeModel();
 
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.DeleteAsync($"NetworkType/DeleteNetworkType?Id={id}");
+            var response = await client.GetAsync($"NetworkType/DeleteNetworkType?id={id}");
 
             if (response.IsSuccessStatusCode)
             {
-                return RedirectToAction("Index");
+                var data = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<OperationResult>(data);
+
+                if (result != null && result.Success && result.Data != null)
+                {
+                    networkType = JsonConvert.DeserializeObject<AppointmentModel>(result.Data.ToString());
+                    return View(networkType);
+                }
             }
 
-            return RedirectToAction("Index");
+            return View(networkType);
         }
+
+
 
         // POST: NetworkTypeController/Delete/5
         [HttpPost]
@@ -200,8 +203,11 @@ namespace MedCore.Web.Controllers.Insurance
             }
             catch
             {
-                return View();
+                return View(Index);
             }
         }
+
+
+
     }
 }
