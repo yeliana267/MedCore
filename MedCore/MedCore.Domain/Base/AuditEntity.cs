@@ -6,7 +6,7 @@ namespace MedCore.Domain.Base
     public abstract class AuditEntity
     {
         protected AuditEntity()
-        {
+        {   
             this.CreatedAt = DateTime.Now;
         }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

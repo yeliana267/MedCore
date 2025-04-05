@@ -22,17 +22,17 @@ namespace MedCore.Persistence.Repositories.Insurance
                                      ILogger<NetworkTypeRepository> logger,
                                      IConfiguration configuration) : base(context)
         {
-            this._context = context;
-            this._logger = logger;
-            this._configuration = configuration;
+            _context = context;
+            _logger = logger;
+            _configuration = configuration;
         }
-
         public async Task<OperationResult> GetNetworkTypeById(int id)
         {
             OperationResult result = new OperationResult();
 
             try
             {
+
                 var networkType = await _context.NetworkType.FindAsync(id);
 
                 if (networkType == null)
@@ -49,13 +49,13 @@ namespace MedCore.Persistence.Repositories.Insurance
             {
                 this._logger.LogError(ex, "Error retrieving network type with ID {Id}", id);
                 result.Success = false;
-                result.Message = this._configuration["An error occurred while fetching the network type."]!;
+                result.Message = _configuration["An error occurred while fetching the network type."]!;
             }
 
             return result;
 
         }
-
+        
         public async Task<OperationResult> GetNetworkTypeList()
         {
             OperationResult result = new OperationResult();
@@ -78,19 +78,51 @@ namespace MedCore.Persistence.Repositories.Insurance
             catch (Exception ex) 
             {
 
-                result.Message = this._configuration["ErrorNetworkTypeRepository:GetNetworkType"]!;
-                this._logger.LogError(result.Message,ex.ToString());
+                result.Message = _configuration["ErrorNetworkTypeRepository:GetNetworkType"]!;
+                _logger.LogError(result.Message,ex.ToString());
             }
 
             return result;
 
         }
 
+       
+
         public override async Task<OperationResult> SaveEntityAsync(NetworkType entity)
         {
             OperationResult result = new OperationResult();
             try
             {
+                if(entity == null)
+                {
+                    result.Success = false;
+                    result.Message = "La entidad no puede ser nula.";
+                    return result;
+                }
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    result.Success = false;
+                    result.Message = "Name no puede estar vacio.";
+                    return result;
+                }
+                if (entity.Name.Length > 50)
+                {
+                    result.Success = false;
+                    result.Message = "La longitud del nombre no puede exceder los 50 caracteres.";
+                    return result;
+                }
+                if(_context.NetworkType.Any(de => de.Name == entity.Name))
+                {
+                    result.Success = false;
+                    result.Message = "El networktype no puede estar duplicado";
+                    return result;
+                }
+                if(entity.Description?.Length > 255)
+                {
+                    result.Success = false;
+                    result.Message = "La longitud de la descripcion no puede exceder los 255 caracteres.";
+                    return result;
+                }
                 _context.NetworkType.Add(entity);
                 await _context.SaveChangesAsync();
                 result.Success = true;
@@ -100,6 +132,7 @@ namespace MedCore.Persistence.Repositories.Insurance
             {
                 result.Success = false;
                 result.Message = $"Ocurrió un error {ex.Message} guardando la entidad.";
+                _logger.LogError(ex, "Error al guardar la entidad NetworkType.");
             }
             return result;
         }
@@ -111,23 +144,48 @@ namespace MedCore.Persistence.Repositories.Insurance
 
             try
             {
+                if (entity == null)
+                {
+                    result.Success = false;
+                    result.Message = "La entidad no puede ser nula.";
+                    return result;
+                }
+
                 var networkType = await _context.NetworkType.FindAsync(id);
 
                 if (networkType == null)
                 {
                     result.Success = false;
                     result.Message = $"No se encontró NetworkType por ID {id}.";
-                    _logger.LogWarning($"Intento de actualización fallido: NetworkType {id} no encontrada.");
+                    return result;
+                }
+                if (string.IsNullOrWhiteSpace(entity.Name))
+                {
+                    result.Success = false;
+                    result.Message = "Name no puede estar vacio.";
+                    return result;
+
+                }
+                if (entity.Name.Length > 50)
+                {
+                    result.Success = false;
+                    result.Message = "La longitud del nombre no puede exceder los 50 caracteres.";
+                    return result;
+                }
+                if (entity.Description?.Length > 255)
+                {
+                    result.Success = false;
+                    result.Message = "La longitud de la descripcion no puede exceder los 255 caracteres.";
                     return result;
                 }
 
                 _logger.LogInformation($"Actualizando NetworkType {entity.Id}");
 
-                networkType.Name = entity.Name;
-                networkType.Description = entity.Description;
+                networkType.Name = entity.Name?? networkType.Name;
+                networkType.Description = entity.Description?? networkType.Description;
                 networkType.UpdatedAt = DateTime.Now;
 
-                _context.NetworkType.Update(networkType);
+
                 await _context.SaveChangesAsync();
 
                 result.Success = true;
@@ -151,6 +209,7 @@ namespace MedCore.Persistence.Repositories.Insurance
 
             try
             {
+     
                 var querys = await _context.Database.ExecuteSqlRawAsync("DELETE FROM [MedicalAppointment].[Insurance].[NetworkType] Where NetworkTypeId = {0}", NetworkTypeId);
 
 

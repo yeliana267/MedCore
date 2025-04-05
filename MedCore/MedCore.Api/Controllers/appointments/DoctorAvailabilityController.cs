@@ -1,4 +1,7 @@
-﻿using MedCore.Domain.Entities.appointments;
+﻿using MedCore.Application.Dtos.appointments.Appointments;
+using MedCore.Application.Dtos.appointments.DoctorAvailability;
+using MedCore.Application.Interfaces.appointments;
+using MedCore.Domain.Entities.appointments;
 using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,13 +13,14 @@ namespace MedCore.Api.Controllers.appointments
     [ApiController]
     public class DoctorAvailabilityController : ControllerBase
     {
-        public readonly IDoctorAvailabilityRepository _doctorAvailabilityRepository;
+        private readonly IDoctorAvailabilityService _doctorAvailabilityService;
         public readonly ILogger<DoctorAvailabilityController> _logger;
         public readonly IConfiguration _configuration;
-        public DoctorAvailabilityController( IDoctorAvailabilityRepository doctorAvailabilityRepository 
+        public DoctorAvailabilityController(IDoctorAvailabilityService doctorAvailabilityService
+ 
             , ILogger<DoctorAvailabilityController> logger, IConfiguration configuration)
         {
-            _doctorAvailabilityRepository = doctorAvailabilityRepository;
+          _doctorAvailabilityService = doctorAvailabilityService;
             _logger = logger;
             _configuration = configuration;
         }
@@ -28,40 +32,43 @@ namespace MedCore.Api.Controllers.appointments
         [HttpGet("GetDoctorAvailability")]
         public async Task<IActionResult> Get()
         {
-            var doctorAvailabilities = await _doctorAvailabilityRepository.GetAllAsync();
+            var doctorAvailabilities = await _doctorAvailabilityService.GetAll();
             return Ok(doctorAvailabilities);
         }
 
         // GET api/<DoctorAvailabilityController>/5
-        [HttpGet("Doctor")]
-        public async Task<IActionResult> Get(int id)
+        [HttpGet("GetDoctorAvailabilityById")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var doctorAvailabilities = await _doctorAvailabilityRepository.GetEntityByIdAsync(id);
-            return Ok(doctorAvailabilities);
-
+            var availability = await _doctorAvailabilityService.GetById(id);
+            return Ok(availability);
         }
+
 
         // POST api/<DoctorAvailabilityController>
         [HttpPost("SaveDoctorAvailability")]
-        public async Task<IActionResult> Post([FromBody] DoctorAvailability doctorAvailability)
+        public async Task<IActionResult> Post([FromBody] SaveDoctorAvailabilityDto dto)
         {
-            var doctorAvailabilities = await _doctorAvailabilityRepository.SaveEntityAsync(doctorAvailability);
-            return Ok(doctorAvailabilities);
+            var result = await _doctorAvailabilityService.Save(dto);
+            return Ok(result);
         }
+
 
         // PUT api/<DoctorAvailabilityController>/5
         [HttpPut("UpdateDoctorAvailability")]
-        public async Task<IActionResult> Put(int id, [FromBody] DoctorAvailability doctorAvailability)
+        public async Task<IActionResult> Put([FromBody] UpdateDoctorAvailabilityDto dto)
         {
-            var doctorAvailabilities = await _doctorAvailabilityRepository.UpdateEntityAsync(id, doctorAvailability);
-            return Ok(doctorAvailabilities);
+            var result = await _doctorAvailabilityService.Update(dto);
+            return Ok(result);
         }
 
+
         // DELETE api/<DoctorAvailabilityController>/5
-        [HttpDelete("DeleteDoctorAvailability")]
+        [HttpPost("DeleteDoctorAvailability")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _doctorAvailabilityRepository.DeleteEntityByIdAsync(id);
+            var dto = new RemoveDoctorAvailabilityDto{AvailabilityID = id };
+            var result = await _doctorAvailabilityService.Remove(dto);
             return Ok(result);
         }
     }

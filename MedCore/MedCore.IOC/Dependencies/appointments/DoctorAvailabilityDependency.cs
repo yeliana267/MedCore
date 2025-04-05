@@ -1,7 +1,6 @@
 ﻿
 
 using MedCore.Application.Interfaces.appointments;
-using MedCore.Application.Services.appointments;
 using MedCore.Persistence.Interfaces.appointments;
 using MedCore.Persistence.Repositories.appointments;
 using Microsoft.Extensions.DependencyInjection;
