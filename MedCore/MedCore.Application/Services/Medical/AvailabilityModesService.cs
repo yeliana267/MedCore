@@ -39,25 +39,36 @@ namespace MedCore.Application.Services.Medical
 
         public async Task<OperationResult> GetById(int id)
         {
+            var result = new OperationResult();
+
             if (id <= 0)
             {
-                return new OperationResult { Success = false, Message = "El ID debe ser un número positivo." };
+                result.Success = false;
+                result.Message = "El ID proporcionado no es válido.";
+                return result;
             }
 
             try
             {
-                var result = await _availabilityModesRepository.GetEntityByIdAsync((short)id);
-                if (result == null)
+                var appointment = await _availabilityModesRepository.GetEntityByIdAsync((short)id);
+                if (appointment == null)
                 {
-                    return new OperationResult { Success = false, Message = "Modo de disponibilidad no encontrado." };
+                    result.Success = false;
+                    result.Message = "Cita no encontrada.";
                 }
-                return new OperationResult { Success = true, Data = result };
+                else
+                {
+                    result.Success = true;
+                    result.Data = appointment;
+                }
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener el modo de disponibilidad por ID.");
-                return new OperationResult { Success = false, Message = "Error al obtener el modo de disponibilidad por ID." };
+                result.Success = false;
+                result.Message = "Error al buscar la cita: " + ex.Message;
             }
+
+            return result;
         }
 
         public async Task<OperationResult> Remove(RemoveAvailabilityModesDto dto)
@@ -133,5 +144,31 @@ namespace MedCore.Application.Services.Medical
                 return new OperationResult { Success = false, Message = "Error al actualizar el modo de disponibilidad." };
             }
         }
+
+        public async Task<OperationResult> GetAvailabilityModeByNameAsync(string name)
+        {
+            var result = new OperationResult();
+
+            try
+            {
+                if (string.IsNullOrWhiteSpace(name))
+                {
+                    result.Success = false;
+                    result.Message = "El nombre proporcionado no es válido.";
+                    return result;
+                }
+
+                result = await _availabilityModesRepository.GetAvailabilityModeByNameAsync(name);
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Ocurrió un error: {ex.Message}";
+                _logger.LogError($"Error en GetAvailabilityModeByNameAsync para el modo de disponibilidad {name}: {ex.Message}", ex);
+            }
+
+            return result;
+        }
+
     }
 }
