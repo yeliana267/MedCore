@@ -23,93 +23,13 @@ namespace MedCore.Persistence.Repositories.medical
             this._configuration = configuration;
         }
 
-        public async Task<List<OperationResult>> GetActiveSpecialtiesAsync()
-        {
-            List<OperationResult> results = new List<OperationResult>();
-
-            try
-            {
-                // Validación: Verificar si el contexto de Specialties está disponible
-                if (_context.Specialties == null)
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error: No se pudo acceder a la base de datos de especialidades."
-                    });
-                    return results;
-                }
-
-                // Consulta de especialidades activas
-                var querys = await (from s in _context.Specialties
-                                    where s.IsActive == true
-                                    select new SpecialtiesModel()
-                                    {
-                                        Id = s.Id,
-                                        SpecialtyName = s.SpecialtyName,
-                                        IsActive = s.IsActive
-                                    }).ToListAsync();
-
-                // Validación: Verificar si la lista está vacía
-                if (querys == null || querys.Count == 0)
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "No existen especialidades activas."
-                    });
-                    return results;
-                }
-
-                // Validación: Verificar integridad de cada registro
-                var registrosInvalidos = querys.Where(s =>
-                    s.Id <= 0 ||
-                    string.IsNullOrWhiteSpace(s.SpecialtyName)).ToList();
-
-                if (registrosInvalidos.Any())
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "Se encontraron especialidades activas con datos incompletos o inválidos."
-                    });
-                    return results;
-                }
-
-                // Resultado exitoso
-                results.Add(new OperationResult
-                {
-                    Success = true,
-                    Data = querys
-                });
-
-                return results;
-            }
-            catch (Exception ex)
-            {
-                // Validación: Obtener mensaje de error desde la configuración
-                var errorMessage = _configuration["ErrorSpecialtiesRepository:GetActiveSpecialtiesAsync"]
-                                   ?? "Error desconocido al obtener especialidades activas.";
-
-                _logger.LogError("{ErrorMessage} - Exception: {Exception}", errorMessage, ex);
-
-                results.Add(new OperationResult
-                {
-                    Success = false,
-                    Message = errorMessage
-                });
-
-                return results;
-            }
-        }
-
         public async Task<OperationResult> GetSpecialtyByNameAsync(string name)
         {
-            OperationResult result = new OperationResult();
+            var result = new OperationResult();
 
             try
             {
-                //Verificar si el nombre es nulo o vacío
+                // Verificar si el nombre es nulo o vacío
                 if (string.IsNullOrWhiteSpace(name))
                 {
                     result.Success = false;
@@ -117,10 +37,10 @@ namespace MedCore.Persistence.Repositories.medical
                     return result;
                 }
 
-                //Normalizar el nombre para evitar errores de formato
+                // Normalizar el nombre para evitar errores de formato
                 name = name.Trim().ToLower();
 
-                //Verificar si el contexto de Specialties está disponible
+                // Verificar si el contexto de Specialties está disponible
                 if (_context.Specialties == null)
                 {
                     result.Success = false;
@@ -128,30 +48,21 @@ namespace MedCore.Persistence.Repositories.medical
                     return result;
                 }
 
-                //Buscar la especialidad con el nombre normalizado
+                // Buscar la especialidad con el nombre normalizado
                 var specialty = await _context.Specialties
-                    .Where(s => s.SpecialtyName.ToLower() == name)
-                    .ToListAsync();
+                    .FirstOrDefaultAsync(s => s.SpecialtyName.ToLower() == name);
 
-                // Verificar si hay resultados
-                if (specialty == null || specialty.Count == 0)
+                // Verificar si se encontró la especialidad
+                if (specialty == null)
                 {
                     result.Success = false;
                     result.Message = "No se encontró la especialidad solicitada.";
                     return result;
                 }
 
-                //Verificar si hay múltiples especialidades con el mismo nombre
-                if (specialty.Count > 1)
-                {
-                    result.Success = false;
-                    result.Message = "Se encontraron múltiples especialidades con el mismo nombre.";
-                    return result;
-                }
-
-                // Retornar el primer (y único) resultado encontrado
+                // Retornar el resultado encontrado
                 result.Success = true;
-                result.Data = specialty.First();
+                result.Data = specialty;
                 return result;
             }
             catch (Exception ex)

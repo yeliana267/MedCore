@@ -133,5 +133,27 @@ namespace MedCore.Application.Services.Medical
                 return new OperationResult { Success = false, Message = "Error al actualizar la especialidad." };
             }
         }
+
+        public async Task<OperationResult> GetSpecialtyByNameAsync(string name)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+            {
+                return new OperationResult { Success = false, Message = "El nombre no puede estar vacío." };
+            }
+            try
+            {
+                var result = await _specialtiesRepository.GetSpecialtyByNameAsync(name);
+                if (result == null)
+                {
+                    return new OperationResult { Success = false, Message = "Especialidad no encontrada." };
+                }
+                return new OperationResult { Success = true, Data = result };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener la especialidad por nombre.");
+                return new OperationResult { Success = false, Message = "Error al obtener la especialidad por nombre." };
+            }
+        }
     }
 }
