@@ -7,6 +7,7 @@ namespace MedCore.Application.Dtos.Insurance.InsuranceProviders
 {
     public class InsuranceProvidersDto : DtoBase
     {
+        public int InsuranceProviderID { get; set; }
         public string Name { get; set; }
         public string ContactNumber { get; set; }
         public string Email { get; set; }

@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedCore.Model.Models.appointments
 {
-    public class AppointmentsModel
+    public class AppointmentsModel 
     {
         [Key]
         public int AppointmentID { get; set; }
@@ -17,9 +17,6 @@ namespace MedCore.Model.Models.appointments
 
         [Required]
         public DateTime AppointmentDate { get; set; }
-
-        public string FirstName  { get; set;}
-        public string LastName  {get;set;}
 
         [Required]
         public int StatusID { get; set; }

@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+
 namespace MedCore.Web
 {
     public class Program
@@ -25,7 +26,10 @@ namespace MedCore.Web
        
     
 
+
             builder.Services.AddControllersWithViews();
+            
+
 
             var app = builder.Build();
 
