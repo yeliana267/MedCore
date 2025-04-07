@@ -1,5 +1,7 @@
 
+using MedCore.Application.Interfaces.appointments;
 using MedCore.IOC.Dependencies.appointments;
+using MedCore.IOC.Dependencies.Insurance;
 using MedCore.IOC.Dependencies.Medical;
 using MedCore.IOC.Dependencies.users;
 using MedCore.Persistence.Context;
@@ -34,10 +36,12 @@ namespace MedCore.Web
             builder.Services.AddAppointmentsDependency();
 
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
-            
+
             builder.Services.AddUsersDependency();
             builder.Services.AddPatientsDependency();
             builder.Services.AddDoctorsDependency();
+            builder.Services.AddInsuranceProvidersDependency();
+            builder.Services.AddNetworkTypeDependency();
             builder.Services.AddControllers();
        
 

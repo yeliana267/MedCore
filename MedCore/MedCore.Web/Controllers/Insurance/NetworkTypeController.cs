@@ -3,211 +3,171 @@ using MedCore.Application.Dtos.Insurance.NetworkType;
 using MedCore.Application.Interfaces.Insurance;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.Insurance;
-using MedCore.Web.Models.Insurance;
 using MedCore.Persistence.Interfaces.Insurance;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using MedCore.Web.Models.Insurance.NetworkType;
 using MedCore.Web.Models.appointments;
+using MedCore.Web.Interfaces.appointments;
+using MedCore.Web.Interfaces.Insurance;
+using MedCore.Web.Repositories.InsuranceWeb.NetworkTypeWeb;
 
 namespace MedCore.Web.Controllers.Insurance
 {
     public class NetworkTypeController : Controller
     {
-        private readonly INetworkTypeService _networkTypeService;
-        public NetworkTypeController(INetworkTypeService NetworkTypeService)
+        private readonly INetworkTypeWeb _networkTypeWeb;
+        private readonly ILogger<NetworkTypeController> _logger;
+
+
+        public NetworkTypeController(INetworkTypeWeb networkTypeWeb,
+            ILogger<NetworkTypeController> logger)
         {
-            _networkTypeService = NetworkTypeService;
+            _networkTypeWeb = networkTypeWeb;
+            _logger = logger;
+
         }
 
-
-        // GET: NetworkTypeController
         public async Task<IActionResult> Index()
         {
-            List<NetworkTypeModel> networktype = new List<NetworkTypeModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("NetworkType/GetNeworkType");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    networktype = JsonConvert.DeserializeObject<List<NetworkTypeModel>>(result.Data.ToString());
-                    return View(networktype);
-                }
+                var networktype = await _networkTypeWeb.GetAllAsync();
+                return View(networktype);
             }
-            return View(new List<NetworkTypeModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener los tipos de redes de seguro");
+                ViewBag.ErrorMessage = "Error al obtener red de seguro";
+                return View(new List<AppointmentModel>());
+            }
         }
 
-
-
-        // GET: NetworkTypeController/Details/5
-        public async Task<IActionResult> Details(int Id)
+        public async Task<IActionResult> Details(int id)
         {
-            NetworkTypeModel networktype = new NetworkTypeModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"NetworkType/GetNetworkTypeById?Id={Id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    networktype = JsonConvert.DeserializeObject<NetworkTypeModel>(result.Data.ToString());
-                    return View(networktype);
-                }
+                var network = await _networkTypeWeb.GetByIdAsync(id);
+                return View(network);
             }
-
-            return View(networktype);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener red de seguro con el n ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // GET: NetworkTypeController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: NetworkTypeController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(NetworkTypeModel networkType)
+        public async Task<IActionResult> Create(CreateNetworkTypeModel model)
         {
-            OperationResult operationResult = new OperationResult();
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             try
             {
-                using (var client = new HttpClient())
+                var success = await _networkTypeWeb.CreateAsync(model);
+                if (success)
                 {
-                    client.BaseAddress = new Uri("http://localhost:5266/api/");
-                    var response = await client.PostAsJsonAsync<NetworkTypeModel>($"NetworkType/SaveNetworkType", networkType);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        operationResult = await response.Content.ReadFromJsonAsync<OperationResult>();
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Error guardandado Tipo de red";
-                        return View();
-                    }
+                    return RedirectToAction(nameof(Index));
                 }
 
-                return RedirectToAction(nameof(Index));
+                ViewBag.Message = "Error al crear la red de seguros";
+                return View(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, "Error al crear la red de seguros");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
         }
 
-        // GET: NetworkTypeController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            NetworkTypeModel network = new NetworkTypeModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"NetworkType/UpdateNetworkType/{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    network = JsonConvert.DeserializeObject<NetworkTypeModel>(result.Data.ToString());
-                    return View(network);
-                }
-            }
-
-            return View(network);
-        }
-
-        // POST: NetworkTypeController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(NetworkTypeModel networkType)
-        {
-            OperationResult operationResult = new OperationResult();
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5266/api/");
-                    var response = await client.PostAsJsonAsync<NetworkTypeModel>($"NetworkType/UpdateNetworkType", networkType);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        operationResult = await response.Content.ReadFromJsonAsync<OperationResult>();
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Error actualizado tipo de red";
-                        return View();
-                    }
-                }
-
-                return RedirectToAction(nameof(Index));
+                var network = await _networkTypeWeb.GetEditModelByIdAsync(id);
+                return View(network);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, $"Error al cargar el tipo de red {id}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditNetworkTypeModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
 
+            try
+            {
+                var success = await _networkTypeWeb.UpdateAsync(id, model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al actualizar eltipo de red.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar eltipo de red con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
+            }
+        }
 
         public async Task<IActionResult> Delete(int id)
         {
-            NetworkTypeModel networkType = new NetworkTypeModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"NetworkType/DeleteNetworkType?id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    networkType = JsonConvert.DeserializeObject<AppointmentModel>(result.Data.ToString());
-                    return View(networkType);
-                }
+                var network = await _networkTypeWeb.GetByIdAsync(id);
+                return View(network);
             }
-
-            return View(networkType);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al eliminar red con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-
-
-        // POST: NetworkTypeController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _networkTypeWeb.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar el tipo de red.";
+                return View();
             }
-            catch
+            catch (Exception ex)
             {
-                return View(Index);
+                _logger.LogError(ex, $"Error al eliminar tipo de red con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View();
             }
         }
-
-
-
     }
 }

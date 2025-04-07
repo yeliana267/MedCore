@@ -1,4 +1,4 @@
-﻿namespace MedCore.Web.Models.Insurance
+﻿namespace MedCore.Web.Models.Insurance.NetworkType
 {
     public class NetworkTypeModel
     {

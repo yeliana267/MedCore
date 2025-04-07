@@ -5,8 +5,11 @@ using MedCore.Application.Interfaces.Insurance;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Model.Models.appointments;
+using MedCore.Web.Interfaces.Insurance;
 using MedCore.Web.Models;
-using MedCore.Web.Models.Insurance;
+using MedCore.Web.Models.appointments;
+using MedCore.Web.Models.Insurance.InsuranceProviders;
+using MedCore.Web.Models.Insurance.NetworkType;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -15,181 +18,154 @@ namespace MedCore.Web.Controllers.Insurance
 {
     public class InsuranceProvidersController : Controller
     {
-        private readonly IInsuranceProvidersService _insuranceProvidersService;
-        public InsuranceProvidersController(IInsuranceProvidersService InsuranceProvidersService)
+        private readonly IInsuranceProvidersWeb _insuranceProvidersWeb;
+        private readonly ILogger<InsuranceProvidersController> _logger;
+
+        public InsuranceProvidersController(IInsuranceProvidersWeb insuranceProvidersWeb,
+            ILogger<InsuranceProvidersController> logger)
         {
-            _insuranceProvidersService = InsuranceProvidersService;
+            _insuranceProvidersWeb = insuranceProvidersWeb;
+            _logger = logger;
+            
         }
-        // GET: InsuranceProvidersController
+
         public async Task<IActionResult> Index()
         {
-            List<InsuranceProvidersModel> insuranceprovider = new List<InsuranceProvidersModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("InsuranceProviders/GetInsuranceProviders");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    insuranceprovider = JsonConvert.DeserializeObject<List<InsuranceProvidersModel>>(result.Data.ToString());
-                    return View(insuranceprovider);
-                }
+                var insuranceProviders = await _insuranceProvidersWeb.GetAllAsync();
+                return View(insuranceProviders);
             }
-            return View(new List<InsuranceProvidersModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener los proveedores de seguro");
+                ViewBag.ErrorMessage = "Error al obtener red de seguroro";
+                return View(new List<AppointmentModel>());
+            }
         }
 
-        // GET: InsuranceProvidersController/Details/5
-        public async Task<IActionResult> Details(int Id)
+        public async Task<IActionResult> Details(int id)
         {
-            InsuranceProvidersModel insuranceproviders = new InsuranceProvidersModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"InsuranceProviders/GetInsuranceProvidersById?Id={Id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    insuranceproviders = JsonConvert.DeserializeObject<InsuranceProvidersModel>(result.Data.ToString());
-                    return View(insuranceproviders);
-                }
+                var network = await _insuranceProvidersWeb.GetByIdAsync(id);
+                return View(network);
             }
-
-            return View(insuranceproviders);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener red de seguro con el conn ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-
-
-        // GET: InsuranceProvidersController/Create
-        public ActionResult Create()
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: InsuranceProvidersController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(InsuranceProvidersModel insuranceProviders)
+        public async Task<IActionResult> Create(CreateInsuranceProvidersModel model)
         {
-            OperationResult operationResult = new OperationResult();
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             try
             {
-                using (var client = new HttpClient())
+                var success = await _insuranceProvidersWeb.CreateAsync(model);
+                if (success)
                 {
-                    client.BaseAddress = new Uri("http://localhost:5266/api/");
-                    var response = await client.PostAsJsonAsync<InsuranceProvidersModel>($"InsuranceProviders/SaveInsuranceProviders", 
-                                                                                         insuranceProviders);
-
-                    if (response.IsSuccessStatusCode)
-                    {
-                        operationResult = await response.Content.ReadFromJsonAsync<OperationResult>();
-                    }
-                    else
-                    {
-                        ViewBag.Message = "Error guardandado el proveedor";
-                        return View();
-                    }
+                    return RedirectToAction(nameof(Index));
                 }
 
-                return RedirectToAction(nameof(Index));
+                ViewBag.Message = "Error al crear Insurance Provider";
+                return View(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, "Error al crear Insurance Provider");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
         }
 
-        // GET: InsuranceProvidersController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            InsuranceProvidersModel insuranceprovider = new InsuranceProvidersModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"InsuranceProviders/UpdateInsuranceProviders{id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    insuranceprovider = JsonConvert.DeserializeObject<InsuranceProvidersModel>(result.Data.ToString());
-                    return View(insuranceprovider);
-                }
-            }
-
-            return View(insuranceprovider);
-        }
-
-        // POST: InsuranceProvidersController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(InsuranceProvidersModel insuranceProviders)
-        {
-            OperationResult operationResult = new OperationResult();
             try
             {
-                using (var client = new HttpClient())
-                {
-                    client.BaseAddress = new Uri("http://localhost:5266/api/");
-                    var response = await client.PostAsJsonAsync<InsuranceProvidersModel>($"InsuranceProviders/UpdateInsuranceProviders", insuranceProviders);
-
-                    if (response.IsSuccessStatusCode) 
-                    {
-                        operationResult = await response.Content.ReadFromJsonAsync<OperationResult>();
-                    }
-                    else 
-                    {
-                        ViewBag.Message = "Error actualizado el proveedor de seguros";
-                        return View();
-                    }
-                }
-
+                var insuranceProvider = await _insuranceProvidersWeb.GetEditModelByIdAsync(id);
+                return View(insuranceProvider);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar el proveedor con ID {id}");
                 return RedirectToAction(nameof(Index));
             }
-            catch
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditInsuranceProvidersModel model)
+        {
+            if (!ModelState.IsValid)
             {
+                return View(model);
+            }
+
+            try
+            {
+                var success = await _insuranceProvidersWeb.UpdateAsync(id, model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al actualizar el tipo de proveedor de seguro.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar el proveedor de seguro con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
+            }
+        }
+
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var network = await _insuranceProvidersWeb.GetByIdAsync(id);
+                return View(network);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al eliminar proveedor con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            try
+            {
+                var success = await _insuranceProvidersWeb.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar el tipo de red de seguro.";
                 return View();
             }
-        }
-
-
-        // GET: InsuranceProvidersController/Delete/5
-        //public async Task<IActionResult> Delete(int id)
-        //{
-        //    OperationResult operationResult = new OperationResult();
-        //    using var client = new HttpClient();
-        //    client.BaseAddress = new Uri("http://localhost:5266/api/");
-        //    var response = await client.DeleteAsync("NetworkType/DeleteNetworkType");
-
-
-        //    return View();
-        //}
-       
-
-
-        // POST: InsuranceProvidersController/Delete/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
-        {
-            try
+            catch (Exception ex)
             {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
+                _logger.LogError(ex, $"Error al eliminar proveedor con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
                 return View();
             }
         }
