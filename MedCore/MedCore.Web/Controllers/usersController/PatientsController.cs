@@ -3,7 +3,6 @@ using MedCore.Application.Dtos.users.Patients;
 using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
 using MedCore.Web.Models.users.Patients;
-using MedCore.Web.Models.users.users;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
