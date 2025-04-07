@@ -1,4 +1,5 @@
-﻿using MedCore.Web.Interfaces.appointments;
+﻿using MedCore.Web.Interfaces.appointments.appointment;
+using MedCore.Web.Repositories.appointmentsRepository.appointment;
 using MedCore.Web.Models.appointments;
 using Microsoft.AspNetCore.Mvc;
 
@@ -10,7 +11,7 @@ namespace MedCore.Web.Controllers.Appointments
         private readonly ILogger<AppointmentsController> _logger;
 
         public AppointmentsController(
-            IAppointmentWeb appointmentWeb,
+            IAppointmentWeb  appointmentWeb,
             ILogger<AppointmentsController> logger)
         {
             _appointmentWeb = appointmentWeb;
