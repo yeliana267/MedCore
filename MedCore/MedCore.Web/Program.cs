@@ -1,13 +1,14 @@
-using MedCore.IOC.Dependencies.Medical;
+using MedCore.Application.Interfaces.appointments;
+using MedCore.IOC.Dependencies.appointments;
+
 using MedCore.Persistence.Context;
+using MedCore.Web.Interfaces;
+using MedCore.Web.Interfaces.appointments;
+using MedCore.Web.Repositories;
+using MedCore.Web.Repositories.appointments;
 using Microsoft.EntityFrameworkCore;
-using MedCore.IOC.Dependencies.users;
-using MedCore.Persistence.Context;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+using static System.Net.WebRequestMethods;
+
 
 
 namespace MedCore.Web
@@ -19,6 +20,16 @@ namespace MedCore.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
+            builder.Services.AddControllersWithViews();
+
+            // Configuraci�n de HttpClient
+            builder.Services.AddHttpClient();
+
+            // Registro de servicios
+            builder.Services.AddScoped<IApiClient, ApiClient>();
+            builder.Services.AddAppointmentsDependency();
+
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             
             builder.Services.AddUsersDependency();
@@ -27,8 +38,14 @@ namespace MedCore.Web
             builder.Services.AddControllers();
 
        
-    
 
+
+            builder.Services.AddScoped<IAppointmentWeb, AppointmentWeb>();
+
+
+            // Configuraci�n de DbContext
+            builder.Services.AddDbContext<MedCoreContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
 
             builder.Services.AddControllersWithViews();
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
@@ -36,6 +53,9 @@ namespace MedCore.Web
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();
 
+            // Otros servicios
+            builder.Services.AddAppointmentsDependency();
+            builder.Services.AddDoctorAvailabilityDependency();
 
             var app = builder.Build();
 
