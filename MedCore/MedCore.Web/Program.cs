@@ -1,13 +1,14 @@
-using MedCore.Application.Interfaces.appointments;
-using MedCore.IOC.Dependencies.appointments;
 
+using MedCore.IOC.Dependencies.appointments;
+using MedCore.IOC.Dependencies.Medical;
+using MedCore.IOC.Dependencies.users;
 using MedCore.Persistence.Context;
 using MedCore.Web.Interfaces;
 using MedCore.Web.Interfaces.appointments;
 using MedCore.Web.Repositories;
 using MedCore.Web.Repositories.appointments;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.WebRequestMethods;
+
 
 
 
