@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MedCore.Application.Dtos.Insurance.InsuranceProviders;
 using MedCore.Application.Interfaces.Insurance;
-using MedCore.Domain.Base;
+
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Model.Models.appointments;
 using MedCore.Web.Models;
@@ -44,13 +44,13 @@ namespace MedCore.Web.Controllers.Insurance
         }
 
         // GET: InsuranceProvidersController/Details/5
-        public async Task<IActionResult> Details(int insuranceProviderID)
+        public async Task<IActionResult> Details(int Id)
         {
             InsuranceProvidersModel insuranceproviders = new InsuranceProvidersModel();
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"InsuranceProviders/GetInsuranceProvidersById?Id={insuranceProviderID}");
+            var response = await client.GetAsync($"InsuranceProviders/GetInsuranceProvidersById?Id={Id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -66,6 +66,8 @@ namespace MedCore.Web.Controllers.Insurance
 
             return View(insuranceproviders);
         }
+
+
 
         // GET: InsuranceProvidersController/Create
         public ActionResult Create()
@@ -112,7 +114,7 @@ namespace MedCore.Web.Controllers.Insurance
             using var client = new HttpClient();
             client.BaseAddress = new Uri("http://localhost:5266/api/");
 
-            var response = await client.GetAsync($"InsuranceProviders/UpdateInsuranceProviders?Id={id}");
+            var response = await client.GetAsync($"InsuranceProviders/UpdateInsuranceProviders{id}");
 
             if (response.IsSuccessStatusCode)
             {
@@ -160,6 +162,10 @@ namespace MedCore.Web.Controllers.Insurance
                 return View();
             }
         }
+
+
+
+
 
         // GET: InsuranceProvidersController/Delete/5
         //public async Task<IActionResult> Delete(int id)

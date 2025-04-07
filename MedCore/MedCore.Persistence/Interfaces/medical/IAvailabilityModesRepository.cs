@@ -6,13 +6,10 @@ namespace MedCore.Persistence.Interfaces.medical
 {
     public interface IAvailabilityModesRepository : IBaseRepository<AvailabilityModes, short>
     {
-        // Obtener modos actualizados en los últimos X días
-        Task<List<OperationResult>> GetRecentlyUpdatedModesAsync(int days);
+        //obtener disponibilidad por id 
+        Task<OperationResult> GetAvailabilityModeByIdAsync(short id);
 
         // Obtiene un modo de disponibilidad por su nombre  
         Task<OperationResult> GetAvailabilityModeByNameAsync(string name);
-
-        // Elimina un modo de disponibilidad por su ID
-        Task<OperationResult> DeleteAvailabilityModeAsync(short id);
     }
 }

@@ -6,8 +6,6 @@ namespace MedCore.Persistence.Interfaces.medical
 {
     public interface ISpecialtiesRepository : IBaseRepository<Specialties, short>
     {
-        // Obtiene todas las especialidades que están activas en el sistema  
-        Task<List<OperationResult>> GetActiveSpecialtiesAsync();
 
         // Obtiene una especialidad por su nombre  
         Task<OperationResult> GetSpecialtyByNameAsync(string name);

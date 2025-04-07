@@ -1,5 +1,6 @@
 using MedCore.Application.Interfaces.appointments;
 using MedCore.IOC.Dependencies.appointments;
+
 using MedCore.Persistence.Context;
 using MedCore.Web.Interfaces;
 using MedCore.Web.Interfaces.appointments;
@@ -7,6 +8,7 @@ using MedCore.Web.Repositories;
 using MedCore.Web.Repositories.appointments;
 using Microsoft.EntityFrameworkCore;
 using static System.Net.WebRequestMethods;
+
 
 
 namespace MedCore.Web
@@ -18,20 +20,38 @@ namespace MedCore.Web
             var builder = WebApplication.CreateBuilder(args);
 
             // Add services to the container.
+
             builder.Services.AddControllersWithViews();
 
-            // Configuración de HttpClient
+            // Configuraciï¿½n de HttpClient
             builder.Services.AddHttpClient();
 
             // Registro de servicios
             builder.Services.AddScoped<IApiClient, ApiClient>();
             builder.Services.AddAppointmentsDependency();
 
+            builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+            
+            builder.Services.AddUsersDependency();
+            builder.Services.AddPatientsDependency();
+            builder.Services.AddDoctorsDependency();
+            builder.Services.AddControllers();
+
+       
+
+
             builder.Services.AddScoped<IAppointmentWeb, AppointmentWeb>();
 
-            // Configuración de DbContext
+
+            // Configuraciï¿½n de DbContext
             builder.Services.AddDbContext<MedCoreContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+            builder.Services.AddAvailabilityModesDependency();
+            builder.Services.AddMedicalRecordsDependency();
+            builder.Services.AddSpecialtiesDependency();
 
             // Otros servicios
             builder.Services.AddAppointmentsDependency();

@@ -6,6 +6,7 @@ using MedCore.Persistence.Interfaces.users;
 using MedCore.Persistence.Repositories.users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.IdentityModel.Tokens;
 
 
 namespace MedCore.Application.Services.users
@@ -29,7 +30,7 @@ namespace MedCore.Application.Services.users
 
             try
             {
-                // Validar que el ID del paciente sea válido
+  
                 if (patientId <= 0)
                 {
                     result.Success = false;
@@ -37,7 +38,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Obtener el paciente existente
+
                 var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
                 if (existingPatient == null)
                 {
@@ -46,10 +47,10 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Activar al paciente (asumiendo que hay una propiedad IsActive)
+
                 existingPatient.IsActive = true;
 
-                // Guardar los cambios en la base de datos
+
                 var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
                 if (!updateResult.Success)
                 {
@@ -60,7 +61,7 @@ namespace MedCore.Application.Services.users
 
                 result.Success = true;
                 result.Message = "Paciente activado correctamente.";
-                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+                result.Data = existingPatient; 
             }
             catch (Exception ex)
             {
@@ -241,7 +242,7 @@ namespace MedCore.Application.Services.users
 
             try
             {
-                // Validar que el DTO no sea nulo
+
                 if (dto == null)
                 {
                     result.Success = false;
@@ -249,7 +250,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Validar campos obligatorios específicos de Patients
+
                 if (dto.DateOfBirth == default || dto.Gender == '\0' || string.IsNullOrEmpty(dto.PhoneNumber))
                 {
                     result.Success = false;
@@ -257,7 +258,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Crear la entidad Patients
+
                 var patient = new Patients
                 {
                     DateOfBirth = dto.DateOfBirth,
@@ -271,7 +272,7 @@ namespace MedCore.Application.Services.users
                     InsuranceProviderID = dto.InsuranceProviderID
                 };
 
-                // Guardar el paciente en la base de datos
+
                 var saveResult = await _patientsRepository.SaveEntityAsync(patient);
                 if (!saveResult.Success)
                 {
@@ -282,7 +283,7 @@ namespace MedCore.Application.Services.users
 
                 result.Success = true;
                 result.Message = "Paciente guardado correctamente.";
-                result.Data = patient; 
+                result.Data = patient;
             }
             catch (Exception ex)
             {
@@ -293,7 +294,6 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> Update(UpdatePatientsDto dto)
         {
             var result = new OperationResult();

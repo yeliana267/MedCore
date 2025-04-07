@@ -163,5 +163,56 @@ namespace MedCore.Persistence.Repositories.users
             return result;
         }
 
+        public override async Task<OperationResult> SaveEntityAsync(Patients patient)
+        {
+            var result = new OperationResult();
+
+            try
+            {
+                if (patient == null)
+                {
+                    result.Success = false;
+                    result.Message = "El paciente no puede ser nulo";
+                    return result;
+                }
+
+                if (string.IsNullOrEmpty(patient.PhoneNumber))
+                {
+                    result.Success = false;
+                    result.Message = "El número de teléfono es obligatorio";
+                    return result;
+                }
+
+                if (patient.InsuranceProviderID <= 0)
+                {
+                    result.Success = false;
+                    result.Message = "Debe especificar un proveedor de seguros válido";
+                    return result;
+                }
+
+                var providerExists = await _context.InsuranceProviders
+                    .AnyAsync(p => p.Id == patient.InsuranceProviderID);
+
+                if (!providerExists)
+                {
+                    result.Success = false;
+                    result.Message = "El proveedor de seguros especificado no existe";
+                    return result;
+                }
+
+                return await base.SaveEntityAsync(patient);
+            }
+          
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error inesperado al guardar paciente");
+                result.Success = false;
+                result.Message = $"Error inesperado: {ex.Message}";
+                Console.WriteLine(ex.InnerException?.Message);
+                return result;
+            }
+        }
     }
+
 }
+
