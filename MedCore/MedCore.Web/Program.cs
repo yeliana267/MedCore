@@ -1,13 +1,14 @@
-using MedCore.Application.Interfaces.appointments;
 using MedCore.IOC.Dependencies.appointments;
-
+using MedCore.IOC.Dependencies.Medical;
+using MedCore.IOC.Dependencies.users;
 using MedCore.Persistence.Context;
 using MedCore.Web.Interfaces;
 using MedCore.Web.Interfaces.appointments;
+using MedCore.Web.Interfaces.Medical;
 using MedCore.Web.Repositories;
 using MedCore.Web.Repositories.appointments;
+using MedCore.Web.Repositories.Medical;
 using Microsoft.EntityFrameworkCore;
-using static System.Net.WebRequestMethods;
 
 
 
@@ -36,23 +37,17 @@ namespace MedCore.Web
             builder.Services.AddPatientsDependency();
             builder.Services.AddDoctorsDependency();
             builder.Services.AddControllers();
-
-       
-
-
-            builder.Services.AddScoped<IAppointmentWeb, AppointmentWeb>();
-
-
-            // Configuraci�n de DbContext
-            builder.Services.AddDbContext<MedCoreContext>(options =>
-                options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
-
-            builder.Services.AddControllersWithViews();
-            builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
             builder.Services.AddAvailabilityModesDependency();
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();
 
+
+            builder.Services.AddScoped<IAvailabilityModesWeb, AvailabilityModesWeb>();
+            builder.Services.AddScoped<IMedicalRecordsWeb, MedicalRecordsWeb>();
+            builder.Services.AddScoped<ISpecialtiesWeb, SpecialtiesWeb>();
+            builder.Services.AddScoped<IAppointmentWeb, AppointmentWeb>();
+            builder.Services.AddControllersWithViews();
+          
             // Otros servicios
             builder.Services.AddAppointmentsDependency();
             builder.Services.AddDoctorAvailabilityDependency();

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<MedCore.Web.Models.Medical.AvailabilityModes.AvailabilityModesModel>
+﻿@model IEnumerable<MedCore.Web.Models.Medical.SpecialtiesModels.SpecialtiesModel>
 
 @{
     ViewData["Title"] = "Index";
@@ -13,10 +13,10 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.AvailabilityModesId)
+                @Html.DisplayNameFor(model => model.SpecialtiesId)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.AvailabilityMode)
+                @Html.DisplayNameFor(model => model.SpecialtyName)
             </th>
             <th>
                 @Html.DisplayNameFor(model => model.CreatedAt)
@@ -34,10 +34,10 @@
 @foreach (var item in Model) {
         <tr>
             <td>
-                    @Html.DisplayFor(modelItem => item.AvailabilityModesId)
+                @Html.DisplayFor(modelItem => item.SpecialtiesId)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.AvailabilityMode)
+                @Html.DisplayFor(modelItem => item.SpecialtyName)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CreatedAt)
@@ -49,9 +49,9 @@
                 @Html.DisplayFor(modelItem => item.IsActive)
             </td>
             <td>
-                    @Html.ActionLink("Edit", "Edit", new { id = item.AvailabilityModesId }) |
-                    @Html.ActionLink("Details", "Details", new { id = item.AvailabilityModesId }) |
-                @Html.ActionLink("Delete", "Delete", new {  id=item.AvailabilityModesId  })
+                @Html.ActionLink("Edit", "Edit", new {  id=item.SpecialtiesId  }) |
+                @Html.ActionLink("Details", "Details", new {  id=item.SpecialtiesId  }) |
+                @Html.ActionLink("Delete", "Delete", new {  id=item.SpecialtiesId })
             </td>
         </tr>
 }

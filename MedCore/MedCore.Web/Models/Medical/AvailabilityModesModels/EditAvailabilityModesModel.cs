@@ -4,10 +4,10 @@ namespace MedCore.Web.Models.Medical.AvailabilityModes
 {
     public class EditAvailabilityModesModel
     {
-        [Required(ErrorMessage = "El ID es obligatorio.")]
         public short AvailabilityModesId { get; set; }
-
-        [Required(ErrorMessage = "El modo de disponibilidad es obligatorio.")]
-        public required string AvailabilityMode { get; set; }
+        public string AvailabilityMode { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public bool IsActive { get; set; }
     }
 }
