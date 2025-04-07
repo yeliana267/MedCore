@@ -24,11 +24,7 @@ namespace MedCore.Persistence.Repositories.users
             _logger = loger;
             _configuration = configuration;
         }
-        public override Task<OperationResult> SaveEntityAsync(Doctors entity)
-        {
-            _logger.LogInformation($"Guardando un doctor nuevo");
-            return base.SaveEntityAsync(entity);
-        }
+
         public override async Task<OperationResult> UpdateEntityAsync(int id, Doctors entity)
         {
             OperationResult result = new OperationResult();
@@ -242,7 +238,43 @@ namespace MedCore.Persistence.Repositories.users
                 };
             }
         }
-       
+        public override async Task<OperationResult> SaveEntityAsync(Doctors entity)
+        {
+            OperationResult result = new OperationResult();
+            try
+            {
+                // Verificar si el User asociado existe
+                var userExists = await _context.Users.AnyAsync(u => u.Id == entity.Id);
+                if (!userExists)
+                {
+                    result.Success = false;
+                    result.Message = "El usuario asociado no existe.";
+                    return result;
+                }
+
+                // Verificar si el doctor ya existe
+                var doctorExists = await _context.Doctors.AnyAsync(d => d.Id == entity.Id);
+                if (doctorExists)
+                {
+                    result.Success = false;
+                    result.Message = "Ya existe un doctor con este ID.";
+                    return result;
+                }
+
+                await _context.Doctors.AddAsync(entity);
+                await _context.SaveChangesAsync();
+
+                result.Success = true;
+                result.Message = "Doctor guardado correctamente.";
+            }
+            catch (Exception ex)
+            {
+                result.Success = false;
+                result.Message = $"Error al guardar el doctor: {ex.Message}";
+            }
+            return result;
+        }
+
     }
 
 }
