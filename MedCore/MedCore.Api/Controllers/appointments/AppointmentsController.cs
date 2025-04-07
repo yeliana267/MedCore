@@ -69,9 +69,9 @@ namespace MedCore.Api.Controllers.appointments
 
         // PUT api/<AppointmentsController>/5
         [HttpPut("UpdateAppointment/{id}")]
-        public async Task<IActionResult> Put([FromBody] UpdateAppointmentsDto appointmentsDto)
+        public async Task<IActionResult> Put([FromBody] UpdateAppointmentsDto updateAppointmentsDto)
         {
-            var appointment = await _appointmentsService.Update(appointmentsDto);
+            var appointment = await _appointmentsService.Update(updateAppointmentsDto);
             return Ok(appointment);
         }
 

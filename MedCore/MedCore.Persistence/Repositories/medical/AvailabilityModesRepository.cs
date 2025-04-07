@@ -21,113 +21,6 @@ namespace MedCore.Persistence.Repositories.medical
             this._configuration = configuration;
         }
 
-        public async Task<List<OperationResult>> GetRecentlyUpdatedModesAsync(int days)
-        {
-            List<OperationResult> results = new List<OperationResult>();
-
-            // Validar el parámetro de entrada
-            if (days <= 0)
-            {
-                results.Add(new OperationResult
-                {
-                    Success = false,
-                    Message = "El número de días debe ser mayor que cero."
-                });
-                return results;
-            }
-
-            try
-            {
-                var recentDate = DateTime.Now.AddDays(-days);
-
-                // Validar si el contexto está disponible
-                if (_context == null)
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error interno: El contexto de base de datos no está disponible."
-                    });
-                    return results;
-                }
-
-                // Validar la conexión a la base de datos
-                if (!_context.Database.CanConnect())
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error: No se puede conectar a la base de datos."
-                    });
-                    return results;
-                }
-
-                // Validar que la entidad AvailabilityModes exista en el contexto
-                if (!_context.Model.GetEntityTypes().Any(e => e.ClrType == typeof(AvailabilityModes)))
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error: La entidad AvailabilityModes no está configurada en el contexto."
-                    });
-                    return results;
-                }
-
-                // Obtener los modos actualizados recientemente
-                var modes = await _context.AvailabilityModes
-                                          .Where(am => am.UpdatedAt >= recentDate)
-                                          .ToListAsync();
-
-                // Validar si se encontraron registros
-                if (modes == null || !modes.Any())
-                {
-                    results.Add(new OperationResult
-                    {
-                        Success = false,
-                        Message = "No se encontraron modos de disponibilidad actualizados recientemente."
-                    });
-                    return results;
-                }
-
-                results.Add(new OperationResult
-                {
-                    Data = modes,
-                    Success = true,
-                    Message = "Modos de disponibilidad actualizados recientemente obtenidos exitosamente."
-                });
-            }
-            catch (ArgumentNullException ex)
-            {
-                results.Add(new OperationResult
-                {
-                    Success = false,
-                    Message = "Error: Se recibió un valor nulo inesperado."
-                });
-                _logger.LogError(ex, "ArgumentNullException en GetRecentlyUpdatedModesAsync");
-            }
-            catch (InvalidOperationException ex)
-            {
-                results.Add(new OperationResult
-                {
-                    Success = false,
-                    Message = "Error: Operación inválida al acceder a la base de datos."
-                });
-                _logger.LogError(ex, "InvalidOperationException en GetRecentlyUpdatedModesAsync");
-            }
-            catch (Exception ex)
-            {
-                results.Add(new OperationResult
-                {
-                    Message = _configuration["ErrorAvailabilityModesRepository:GetRecentlyUpdatedModes"]
-                             ?? "Error desconocido al obtener modos de disponibilidad actualizados recientemente.",
-                    Success = false
-                });
-                _logger.LogError(ex, "Error inesperado en GetRecentlyUpdatedModesAsync");
-            }
-
-            return results;
-        }
-
         public async Task<OperationResult> GetAvailabilityModeByNameAsync(string name)
         {
             OperationResult result = new OperationResult();
@@ -208,91 +101,79 @@ namespace MedCore.Persistence.Repositories.medical
         }
 
 
-        public async Task<OperationResult> DeleteAvailabilityModeAsync(short id)
+        public async Task<OperationResult> GetAvailabilityModeByIdAsync(short id)
         {
-            OperationResult result = new OperationResult();
+            var result = new OperationResult();
 
             try
             {
                 // Validar si el ID es válido (1)
                 if (id <= 0)
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "El ID del modo de disponibilidad no es válido."
-                    };
+                    result.Success = false;
+                    result.Message = "El ID proporcionado no es válido.";
+                    return result;
                 }
 
                 // Validar si el contexto está disponible (2)
                 if (_context == null)
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error interno: El contexto de base de datos no está disponible."
-                    };
+                    result.Success = false;
+                    result.Message = "Error interno: El contexto de base de datos no está disponible.";
+                    return result;
                 }
 
                 // Validar la conexión a la base de datos (3)
                 if (!_context.Database.CanConnect())
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error: No se puede conectar a la base de datos."
-                    };
+                    result.Success = false;
+                    result.Message = "Error: No se puede conectar a la base de datos.";
+                    return result;
                 }
 
                 // Validar que la entidad AvailabilityModes exista en el contexto (4)
                 if (!_context.Model.GetEntityTypes().Any(e => e.ClrType == typeof(AvailabilityModes)))
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "Error: La entidad AvailabilityModes no está configurada en el contexto."
-                    };
+                    result.Success = false;
+                    result.Message = "Error: La entidad AvailabilityModes no está configurada en el contexto.";
+                    return result;
                 }
 
-                // Buscar el registro en la base de datos (5)
-                var mode = await _context.AvailabilityModes.FindAsync(id);
-                if (mode == null)
+                // Buscar el modo de disponibilidad por ID
+                var availabilityMode = await _context.AvailabilityModes.FindAsync(id);
+
+                // Validar si se encontró el registro (5)
+                if (availabilityMode == null)
                 {
-                    return new OperationResult
-                    {
-                        Success = false,
-                        Message = "Modo de disponibilidad no encontrado."
-                    };
+                    result.Success = false;
+                    result.Message = "No se encontró el modo de disponibilidad con el ID proporcionado.";
+                    return result;
                 }
 
-                // Eliminar el registro
-                _context.AvailabilityModes.Remove(mode);
-                await _context.SaveChangesAsync();
-
-                return new OperationResult
-                {
-                    Success = true,
-                    Message = "Modo de disponibilidad eliminado correctamente."
-                };
+                result.Data = availabilityMode;
+                result.Success = true;
+                result.Message = "Modo de disponibilidad obtenido exitosamente.";
             }
-            catch (DbUpdateException ex)
+            catch (ArgumentNullException ex)
             {
-                _logger.LogError(ex, "DbUpdateException al eliminar el modo de disponibilidad con ID {Id}", id);
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = "Error al eliminar el modo de disponibilidad. Puede estar relacionado con otras entidades."
-                };
+                result.Success = false;
+                result.Message = "Error: Se recibió un valor nulo inesperado.";
+                _logger.LogError(ex, "ArgumentNullException en GetAvailabilityModeByIdAsync");
+            }
+            catch (InvalidOperationException ex)
+            {
+                result.Success = false;
+                result.Message = "Error: Operación inválida al acceder a la base de datos.";
+                _logger.LogError(ex, "InvalidOperationException en GetAvailabilityModeByIdAsync");
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al eliminar el modo de disponibilidad con ID {Id}", id);
-                return new OperationResult
-                {
-                    Success = false,
-                    Message = "Error desconocido al eliminar el modo de disponibilidad."
-                };
+                result.Success = false;
+                result.Message = $"Error desconocido al obtener el modo de disponibilidad: {ex.Message}";
+                _logger.LogError(ex, $"Error inesperado al obtener el modo de disponibilidad con ID {id}: {ex.Message}");
             }
+
+            return result;
         }
 
         public override async Task<OperationResult> SaveEntityAsync(AvailabilityModes entity)

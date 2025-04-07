@@ -4,37 +4,57 @@
     ViewData["Title"] = "Details";
 }
 
-<h2 class="text-center mt-4 mb-4 text-primary">Detalles de la Cita Médica</h2>
+<h1>Details</h1>
 
-<div class="container">
-    <div class="card shadow-sm border-0">
-        <div class="card-body">
-            <dl class="row">
-                <dt class="col-sm-4">ID</dt>
-                <dd class="col-sm-8">@Model.Id</dd>
-
-                <dt class="col-sm-4">ID del Paciente</dt>
-                <dd class="col-sm-8">@Model.PatientID</dd>
-
-                <dt class="col-sm-4">ID del Doctor</dt>
-                <dd class="col-sm-8">@Model.DoctorID</dd>
-
-                <dt class="col-sm-4">Fecha de la Cita</dt>
-                <dd class="col-sm-8">@Model.AppointmentDate.ToString("dd/MM/yyyy hh:mm tt")</dd>
-
-                <dt class="col-sm-4">Estado</dt>
-                <dd class="col-sm-8">@Model.StatusID</dd>
-
-                <dt class="col-sm-4">Creado en</dt>
-                <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
-
-                <dt class="col-sm-4">Última Actualización</dt>
-                <dd class="col-sm-8">@Model.UpdatedAt?.ToString("dd/MM/yyyy")</dd>
-            </dl>
-        </div>
-        <div class="card-footer d-flex justify-content-between">
-            <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Editar</a>
-            <a asp-action="Index" class="btn btn-secondary">Volver a la Lista</a>
-        </div>
-    </div>
+<div>
+    <h4>AppointmentModel</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Id)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Id)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.PatientID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.PatientID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.DoctorID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.DoctorID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.AppointmentDate)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.AppointmentDate)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.StatusID)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.StatusID)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.CreatedAt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.CreatedAt)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.UpdatedAt)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.UpdatedAt)
+        </dd>
+    </dl>
+</div>
+<div>
+    @Html.ActionLink("Edit", "Edit", new {  id = Model.Id}) |
+    <a asp-action="Index">Back to List</a>
 </div>
