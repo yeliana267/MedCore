@@ -1,76 +1,74 @@
 ﻿
-using MedCore.Application.Dtos.users.Patients;
-using MedCore.Application.Interfaces.users;
-using MedCore.Domain.Base;
+using MedCore.Web.Interfaces.users;
 using MedCore.Web.Models.users.Patients;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using PatientsModel = MedCore.Model.Models.users.PatientsModel;
 
 namespace MedCore.Web.Controllers.usersController
 {
     public class PatientsController : Controller
     {
-        private readonly IPatientsService _patientsService;
+        private readonly IPatientsWeb _patientWeb;
+        private readonly ILogger<PatientsController> _logger;
 
-        public PatientsController(IPatientsService patientsService)
+        public PatientsController(
+            IPatientsWeb patientWeb,
+            ILogger<PatientsController> logger)
         {
-            _patientsService = patientsService;
+            _patientWeb = patientWeb;
+            _logger = logger;
         }
-        // GET: PatientsController
+
         public async Task<IActionResult> Index()
         {
-            List<PatientsModel> patient = new List<PatientsModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("Patients/GetPatients");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    patient = JsonConvert.DeserializeObject<List<PatientsModel>>(result.Data.ToString());
-                    return View(patient);
-                }
+                var patients = await _patientWeb.GetAllAsync();
+                return View(patients);
             }
-
-            return View(new List<PatientsModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener lista de pacientes");
+                ViewBag.ErrorMessage = "Error al cargar los pacientes. Por favor intente nuevamente.";
+                return View(new List<PatientsModel>());
+            }
         }
 
-        // GET: PatientsController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            PatientsModel patient = new PatientsModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Patients/GetPatientByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    patient = JsonConvert.DeserializeObject<PatientsModel>(result.Data.ToString());
-                    return View(patient);
-                }
+                var patient = await _patientWeb.GetByIdAsync(id);
+                return View(patient);
             }
-
-            return View(patient);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener detalles de paciente con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // GET: PatientsController/Create
         public async Task<IActionResult> Create()
         {
-            return View();
+            try
+            {
+                
+                var bloodTypes = new List<string> { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
+                ViewData["BloodTypes"] = bloodTypes;
+
+                return View(new CreatePatientsModel
+                {
+                    
+                    DateOfBirth = (DateTime.Now.AddYears(-18))
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar vista de creación");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: PatientsController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreatePatientsModel model)
@@ -79,130 +77,106 @@ namespace MedCore.Web.Controllers.usersController
             {
                 return View(model);
             }
+
             try
             {
-                using var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var dto = new SavePatientsDto
-                    {
-                
-                Gender = model.Gender,
-                DateOfBirth = model.DateOfBirth,
-                PhoneNumber = model.PhoneNumber,
-                Address = model.Address,
-                EmergencyContactName = model.EmergencyContactName,
-                EmergencyContactPhone = model.EmergencyContactPhone,
-                BloodType = model.BloodType,
-                Allergies = model.Allergies,
-                InsuranceProviderID = model.InsuranceProviderID,
-                IsActive = true,
-                CreatedAt = DateTime.UtcNow
-
-            };
-
-
-                var response = await client.PostAsJsonAsync("Patients/Save", dto);
-
-                if (response.IsSuccessStatusCode)
+                var success = await _patientWeb.CreateAsync(model);
+                if (success)
                 {
-                    var result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                    if (result != null && result.Success)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    ViewBag.Message = result?.Message ?? "Error desconocido al crear el paciente.";
+                    return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    ViewBag.Message = "Error al conectar con la API.";
-                }
+
+                ViewBag.Message = "Error al crear el paciente.";
+                return View(model);
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "Error inesperado: " + ex.Message;
+                _logger.LogError(ex, "Error al crear paciente");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
-            return View(model);
         }
 
-        // GET: PatientsController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            EditPatientsModel patient = new EditPatientsModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Patients/GetPatientByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-
-                    patient = JsonConvert.DeserializeObject<EditPatientsModel>(result.Data.ToString());
-                    return View(patient);
-                }
-            }
-            return View(patient);
-        }
-
-        // POST: PatientsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var patient = await _patientWeb.GetEditModelByIdAsync(id);
+
+                
+                var bloodTypes = new List<string> { "A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-" };
+                ViewData["BloodTypes"] = bloodTypes;
+
+                return View(patient);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, $"Error al cargar paciente para edición con ID {id}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
-        // GET: PatientsController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditPatientsModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var success = await _patientWeb.UpdateAsync(id, model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al actualizar el paciente.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar paciente con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
+            }
+        }
+
         public async Task<IActionResult> Delete(int id)
         {
-            PatientsModel patient = new PatientsModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Patients/GetPatientByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    patient = JsonConvert.DeserializeObject<PatientsModel>(result.Data.ToString());
-                    return View(patient);
-                }
+                var patient = await _patientWeb.GetByIdAsync(id);
+                return View(patient);
             }
-                
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar paciente para eliminación con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: PatientsController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _patientWeb.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar el paciente.";
+                return View();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error al eliminar paciente con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
                 return View();
             }
         }

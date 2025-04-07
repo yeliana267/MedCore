@@ -2,7 +2,7 @@
 using System.Threading.Tasks;
 using MedCore.Application.Dtos.Insurance.InsuranceProviders;
 using MedCore.Application.Interfaces.Insurance;
-
+using MedCore.Domain.Base;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Model.Models.appointments;
 using MedCore.Web.Models;
