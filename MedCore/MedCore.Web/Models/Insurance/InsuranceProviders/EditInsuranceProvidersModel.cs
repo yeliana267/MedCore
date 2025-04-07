@@ -1,8 +1,8 @@
-﻿namespace MedCore.Web.Models.Insurance
+﻿namespace MedCore.Web.Models.Insurance.InsuranceProviders
 {
-    public class InsuranceProvidersModel
+    public class EditInsuranceProvidersModel
     {
-        public int insuranceProviderID { get; set; }
+        public int InsuranceProviderID { get; set; }
         public string Name { get; set; }
         public string ContactNumber { get; set; }
         public string Email { get; set; }
@@ -19,5 +19,6 @@
         public string? CustomerSupportContact { get; set; }
         public string? AcceptedRegions { get; set; }
         public decimal? MaxCoverageAmount { get; set; }
+        public DateTime? UpdatedAt { get; set; }
     }
 }
