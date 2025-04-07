@@ -9,9 +9,6 @@ namespace MedCore.Persistence.Interfaces.medical
         // Obtiene todos los registros médicos de un paciente específico por su ID
         Task<List<OperationResult>> GetMedicalRecordsByPatientIdAsync(int patientId);
 
-        // Obtiene los registros médicos dentro de un rango de fechas determinado  
-        Task<List<OperationResult>> GetMedicalRecordsByDateRangeAsync(DateTime startDate, DateTime endDate);
-
         // Elimina un registro por su ID
         Task<OperationResult> DeleteMedicalRecordAsync(int id);
 

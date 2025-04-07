@@ -24,7 +24,11 @@ namespace MedCore.Persistence.Repositories.users
             _logger = loger;
             _configuration = configuration;
         }
-
+        public override Task<OperationResult> SaveEntityAsync(Doctors entity)
+        {
+            _logger.LogInformation($"Guardando un doctor nuevo");
+            return base.SaveEntityAsync(entity);
+        }
         public override async Task<OperationResult> UpdateEntityAsync(int id, Doctors entity)
         {
             OperationResult result = new OperationResult();
@@ -99,7 +103,6 @@ namespace MedCore.Persistence.Repositories.users
             }
             return result;
         }
-
         public async Task<OperationResult> GetDoctorsBySpecialtyAsync(int specialtyId)
         {
             try
@@ -144,7 +147,6 @@ namespace MedCore.Persistence.Repositories.users
                 };
             }
         }
-
         public async Task<OperationResult> UpdateConsultationFeeAsync(int doctorId, decimal consultationFee)
         {
             try
@@ -197,7 +199,6 @@ namespace MedCore.Persistence.Repositories.users
                 };
             }
         }
-
         public async Task<OperationResult> GetDoctorsWithExpiringLicenseAsync(DateTime expirationDate)
         {
             try
@@ -241,6 +242,7 @@ namespace MedCore.Persistence.Repositories.users
                 };
             }
         }
+       
     }
 
 }

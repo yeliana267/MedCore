@@ -115,8 +115,7 @@ namespace MedCore.Persistence.Repositories.users
                 };
             }
         }
-
-        public override async Task<OperationResult> DeleteEntityByIdAsync(int userId)
+  public override async Task<OperationResult> DeleteEntityByIdAsync(int userId)
         {
             OperationResult result = new OperationResult();
 
@@ -146,6 +145,7 @@ namespace MedCore.Persistence.Repositories.users
 
         }
 
+      
         public async Task<OperationResult> GetByEmailAsync(string email)
         {
             try
