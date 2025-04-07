@@ -4,6 +4,7 @@ using System.Diagnostics.Metrics;
 using System.Net;
 using System.Reflection.Emit;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using MedCore.Application.Dtos.Insurance.InsuranceProvider;
 using MedCore.Application.Dtos.Insurance.InsuranceProviders;
 using MedCore.Application.Interfaces.Insurance;
@@ -29,55 +30,30 @@ namespace MedCore.Application.Services.Insurance
             _logger = logger; 
             _configuration = configuration;
         }
+       
         public async Task<OperationResult> GetAll()
         {
-            OperationResult operationResult = new OperationResult();
-
+            var result = new OperationResult();
             try
             {
-               var insuranceProviders = (await _insuranceProvidersRepository.GetAllAsync())
-                    .Select(ip => new Dtos.Insurance.InsuranceProviders.InsuranceProvidersDto() 
-                    {
-                        InsuranceProviderID = ip.Id,
-                        Name = ip.Name,
-                        ContactNumber = ip.ContactNumber,
-                        Email = ip.Email,
-                        Website = ip.Website,
-                        Address = ip.Address,
-                        City = ip.City,
-                        State = ip.State,
-                        Country = ip.Country,
-                        ZipCode = ip.ZipCode,
-                        CoverageDetails = ip.CoverageDetails,
-                        LogoUrl = ip.LogoUrl,
-                        IsPreferred = ip.IsPreferred,
-                        NetworkTypeId = ip.NetworkTypeId,
-                        CustomerSupportContact = ip.CustomerSupportContact,
-                        AcceptedRegions = ip.AcceptedRegions,
-                        MaxCoverageAmount = ip.MaxCoverageAmount
-                    }).ToList();
+                var data = await _insuranceProvidersRepository.GetAllAsync();
+                result.Data = data;
+                result.Success = true;
 
                 // Validar si se obtuvieron datos
-                if (!insuranceProviders.Any())
+                if (!data.Any())
                 {
-                    operationResult.Success = false;
-                    operationResult.Message = _configuration["No Insurance Providers Found"]!;
-                    _logger.LogWarning(operationResult.Message);
-                }
-
-                operationResult.Success = true;
-                operationResult.Data = insuranceProviders;
-                
-            }
-
+                    result.Success = false;
+                    result.Message = _configuration["No Insurance Providers Found"]!;
+                    _logger.LogWarning(result.Message);
+                }            }
             catch (Exception ex)
             {
-                operationResult.Success = false;
-                operationResult.Message = _configuration["Error Insurance Providers"]!;
-                _logger.LogError(operationResult.Message, ex);
+                result.Success = false;
+                result.Message = $"Error Insurance Providers: {ex.Message}";
+                _logger.LogError(result.Message, ex);
             }
-            return operationResult;
-       
+            return result;
         }
 
         public async Task<OperationResult> GetById(int Id)
@@ -85,19 +61,21 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
-               var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(Id);
 
                 if (Id <= 0)
                 {
                     operationResult.Success = false;
                     operationResult.Message = _configuration["Error Insurance Providers"]!;
                 }
+
+                var insuranceProviders = await _insuranceProvidersRepository.GetEntityByIdAsync(Id);
                 if (insuranceProviders == null)
                 {
                     operationResult.Success = false;
                     operationResult.Message = "Insurance Providers not found.";
                     return operationResult;
                 }
+
                 operationResult.Success = true;
                 operationResult.Data = insuranceProviders;
 
@@ -111,17 +89,18 @@ namespace MedCore.Application.Services.Insurance
             return operationResult;
         }
 
-        public async Task<OperationResult> Remove(RemoveInsuranceProvidersDto dto)
+
+        public async Task<OperationResult> Remove(RemoveInsuranceProvidersDto insuranceProvidersDto)
         {
             OperationResult operationResult = new OperationResult();
             try
             {
 
-                operationResult = await _insuranceProvidersRepository.DeleteEntityByIdAsync(dto.InsuranceProviderID);
+                operationResult = await _insuranceProvidersRepository.DeleteEntityByIdAsync(insuranceProvidersDto.InsuranceProviderID);
                 operationResult.Success = true;
                 operationResult.Message = "Borrado exitosamente";
 
-                if(dto.InsuranceProviderID <= 0)
+                if(insuranceProvidersDto.InsuranceProviderID <= 0)
                 {
                     operationResult.Success = false;
                     operationResult.Message = "Error borrando";
@@ -142,50 +121,10 @@ namespace MedCore.Application.Services.Insurance
             OperationResult operationResult = new OperationResult();
             try
             {
-                if(dto == null)
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "No puede ser null";
-                    return operationResult;
-                }
-                if (string.IsNullOrWhiteSpace(dto.Name) || dto.Name.Length > 100)
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "Name is required.";
-                    return operationResult;
-                }
-                if (string.IsNullOrEmpty(dto.ContactNumber))
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "ContactNumber no puede estar vacio.";
-                    return operationResult;
-                }
-                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
-                if (string.IsNullOrEmpty(dto.Email) || !Regex.IsMatch(dto.Email, emailPattern))
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "El formato del correo electrónico no es válido.";
-                    _logger.LogWarning("Intento de actualización fallido: Formato de correo electrónico no válido.");
-                    return operationResult;
-                }
-                if (string.IsNullOrEmpty(dto.Address) || dto.Address.Length > 255)
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "El formato del Address electrónico no es válido.";
-                    _logger.LogWarning("Intento de Guardar fallido: Formato de Address electrónico no válido.");
-                    return operationResult;
-                }
-                if (dto.NetworkTypeId < 0)
-                {
-                    operationResult.Success = false;
-                    operationResult.Message = "Ingrese un NetworkTypeId valido";
-                    _logger.LogWarning("Intento de Guardar fallido: NetworkTypeId no valido");
-                    return operationResult;
-                }
+               
 
                 var insuranceProvider = await _insuranceProvidersRepository.SaveEntityAsync(new InsuranceProviders()
                 {
-
                     Name = dto.Name,
                     ContactNumber = dto.ContactNumber,
                     Email = dto.Email,
@@ -276,22 +215,7 @@ namespace MedCore.Application.Services.Insurance
                     return operationResult;
                 }
 
-                insuranceProvider.Name = dto.Name;
-                insuranceProvider.ContactNumber = dto.ContactNumber;
-                insuranceProvider.Email = dto.Email;
-                insuranceProvider.Website = dto.Website;
-                insuranceProvider.Address = dto.Address;
-                insuranceProvider.City = dto.City;
-                insuranceProvider.State = dto.State;
-                insuranceProvider.Country = dto.Country;
-                insuranceProvider.ZipCode = dto.ZipCode;
-                insuranceProvider.CoverageDetails = dto.CoverageDetails;
-                insuranceProvider.LogoUrl = dto.LogoUrl;
-                insuranceProvider.IsPreferred = dto.IsPreferred;
-                insuranceProvider.NetworkTypeId = dto.NetworkTypeId;
-                insuranceProvider.CustomerSupportContact = dto.CustomerSupportContact;
-                insuranceProvider.AcceptedRegions = dto.AcceptedRegions;
-                insuranceProvider.MaxCoverageAmount = dto.MaxCoverageAmount;
+
                 await _insuranceProvidersRepository.UpdateEntityAsync(dto.InsuranceProviderID, insuranceProvider);
 
                 operationResult.Success = true;

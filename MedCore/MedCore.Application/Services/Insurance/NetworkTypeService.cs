@@ -7,6 +7,7 @@ using MedCore.Domain.Base;
 using MedCore.Domain.Entities.Insurance;
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Interfaces.Insurance;
+using MedCore.Persistence.Repositories.Insurance;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking.Internal;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
@@ -28,35 +29,31 @@ namespace MedCore.Application.Services.Insurance
          _networkTypeRepository = networkTypeRepository;
          _logger = logger; _configuration = configuration;
         }
+       
         public async Task<OperationResult> GetAll()
         {
-            OperationResult operationResult = new OperationResult();
+            var result = new OperationResult();
             try
             {
-                var networkTypes = (await _networkTypeRepository.GetAllAsync())
-                    .Select(net => new Dtos.Insurance.NetworkType.NetworkTypeDto()
-                    {
-                        NetworkTypeId = net.Id,
-                        Name = net.Name,
-                        Description = net.Description
-                    }).ToList();
+                var data = await _networkTypeRepository.GetAllAsync();
+                result.Data = data;
+                result.Success = true;
 
-                if (!networkTypes.Any())
+                // Validar si se obtuvieron datos
+                if (!data.Any())
                 {
-                    operationResult.Success = false;
-                    operationResult.Message = _configuration["No NetworkTypes Found"]!;
-                    _logger.LogWarning(operationResult.Message);
+                    result.Success = false;
+                    result.Message = _configuration["Error NetworkType"]!;
+                    _logger.LogWarning(result.Message);
                 }
-                operationResult.Success = true;
-                operationResult.Data = networkTypes;
             }
             catch (Exception ex)
             {
-                operationResult.Success = false;
-                operationResult.Message = _configuration["Error NetworkType"]!;
-                _logger.LogError(operationResult.Message, ex);
+                result.Success = false;
+                result.Message = $"Error NetworkType: {ex.Message}";
+                _logger.LogError(result.Message, ex);
             }
-            return operationResult;
+            return result;
         }
 
         public async Task<OperationResult> GetById(int Id)
@@ -122,8 +119,6 @@ namespace MedCore.Application.Services.Insurance
                     operationResult.Message = "La longitud de la descripcion no puede exceder los 255 caracteres.";
                     return operationResult;
                 }
-
-
 
                 var network = await _networkTypeRepository.SaveEntityAsync(new NetworkType()
                 { Name = dto.Name,

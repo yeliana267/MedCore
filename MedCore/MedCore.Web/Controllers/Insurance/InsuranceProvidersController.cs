@@ -86,7 +86,8 @@ namespace MedCore.Web.Controllers.Insurance
                 using (var client = new HttpClient())
                 {
                     client.BaseAddress = new Uri("http://localhost:5266/api/");
-                    var response = await client.PostAsJsonAsync<InsuranceProvidersModel>($"InsuranceProviders/SaveInsuranceProviders", insuranceProviders);
+                    var response = await client.PostAsJsonAsync<InsuranceProvidersModel>($"InsuranceProviders/SaveInsuranceProviders", 
+                                                                                         insuranceProviders);
 
                     if (response.IsSuccessStatusCode)
                     {
@@ -162,9 +163,6 @@ namespace MedCore.Web.Controllers.Insurance
                 return View();
             }
         }
-
-
-
 
 
         // GET: InsuranceProvidersController/Delete/5
