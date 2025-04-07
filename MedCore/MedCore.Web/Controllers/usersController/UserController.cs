@@ -1,78 +1,75 @@
 ﻿
-using MedCore.Application.Dtos.users.Users;
-using MedCore.Application.Interfaces.users;
-using MedCore.Domain.Base;
+
+using MedCore.Web.Interfaces.users;
 using MedCore.Web.Models.users.User;
 using MedCore.Web.Models.users.users;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+
 
 namespace MedCore.Web.Controllers.usersController
 {
     public class UserController : Controller
     {
-        public IUsersService _usersService;
+        private readonly IUsersWeb _usersWeb;
+        private readonly ILogger<UserController> _logger;
 
-        public UserController(IUsersService usersService)
+        public UserController(
+            IUsersWeb usersWeb,
+            ILogger<UserController> logger)
         {
-            _usersService = usersService;
+            _usersWeb = usersWeb;
+            _logger = logger;
         }
 
-        // GET: UserController
         public async Task<IActionResult> Index()
         {
-            List<UsersModel> user = new List<UsersModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("Users/GetUsers");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    user = JsonConvert.DeserializeObject<List<UsersModel>>(result.Data.ToString());
-                    return View(user);
-                }
+                var users = await _usersWeb.GetAllAsync();
+                return View(users);
             }
-
-            return View(new List<UsersModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener lista de usuarios");
+                ViewBag.ErrorMessage = "Error al cargar los usuarios. Por favor intente nuevamente.";
+                return View(new List<UsersModel>());
+            }
         }
 
-        // GET: UserController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            UsersModel user = new UsersModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Users/GetUsersByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    user = JsonConvert.DeserializeObject<UsersModel>(result.Data.ToString());
-                    return View(user);
-                }
+                var user = await _usersWeb.GetByIdAsync(id);
+                return View(user);
             }
-
-            return View(user);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener detalles de usuario con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // GET: UserController/Create
         public async Task<IActionResult> Create()
         {
-            return View();
+            try
+            {
+                var model = new CreateUsersModel
+                {
+                    IsActive = true, 
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la vista de creación de usuario");
+                ViewBag.ErrorMessage = "Error al inicializar el formulario de creación";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(CreateUsersModel model)
@@ -81,126 +78,104 @@ namespace MedCore.Web.Controllers.usersController
             {
                 return View(model);
             }
+
             try
             {
-                using var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-                var dto = new SaveUsersDto
+                var success = await _usersWeb.CreateAsync(model);
+                if (success)
                 {
-                    FirstName = model.FirstName,
-                    LastName = model.LastName,
-                    Email = model.Email,
-                    Password = model.Password,
-                    RoleID = model.RoleID,
-                    IsActive = true,
-                    CreatedAt = DateTime.UtcNow
-                };
-
-
-                var response = await client.PostAsJsonAsync("Users/SaveUsers", dto);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                    if (result != null && result.Success)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    ViewBag.Message = result?.Message ?? "Error desconocido al crear el usuario.";
+                    return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    ViewBag.Message = "Error al conectar con la API.";
-                }
+
+                ViewBag.Message = "Error al crear el usuario.";
+                return View(model);
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "Error inesperado: " + ex.Message;
+                _logger.LogError(ex, "Error al crear usuario");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
-            return View(model);
         }
 
-        // GET: UserController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            EditUsersModel user = new EditUsersModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Users/GetUsersByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-
-                    user = JsonConvert.DeserializeObject<EditUsersModel>(result.Data.ToString());
-                    return View(user);
-                }
-            }
-            return View(user);
-        }
-
-        // POST: UserController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormCollection collection)
-        {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var user = await _usersWeb.GetEditModelByIdAsync(id);
+                return View(user);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, $"Error al cargar usuario para edición con ID {id}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
-        // GET: UserController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditUsersModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var success = await _usersWeb.UpdateAsync(id, model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al actualizar el usuario.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar usuario con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
+            }
+        }
+
         public async Task<IActionResult> Delete(int id)
         {
-            UsersModel user = new UsersModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Users/GetUsersByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    user = JsonConvert.DeserializeObject<UsersModel>(result.Data.ToString());
-                    return View(user); 
-                }
+                var user = await _usersWeb.GetByIdAsync(id);
+                return View(user);
             }
-
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar usuario para eliminación con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: UserController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _usersWeb.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar el usuario.";
+                return View();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error al eliminar usuario con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
                 return View();
             }
         }
     }
 }
+
