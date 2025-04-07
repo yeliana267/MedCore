@@ -1,3 +1,6 @@
+using MedCore.IOC.Dependencies.Medical;
+using MedCore.Persistence.Context;
+using Microsoft.EntityFrameworkCore;
 using MedCore.IOC.Dependencies.users;
 using MedCore.Persistence.Context;
 using Microsoft.AspNetCore.Builder;
@@ -28,7 +31,10 @@ namespace MedCore.Web
 
 
             builder.Services.AddControllersWithViews();
-            
+            builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+            builder.Services.AddAvailabilityModesDependency();
+            builder.Services.AddMedicalRecordsDependency();
+            builder.Services.AddSpecialtiesDependency();
 
 
             var app = builder.Build();

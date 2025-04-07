@@ -90,7 +90,7 @@ namespace MedCore.Application.Services.Medical
             }
         }
 
-        public async Task<OperationResult> Save(SaveAvailibilityModesDto dto)
+        public async Task<OperationResult> Save(SaveAvailabilityModesDto dto)
         {
             if (string.IsNullOrWhiteSpace(dto.AvailabilityMode))
             {
@@ -117,7 +117,7 @@ namespace MedCore.Application.Services.Medical
             }
         }
 
-        public async Task<OperationResult> Update(UpdateAvailibilityModesDto dto)
+        public async Task<OperationResult> Update(UpdateAvailabilityModesDto dto)
         {
             if (dto.AvailabilityModesId <= 0)
             {

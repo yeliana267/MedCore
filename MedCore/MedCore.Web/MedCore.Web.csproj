@@ -23,5 +23,17 @@
 		<ProjectReference Include="..\MedCore.Api\MedCore.Api.csproj" />
 	</ItemGroup>
 
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+
+    <PackageReference Include="xunit" Version="2.9.3" />
+  </ItemGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="..\MedCore.Application\MedCore.Application.csproj" />
+    <ProjectReference Include="..\MedCore.IOC\MedCore.IOC.csproj" />
+  </ItemGroup>
 
 </Project>
