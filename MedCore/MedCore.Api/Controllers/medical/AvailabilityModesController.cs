@@ -38,7 +38,7 @@ namespace MedCore.Api.Controllers.medical
 
         // POST api/<AvailabilityModesController>
         [HttpPost("SaveAvailability")]
-        public async Task<IActionResult> Post([FromBody] SaveAvailibilityModesDto availability)
+        public async Task<IActionResult> Post([FromBody] SaveAvailabilityModesDto availability)
 
         {
             var availabilityModes = await _availabilityModesService.Save(availability);
@@ -47,7 +47,7 @@ namespace MedCore.Api.Controllers.medical
 
         // PUT api/<AvailabilityModesController>/5
         [HttpPut("UpdateAvailability")]
-        public async Task<IActionResult> Put(short id, [FromBody] UpdateAvailibilityModesDto availabilityModesDto)
+        public async Task<IActionResult> Put(short id, [FromBody] UpdateAvailabilityModesDto availabilityModesDto)
         {
             var availabilityModes = await _availabilityModesService.Update(availabilityModesDto);
             return Ok(availabilityModes);

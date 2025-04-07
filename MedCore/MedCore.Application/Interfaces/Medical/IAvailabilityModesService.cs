@@ -4,7 +4,7 @@ using MedCore.Domain.Base;
 
 namespace MedCore.Application.Interfaces.Medical
 {
-    public interface IAvailabilityModesService : IBaseService<SaveAvailibilityModesDto, UpdateAvailibilityModesDto, RemoveAvailabilityModesDto>
+    public interface IAvailabilityModesService : IBaseService<SaveAvailabilityModesDto, UpdateAvailabilityModesDto, RemoveAvailabilityModesDto>
     {
 
         // Obtiene un modo de disponibilidad por su nombre  

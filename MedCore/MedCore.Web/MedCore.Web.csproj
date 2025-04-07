@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -10,7 +10,16 @@
 
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
 
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
+
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+
     <PackageReference Include="xunit" Version="2.9.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\MedCore.Application\MedCore.Application.csproj" />
+    <ProjectReference Include="..\MedCore.IOC\MedCore.IOC.csproj" />
   </ItemGroup>
 
 </Project>
