@@ -1,0 +1,51 @@
+﻿@model MedCore.Web.Models.appointments.AppointmentModel
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h2 class="mt-4 text-danger">¿Estás segura de eliminar esta cita?</h2>
+
+<div class="card mt-4 shadow-sm border-danger">
+    <div class="card-header bg-danger text-white">
+        Información de la Cita
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-4">ID</dt>
+            <dd class="col-sm-8">@Model.Id</dd>
+
+            <dt class="col-sm-4">ID del Paciente</dt>
+            <dd class="col-sm-8">@Model.PatientID</dd>
+
+            <dt class="col-sm-4">ID del Doctor</dt>
+            <dd class="col-sm-8">@Model.DoctorID</dd>
+
+            <dt class="col-sm-4">Fecha de la Cita</dt>
+            <dd class="col-sm-8">@Model.AppointmentDate.ToString("dd/MM/yyyy hh:mm tt")</dd>
+
+            <dt class="col-sm-4">Estado</dt>
+            <dd class="col-sm-8">@Model.StatusID</dd>
+
+            <dt class="col-sm-4">Creado en</dt>
+            <dd class="col-sm-8">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
+
+            <dt class="col-sm-4">Última Actualización</dt>
+            <dd class="col-sm-8">@Model.UpdatedAt?.ToString("dd/MM/yyyy")</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete" method="post" class="mt-4">
+    <input type="hidden" asp-for="Id" />
+    <div class="d-flex justify-content-between">
+        <input type="submit" value="Eliminar" class="btn btn-danger" />
+        <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

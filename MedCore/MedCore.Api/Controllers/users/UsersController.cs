@@ -1,8 +1,9 @@
-﻿using MedCore.Domain.Entities.users;
+﻿using MedCore.Application.Dtos.users.Users;
+using MedCore.Application.Interfaces.users;
+using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Interfaces.users;
 using Microsoft.AspNetCore.Mvc;
 
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace MedCore.Api.Controllers.users
 {
@@ -10,13 +11,13 @@ namespace MedCore.Api.Controllers.users
     [ApiController]
     public class UsersController : ControllerBase
     {
-        private readonly IUsersRepository _usersRepository;
+        private readonly IUsersService _usersService;
         public readonly ILogger<UsersController> _logger;
         public readonly IConfiguration _configuration;
-        public UsersController(IUsersRepository usersRepository, ILogger<UsersController> logger, IConfiguration configuration)
+        public UsersController(IUsersService usersService, ILogger<UsersController> logger, IConfiguration configuration)
         {
             _configuration = configuration;
-            _usersRepository = usersRepository;
+            _usersService = usersService;
             _logger = logger;
 
         }
@@ -26,7 +27,7 @@ namespace MedCore.Api.Controllers.users
         [HttpGet("GetUsers")]
         public async Task<IActionResult> Get()
         {
-            var users = await _usersRepository.GetAllAsync();
+            var users = await _usersService.GetAll();
             return Ok(users);
         }
 
@@ -35,32 +36,33 @@ namespace MedCore.Api.Controllers.users
         [HttpGet("GetUsersByID")]
         public async Task<IActionResult> Get(int id)
         {
-            var users = await _usersRepository.GetEntityByIdAsync(id);
+            var users = await _usersService.GetById(id);
             return Ok(users);
         }
 
         // POST api/<UsersController>
-        [HttpPost("Save")]
-        public async Task<IActionResult> Post([FromBody] Users users)
+        [HttpPost("SaveUsers")]
+        public async Task<IActionResult> Post([FromBody] SaveUsersDto users)
         {
-            var user = await _usersRepository.SaveEntityAsync(users);
+            var user = await _usersService.Save(users);
             return Ok(user);
         }
 
         // PUT api/<UsersController>/5
-        [HttpPut("Update")]
-        public async Task<IActionResult> Put(int id, [FromBody] Users users)
+        [HttpPut("UpdateUsers")]
+        public async Task<IActionResult> Put(int id, [FromBody] UpdateUsersDto users)
         {
-            var user = await _usersRepository.UpdateEntityAsync(id, users);
+            var user = await _usersService.Update(users);
             return Ok(user);
         }
 
         // DELETE api/<UsersController>/5
-        [HttpDelete("Delete")]
-        public async Task<IActionResult> Delete(int id)
+        [HttpPost("DeleteUsers")]
+        public async Task<IActionResult> Delete([FromBody] RemoveUsersDto id)
         {
-            var user = await _usersRepository.DeleteEntityByIdAsync(id);
-            return Ok(user);    
+            var user = await _usersService.Remove(id);
+            return Ok(user);
         }
+
     }
 }

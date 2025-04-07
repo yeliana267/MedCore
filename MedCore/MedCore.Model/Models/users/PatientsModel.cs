@@ -10,10 +10,15 @@ namespace MedCore.Model.Models.users
         public int PatientID { get; set; }
         [Required]
         public DateTime DateOfBirth { get; set; }
+
         [Required]
-        public string Gender { get; set; }
+        [MaxLength(1)]
+        public char Gender { get; set; }
+
         [Required]
         public string PhoneNumber { get; set; }
+
+        [Required]
         [MaxLength(255)]
         public string Address { get; set; }
         [Required]
@@ -24,8 +29,8 @@ namespace MedCore.Model.Models.users
         [MaxLength(2)]
         public string BloodType { get; set; }
         [Required]
-        public string? Allergies { get; set; }
+        public string Allergies { get; set; }
         [Required]
-        public int? InsuranceProviderID { get; set; }
+        public int InsuranceProviderID { get; set; }
     }
 }

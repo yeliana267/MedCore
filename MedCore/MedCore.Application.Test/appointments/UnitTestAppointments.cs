@@ -5,7 +5,6 @@ using MedCore.Persistence.Interfaces.appointments;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 
 namespace MedCore.Application.Test.appointments
 {
@@ -51,7 +50,7 @@ namespace MedCore.Application.Test.appointments
         public async Task Save_NullDto_ReturnsError()
         {
             // Act
-            var result = await _service.Save(null);
+            OperationResult result = await _service.Save(null!);
 
             // Assert
             Assert.False(result.Success);

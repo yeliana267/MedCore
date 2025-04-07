@@ -1,8 +1,6 @@
 ﻿
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.appointments;
-using MedCore.Domain.Entities.system;
-using MedCore.Model.Models.appointments;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
 using MedCore.Persistence.Interfaces.appointments;
@@ -158,5 +156,7 @@ namespace MedCore.Persistence.Repositories.appointments
             }
             return result;
         }
+
+    
     }
 }

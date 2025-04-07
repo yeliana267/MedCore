@@ -378,7 +378,6 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> Update(UpdateUsersDto dto)
         {
             OperationResult result = new OperationResult();
