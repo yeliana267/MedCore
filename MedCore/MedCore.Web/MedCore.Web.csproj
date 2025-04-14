@@ -8,7 +8,6 @@
 
 	<ItemGroup>
 
-
 		<PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="9.0.2" />
 
 		<PackageReference Include="Microsoft.VisualStudio.LiveShare" Version="1.1.57" />

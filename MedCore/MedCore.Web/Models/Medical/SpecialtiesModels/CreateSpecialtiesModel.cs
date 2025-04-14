@@ -2,6 +2,5 @@
 {
     public class CreateSpecialtiesModel
     {
-        public string SpecialtyName { get; set; }
     }
 }
