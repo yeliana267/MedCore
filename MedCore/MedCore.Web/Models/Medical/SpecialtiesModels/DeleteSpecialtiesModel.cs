@@ -2,6 +2,5 @@
 {
     public class DeleteSpecialtiesModel
     {
-        public short SpecialtiesId { get; set; }
     }
 }
