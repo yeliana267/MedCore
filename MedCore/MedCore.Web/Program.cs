@@ -1,14 +1,24 @@
+
+
+using MedCore.Application.Interfaces.appointments;
 using MedCore.IOC.Dependencies.appointments;
+using MedCore.IOC.Dependencies.Insurance;
 using MedCore.IOC.Dependencies.Medical;
 using MedCore.IOC.Dependencies.users;
 using MedCore.Persistence.Context;
 using MedCore.Web.Interfaces;
 using MedCore.Web.Interfaces.appointments;
 using MedCore.Web.Interfaces.Medical;
-using MedCore.Web.Repositories;
 using MedCore.Web.Repositories.appointments;
 using MedCore.Web.Repositories.Medical;
 using Microsoft.EntityFrameworkCore;
+using MedCore.Web.Interfaces.appointments.appointment;
+using MedCore.Web.Interfaces.appointments.doctorAvailability;
+using MedCore.Web.Repositories;
+using MedCore.Web.Repositories.appointmentsRepository.appointment;
+using MedCore.Web.Repositories.appointmentsRepository.doctorAvailability;
+using Microsoft.EntityFrameworkCore;
+
 
 
 
@@ -32,11 +42,27 @@ namespace MedCore.Web
             builder.Services.AddAppointmentsDependency();
 
             builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
-            
+
             builder.Services.AddUsersDependency();
             builder.Services.AddPatientsDependency();
             builder.Services.AddDoctorsDependency();
+            builder.Services.AddInsuranceProvidersDependency();
+            builder.Services.AddNetworkTypeDependency();
             builder.Services.AddControllers();
+       
+
+
+            builder.Services.AddScoped<IAppointmentWeb, AppointmentWeb>();
+            builder.Services.AddScoped<IDoctorAvailabilityWeb, DoctorAvailabilityWeb>();
+
+
+            // Configuraci�n de DbContext
+            builder.Services.AddDbContext<MedCoreContext>(options =>
+                options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+
+            builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<MedCoreContext>(Options => Options.UseSqlServer(builder.Configuration.GetConnectionString("MedcoreDb")));
+
             builder.Services.AddAvailabilityModesDependency();
             builder.Services.AddMedicalRecordsDependency();
             builder.Services.AddSpecialtiesDependency();

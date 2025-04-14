@@ -1,7 +1,6 @@
 ﻿
 
 using MedCore.Domain.Base;
-using MedCore.Domain.Entities.appointments;
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Base;
 using MedCore.Persistence.Context;
@@ -163,56 +162,44 @@ namespace MedCore.Persistence.Repositories.users
             return result;
         }
 
-        public override async Task<OperationResult> SaveEntityAsync(Patients patient)
+        public override async Task<OperationResult> SaveEntityAsync(Patients entity)
         {
-            var result = new OperationResult();
-
+            OperationResult result = new OperationResult();
             try
             {
-                if (patient == null)
+                // Verificar si el User asociado existe
+                var userExists = await _context.Users.AnyAsync(u => u.Id == entity.Id);
+                if (!userExists)
                 {
                     result.Success = false;
-                    result.Message = "El paciente no puede ser nulo";
+                    result.Message = "El usuario asociado no existe.";
                     return result;
                 }
 
-                if (string.IsNullOrEmpty(patient.PhoneNumber))
+                // Verificar si el paciente ya existe
+                var patientExists = await _context.Patients.AnyAsync(p => p.Id == entity.Id);
+                if (patientExists)
                 {
                     result.Success = false;
-                    result.Message = "El número de teléfono es obligatorio";
+                    result.Message = "Ya existe un paciente con este ID.";
                     return result;
                 }
 
-                if (patient.InsuranceProviderID <= 0)
-                {
-                    result.Success = false;
-                    result.Message = "Debe especificar un proveedor de seguros válido";
-                    return result;
-                }
+                await _context.Patients.AddAsync(entity);
+                await _context.SaveChangesAsync();
 
-                var providerExists = await _context.InsuranceProviders
-                    .AnyAsync(p => p.Id == patient.InsuranceProviderID);
-
-                if (!providerExists)
-                {
-                    result.Success = false;
-                    result.Message = "El proveedor de seguros especificado no existe";
-                    return result;
-                }
-
-                return await base.SaveEntityAsync(patient);
+                result.Success = true;
+                result.Message = "Paciente guardado correctamente.";
             }
-          
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error inesperado al guardar paciente");
                 result.Success = false;
-                result.Message = $"Error inesperado: {ex.Message}";
-                Console.WriteLine(ex.InnerException?.Message);
-                return result;
+                result.Message = $"Error al guardar el paciente: {ex.Message}";
             }
+            return result;
         }
     }
+    }
 
-}
+
 

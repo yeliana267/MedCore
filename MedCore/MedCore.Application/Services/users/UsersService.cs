@@ -1,4 +1,5 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Text.RegularExpressions;
 using MedCore.Application.Dtos.users.Users;
 using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
@@ -27,7 +28,7 @@ namespace MedCore.Application.Services.users
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el userId sea válido
+                
                 if (userId <= 0)
                 {
                     result.Success = false;
@@ -36,7 +37,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Verificar si el usuario existe
+                
                 var userResult = await _usersRepository.GetEntityByIdAsync(userId);
                 if (userResult == null)
                 {
@@ -46,7 +47,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Verificar si el usuario ya está activo
+                
                 if (userResult.IsActive) 
                 {
                     result.Success = false;
@@ -55,7 +56,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Activar el usuario
+                
                 var activationResult = await _usersRepository.ActivateUserAsync(userId);
                 if (activationResult.Success)
                 {
@@ -78,13 +79,12 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> DeactivateUserAsync(int userId)
         {
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el userId sea válido
+                
                 if (userId <= 0)
                 {
                     result.Success = false;
@@ -93,7 +93,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Verificar si el usuario existe
+                
                 var userResult = await _usersRepository.GetEntityByIdAsync(userId);
                 if (userResult == null)
                 {
@@ -103,7 +103,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Verificar si el usuario ya está desactivado
+                
                 if (!userResult.IsActive) 
                 {
                     result.Success = false;
@@ -112,7 +112,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Desactivar el usuario
+                
                 var deactivationResult = await _usersRepository.DeactivateUserAsync(userId);
                 if (deactivationResult.Success)
                 {
@@ -135,7 +135,6 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> GetAll()
         {
             OperationResult result = new OperationResult();
@@ -143,7 +142,7 @@ namespace MedCore.Application.Services.users
             {
                 var users = await _usersRepository.GetAllAsync();
 
-                // Validacion
+                
                 if (users == null || !users.Any())
                 {
                     result.Success = false;
@@ -164,13 +163,12 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> GetById(int id)
         {
             OperationResult result = new OperationResult();
             try
             {
-                // Validacion
+               
                 if (id <= 0)
                 {
                     result.Success = false;
@@ -181,7 +179,7 @@ namespace MedCore.Application.Services.users
 
                 var user = await _usersRepository.GetEntityByIdAsync(id);
 
-                // Validacion
+                
                 if (user == null)
                 {
                     result.Success = false;
@@ -202,13 +200,12 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> GetUserByEmailAsync(string email)
         {
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el correo electrónico no esté vacío o sea nulo
+               
                 if (string.IsNullOrWhiteSpace(email))
                 {
                     result.Success = false;
@@ -217,7 +214,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Validar el formato del correo electrónico usando una expresión regular
+                
                 string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$"; 
                 if (!Regex.IsMatch(email, emailPattern))
                 {
@@ -227,7 +224,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Obtener el usuario por correo electrónico
+                
                 var userResult = await _usersRepository.GetByEmailAsync(email);
                 if (userResult == null)
                 {
@@ -250,13 +247,12 @@ namespace MedCore.Application.Services.users
             }
             return result;
         }
-
         public async Task<OperationResult> Remove(RemoveUsersDto dto)
         {
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el ID sea válido
+               
                 if (dto.UserID <= 0)
                 {
                     result.Success = false;
@@ -265,7 +261,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Eliminar el usuario
+                
                 var deleteResult = await _usersRepository.DeleteEntityByIdAsync(dto.UserID);
                 if (deleteResult.Success)
                 {
@@ -292,7 +288,7 @@ namespace MedCore.Application.Services.users
             OperationResult result = new OperationResult();
             try
             {
-                //Validar
+                
                 if (string.IsNullOrWhiteSpace(dto.FirstName))
                 {
                     result.Success = false;
@@ -333,7 +329,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Validar formato del correo electrónico 
+                
                 string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$";
                 if (!Regex.IsMatch(dto.Email, emailPattern))
                 {
@@ -343,7 +339,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Mapear el DTO a la entidad Users
+                
                 var user = new Users
                 {
                     FirstName = dto.FirstName,
@@ -355,7 +351,7 @@ namespace MedCore.Application.Services.users
                     CreatedAt = dto.CreatedAt
                 };
 
-                // Guardar el usuario
+                
                 var saveResult = await _usersRepository.SaveEntityAsync(user);
                 if (saveResult.Success)
                 {
@@ -380,103 +376,100 @@ namespace MedCore.Application.Services.users
         }
         public async Task<OperationResult> Update(UpdateUsersDto dto)
         {
-            OperationResult result = new OperationResult();
+            var result = new OperationResult();
+
+            if (dto == null || dto.UserID <= 0)
+            {
+                result.Success = false;
+                result.Message = "Datos inválidos para la actualización.";
+                _logger.LogWarning(result.Message);
+                return result;
+            }
+
             try
             {
-                // Validar que el ID sea válido
-                if (dto.UserID <= 0)
+
+                var existing = await _usersRepository.GetEntityByIdAsync(dto.UserID);
+                if (existing == null)
                 {
                     result.Success = false;
-                    result.Message = "ID de usuario no válido.";
-                    _logger.LogWarning("Intento de actualización fallido: ID de usuario no válido.");
+                    result.Message = "Usuario no encontrado.";
+                    _logger.LogWarning(result.Message);
                     return result;
                 }
 
-                // Validar campos obligatorios
-                if (string.IsNullOrWhiteSpace(dto.FirstName))
+                
+                if (!existing.IsActive && dto.IsActive.HasValue && !dto.IsActive.Value)
                 {
                     result.Success = false;
-                    result.Message = "El nombre del usuario no puede estar vacío.";
-                    _logger.LogWarning("Intento de actualización fallido: Nombre de usuario vacío.");
+                    result.Message = "No se pueden modificar usuarios inactivos.";
+                    _logger.LogWarning(result.Message);
                     return result;
                 }
 
-                if (string.IsNullOrWhiteSpace(dto.LastName))
+                
+                if (dto.Email != null && !new EmailAddressAttribute().IsValid(dto.Email))
                 {
                     result.Success = false;
-                    result.Message = "El apellido del usuario no puede estar vacío.";
-                    _logger.LogWarning("Intento de actualización fallido: Apellido de usuario vacío.");
+                    result.Message = "El formato del email no es válido.";
+                    _logger.LogWarning(result.Message);
                     return result;
                 }
 
-                if (string.IsNullOrWhiteSpace(dto.Email))
+
+
+                
+                if (dto.FirstName != null)
                 {
-                    result.Success = false;
-                    result.Message = "El correo electrónico del usuario no puede estar vacío.";
-                    _logger.LogWarning("Intento de actualización fallido: Correo electrónico de usuario vacío.");
-                    return result;
+                    _logger.LogDebug("Actualizando FirstName de '{Old}' a '{New}'", existing.FirstName, dto.FirstName);
+                    existing.FirstName = dto.FirstName;
                 }
 
-                if (string.IsNullOrWhiteSpace(dto.Password))
+                if (dto.LastName != null)
                 {
-                    result.Success = false;
-                    result.Message = "La contraseña del usuario no puede estar vacía.";
-                    _logger.LogWarning("Intento de actualización fallido: Contraseña de usuario vacía.");
-                    return result;
+                    _logger.LogDebug("Actualizando LastName de '{Old}' a '{New}'", existing.LastName, dto.LastName);
+                    existing.LastName = dto.LastName;
                 }
 
-                if (dto.RoleID <= 0)
+                if (dto.Email != null)
                 {
-                    result.Success = false;
-                    result.Message = "El ID del rol no es válido.";
-                    _logger.LogWarning("Intento de actualización fallido: ID de rol no válido.");
-                    return result;
+                    _logger.LogDebug("Actualizando Email de '{Old}' a '{New}'", existing.Email, dto.Email);
+                    existing.Email = dto.Email;
                 }
 
-                // Validar formato del correo electrónico usando Regex
-                string emailPattern = @"^[^@\s]+@[^@\s]+\.[^@\s]+$"; // Expresión regular básica para correos
-                if (!Regex.IsMatch(dto.Email, emailPattern))
+                if (dto.RoleID.HasValue)
                 {
-                    result.Success = false;
-                    result.Message = "El formato del correo electrónico no es válido.";
-                    _logger.LogWarning("Intento de actualización fallido: Formato de correo electrónico no válido.");
-                    return result;
+                    _logger.LogDebug("Actualizando RoleID de {Old} a {New}", existing.RoleID, dto.RoleID);
+                    existing.RoleID = dto.RoleID.Value;
                 }
 
-                // Mapear el DTO a la entidad Users
-                var user = new Users
+                if (dto.IsActive.HasValue)
                 {
-                    Id = dto.UserID,
-                    FirstName = dto.FirstName,
-                    LastName = dto.LastName,
-                    Email = dto.Email,
-                    Password = dto.Password,
-                    RoleID = dto.RoleID,
-                    IsActive = dto.IsActive,
-                    UpdatedAt = dto.UpdatedAt
-                };
+                    _logger.LogDebug("Actualizando IsActive de {Old} a {New}", existing.IsActive, dto.IsActive);
+                    existing.IsActive = dto.IsActive.Value;
+                }
 
-                // Actualizar el usuario
-                var updateResult = await _usersRepository.UpdateEntityAsync(dto.UserID, user); 
-                if (updateResult.Success)
+
+                
+                var updateResult = await _usersRepository.UpdateEntityAsync(dto.UserID, existing);
+                if (!updateResult.Success)
                 {
-                    result.Success = true;
-                    result.Message = "Usuario actualizado correctamente.";
-                    result.Data = user;
+                    _logger.LogError("Error al guardar en repositorio: {Message}", updateResult.Message);
+                    return updateResult;
                 }
-                else
-                {
-                    result.Success = false;
-                    result.Message = updateResult.Message;
-                    _logger.LogWarning($"Error al actualizar el usuario: {updateResult.Message}");
-                }
+
+                result.Success = true;
+                result.Message = "Usuario actualizado correctamente.";
+                result.Data = existing;
+                _logger.LogInformation(result.Message);
             }
             catch (Exception ex)
             {
-                result.Message = ex.Message;
                 result.Success = false;
-                _logger.LogError($"Error al actualizar el usuario: {ex.Message}", ex);
+                result.Message = $"Error al actualizar usuario: {ex.Message}";
+                _logger.LogError(ex, result.Message);
             }
+
             return result;
         }
     }

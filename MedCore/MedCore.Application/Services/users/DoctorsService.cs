@@ -74,7 +74,6 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> DeactivateDoctorAsync(int doctorId)
         {
             var result = new OperationResult();
@@ -123,7 +122,6 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> GetAll()
         {
             var result = new OperationResult();
@@ -152,7 +150,6 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> GetById(int id)
         {
             var result = new OperationResult();
@@ -189,7 +186,6 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> Remove(RemoveDoctorsDto dto)
         {
             var result = new OperationResult();
@@ -233,14 +229,13 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
         public async Task<OperationResult> Save(SaveDoctorsDto dto)
         {
             var result = new OperationResult();
 
             try
             {
-                // Validar que el DTO no sea nulo
+                
                 if (dto == null)
                 {
                     result.Success = false;
@@ -248,7 +243,16 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Validar campos obligatorios
+                
+                var user = await _usersRepository.GetEntityByIdAsync(dto.UserID);
+                if (user == null)
+                {
+                    result.Success = false;
+                    result.Message = "El usuario asociado no existe.";
+                    return result;
+                }
+
+               
                 if (string.IsNullOrEmpty(dto.LicenseNumber) || dto.AvailabilityModeId == null || dto.LicenseExpirationDate == default)
                 {
                     result.Success = false;
@@ -256,9 +260,10 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Crear la entidad Doctors
+               
                 var doctor = new Doctors
                 {
+                    Id = dto.UserID, 
                     SpecialtyID = dto.SpecialtyID,
                     LicenseNumber = dto.LicenseNumber,
                     PhoneNumber = dto.PhoneNumber,
@@ -267,17 +272,21 @@ namespace MedCore.Application.Services.users
                     Bio = dto.Bio,
                     ConsultationFee = dto.ConsultationFee,
                     ClinicAddress = dto.ClinicAddress,
-                    AvailabilityModeId = dto.AvailabilityModeId, // short?
-                    LicenseExpirationDate = dto.LicenseExpirationDate, // DateOnly
+                    AvailabilityModeId = dto.AvailabilityModeId,
+                    LicenseExpirationDate = dto.LicenseExpirationDate,
                     IsActive = dto.IsActive
                 };
 
-                // Guardar el doctor en la base de datos
-                await _doctorsRepository.SaveEntityAsync(doctor);
+                
+                var saveResult = await _doctorsRepository.SaveEntityAsync(doctor);
+                if (!saveResult.Success)
+                {
+                    return saveResult; 
+                }
 
                 result.Success = true;
                 result.Message = "Doctor guardado correctamente.";
-                result.Data = doctor; // Opcional: devolver el doctor creado
+                result.Data = doctor;
             }
             catch (Exception ex)
             {
@@ -288,162 +297,59 @@ namespace MedCore.Application.Services.users
 
             return result;
         }
-
-
-
-            //    OperationResult result = new OperationResult();
-            //    try
-            //    {
-            //        // Validaciones básicas
-            //        if (string.IsNullOrWhiteSpace(dto.FirstName))
-            //        {
-            //            result.Success = false;
-            //            result.Message = "El nombre del doctor no puede estar vacío.";
-            //            _logger.LogWarning("Intento de guardado fallido: Nombre de doctor vacío.");
-            //            return result;
-            //        }
-
-            //        if (dto.SpecialtyID <= 0)
-            //        {
-            //            result.Success = false;
-            //            result.Message = "La especialidad no es válida.";
-            //            _logger.LogWarning("Intento de guardado fallido: Especialidad no válida.");
-            //            return result;
-            //        }
-
-            //        // 1. Primero creamos el usuario
-            //        var userResult = await _usersRepository.SaveEntityAsync(new Users
-            //        {
-            //            FirstName = dto.FirstName,
-            //            LastName = dto.LastName,
-            //            Email = dto.Email,
-            //            Password = dto.Password,
-            //            RoleID = dto.RoleID,
-            //            IsActive = true,
-            //            CreatedAt = DateTime.UtcNow
-            //        });
-
-            //        if (!userResult.Success)
-            //        {
-            //            result.Success = false;
-            //            result.Message = $"Error al crear usuario: {userResult.Message}";
-            //            _logger.LogWarning($"Error al crear usuario para doctor: {userResult.Message}");
-            //            return result;
-            //        }
-
-            //        var user = (Users)userResult.Data;
-
-            //        // 2. Luego creamos el doctor con el UserID generado
-            //        var doctor = new Doctors
-            //        {
-            //            DoctorID = user.UserID, 
-            //            SpecialtyID = dto.SpecialtyID,
-            //            LicenseNumber = dto.LicenseNumber,
-            //            PhoneNumber = dto.PhoneNumber,
-            //            YearsOfExperience = dto.YearsOfExperience,
-            //            Education = dto.Education,
-            //            Bio = dto.Bio,
-            //            ConsultationFee = dto.ConsultationFee,
-            //            ClinicAddress = dto.ClinicAddress,
-            //            AvailabilityModeId = dto.AvailabilityModeId,
-            //            LicenseExpirationDate = dto.LicenseExpirationDate,
-            //            CreatedAt = DateTime.UtcNow,
-            //            IsActive = true
-            //        };
-
-            //        var saveDoctorResult = await _doctorsRepository.SaveEntityAsync(doctor);
-
-            //        if (saveDoctorResult.Success)
-            //        {
-            //            result.Success = true;
-            //            result.Message = "Doctor guardado correctamente.";
-            //            result.Data = doctor;
-            //        }
-            //        else
-            //        {
-            //            // Si falla al guardar el doctor, podrías considerar eliminar el usuario creado
-            //            // Esto dependerá de tu lógica de negocio
-            //            result.Success = false;
-            //            result.Message = saveDoctorResult.Message;
-            //            _logger.LogWarning($"Error al guardar el doctor: {saveDoctorResult.Message}");
-            //        }
-            //    }
-            //    catch (Exception ex)
-            //    {
-            //        result.Message = $"Error inesperado: {ex.Message}";
-            //        result.Success = false;
-            //        _logger.LogError($"Error al guardar el doctor: {ex.Message}", ex);
-            //    }
-            //    return result;
-            //}
-
-
-
-
-
-
-
         public async Task<OperationResult> Update(UpdateDoctorsDto dto)
         {
             var result = new OperationResult();
 
+            if (dto == null || dto.DoctorID <= 0)
+            {
+                result.Success = false;
+                result.Message = "Datos inválidos para la actualización.";
+                return result;
+            }
+
             try
             {
-                // Validar que el DTO no sea nulo
-                if (dto == null)
-                {
-                    result.Success = false;
-                    result.Message = "El DTO no puede ser nulo.";
-                    return result;
-                }
-
-                // Validar que el ID del doctor sea válido
-                if (dto.DoctorID <= 0)
-                {
-                    result.Success = false;
-                    result.Message = "El ID del doctor no es válido.";
-                    return result;
-                }
-
-                // Obtener el doctor existente
-                var existingDoctor = await _doctorsRepository.GetEntityByIdAsync(dto.DoctorID);
-                if (existingDoctor == null)
+                var existing = await _doctorsRepository.GetEntityByIdAsync(dto.DoctorID);
+                if (existing == null)
                 {
                     result.Success = false;
                     result.Message = "Doctor no encontrado.";
                     return result;
                 }
 
-                // Actualizar los campos del doctor
-                existingDoctor.SpecialtyID = dto.SpecialtyID; // short
-                existingDoctor.LicenseNumber = dto.LicenseNumber; // string
-                existingDoctor.PhoneNumber = dto.PhoneNumber;
-                existingDoctor.YearsOfExperience = dto.YearsOfExperience;
-                existingDoctor.Education = dto.Education;
-                existingDoctor.Bio = dto.Bio;
-                existingDoctor.ConsultationFee = dto.ConsultationFee;
-                existingDoctor.ClinicAddress = dto.ClinicAddress;
-                existingDoctor.AvailabilityModeId = dto.AvailabilityModeId; // short?
-                existingDoctor.LicenseExpirationDate = dto.LicenseExpirationDate; // DateOnly
-                existingDoctor.IsActive = dto.IsActive;
+               
+                if (!existing.IsActive && dto.IsActive.HasValue && !dto.IsActive.Value)
+                {
+                    result.Success = false;
+                    result.Message = "No se pueden modificar doctores inactivos.";
+                    return result;
+                }
 
-                // Guardar los cambios en la base de datos
-                await _doctorsRepository.UpdateEntityAsync(dto.DoctorID, existingDoctor);
+               
+                if (dto.LicenseNumber != null) existing.LicenseNumber = dto.LicenseNumber;
+                if (dto.PhoneNumber != null) existing.PhoneNumber = dto.PhoneNumber;
+                if (dto.YearsOfExperience.HasValue) existing.YearsOfExperience = dto.YearsOfExperience.Value;
+                if (dto.Education != null) existing.Education = dto.Education;
+                if (dto.Bio != null) existing.Bio = dto.Bio;
+                if (dto.ConsultationFee.HasValue) existing.ConsultationFee = dto.ConsultationFee.Value;
+                if (dto.ClinicAddress != null) existing.ClinicAddress = dto.ClinicAddress;
+                if (dto.AvailabilityModeId.HasValue) existing.AvailabilityModeId = dto.AvailabilityModeId.Value;
+                if (dto.LicenseExpirationDate.HasValue) existing.LicenseExpirationDate = dto.LicenseExpirationDate.Value;
+                if (dto.IsActive.HasValue) existing.IsActive = dto.IsActive.Value;
+                if (dto.SpecialtyID.HasValue) existing.SpecialtyID = (short)dto.SpecialtyID.Value;
 
-                result.Success = true;
-                result.Message = "Doctor actualizado correctamente.";
-                result.Data = existingDoctor; // Opcional: devolver el doctor actualizado
+                existing.UpdatedAt = DateTime.UtcNow;
+
+                return await _doctorsRepository.UpdateEntityAsync(dto.DoctorID, existing);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar el doctor.");
                 result.Success = false;
-                result.Message = $"Error inesperado al actualizar el doctor: {ex.Message}";
+                result.Message = "Error al actualizar el doctor: " + ex.Message;
+                return result;
             }
-
-            return result;
         }
-
         public async Task<OperationResult> UpdateConsultationFeeAsync(int doctorId, decimal consultationFee)
         {
             var result = new OperationResult();

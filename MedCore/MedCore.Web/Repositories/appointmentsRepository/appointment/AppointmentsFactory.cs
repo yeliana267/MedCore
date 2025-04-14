@@ -1,7 +1,7 @@
 ﻿using MedCore.Application.Dtos.appointments.Appointments;
 using MedCore.Web.Models.appointments;
 
-namespace MedCore.Web.Repositories.appointmentWeb
+namespace MedCore.Web.Repositories.appointmentsRepository.appointment
 {
     public class AppointmentsFactory
     {

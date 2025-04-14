@@ -3,10 +3,8 @@ using MedCore.Application.Interfaces.users;
 using MedCore.Domain.Base;
 using MedCore.Domain.Entities.users;
 using MedCore.Persistence.Interfaces.users;
-using MedCore.Persistence.Repositories.users;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.IdentityModel.Tokens;
 
 
 namespace MedCore.Application.Services.users
@@ -16,12 +14,14 @@ namespace MedCore.Application.Services.users
         private readonly IPatientsRepository _patientsRepository;
         private readonly ILogger<PatientsService> _logger;
         private readonly IConfiguration _configuration;
+        private readonly IUsersRepository _usersRepository;
 
-        public PatientsService(IPatientsRepository patientsRepository, ILogger<PatientsService> logger, IConfiguration configuration)
+        public PatientsService(IPatientsRepository patientsRepository, IUsersRepository usersRepository, ILogger<PatientsService> logger, IConfiguration configuration)
         {
             _patientsRepository = patientsRepository;
             _logger = logger;
             _configuration = configuration;
+            _usersRepository = usersRepository;
         }
 
         public async Task<OperationResult> ActivatePatientAsync(int patientId)
@@ -79,7 +79,7 @@ namespace MedCore.Application.Services.users
 
             try
             {
-                // Validar que el ID del paciente sea válido
+                
                 if (patientId <= 0)
                 {
                     result.Success = false;
@@ -87,7 +87,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Obtener el paciente existente
+                
                 var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
                 if (existingPatient == null)
                 {
@@ -96,10 +96,10 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Desactivar al paciente (asumiendo que hay una propiedad IsActive)
+                
                 existingPatient.IsActive = false;
 
-                // Guardar los cambios en la base de datos
+                
                 var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
                 if (!updateResult.Success)
                 {
@@ -110,7 +110,7 @@ namespace MedCore.Application.Services.users
 
                 result.Success = true;
                 result.Message = "Paciente desactivado correctamente.";
-                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+                result.Data = existingPatient; 
             }
             catch (Exception ex)
             {
@@ -129,7 +129,7 @@ namespace MedCore.Application.Services.users
             {
                 var patients = await _patientsRepository.GetAllAsync();
 
-                // Validar si la lista de pacientes está vacía
+                
                 if (patients == null || !patients.Any())
                 {
                     result.Success = false;
@@ -156,7 +156,7 @@ namespace MedCore.Application.Services.users
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el ID sea válido
+                
                 if (id <= 0)
                 {
                     result.Success = false;
@@ -167,7 +167,7 @@ namespace MedCore.Application.Services.users
 
                 var patient = await _patientsRepository.GetEntityByIdAsync(id);
 
-                // Validar si el paciente existe
+                
                 if (patient == null)
                 {
                     result.Success = false;
@@ -194,8 +194,8 @@ namespace MedCore.Application.Services.users
             OperationResult result = new OperationResult();
             try
             {
-                // Validar que el ID sea válido
-                if (dto.PatientID <= 0) // Asegúrate de que la propiedad se llame PatientID
+               
+                if (dto.PatientID <= 0) 
                 {
                     result.Success = false;
                     result.Message = "El ID del paciente no es válido.";
@@ -203,7 +203,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Verificar si el paciente existe
+                
                 var patient = await _patientsRepository.GetEntityByIdAsync(dto.PatientID);
                 if (patient == null)
                 {
@@ -213,7 +213,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Eliminar el paciente
+                
                 var deleteResult = await _patientsRepository.DeleteEntityByIdAsync(dto.PatientID);
                 if (deleteResult.Success)
                 {
@@ -242,7 +242,7 @@ namespace MedCore.Application.Services.users
 
             try
             {
-
+                
                 if (dto == null)
                 {
                     result.Success = false;
@@ -250,7 +250,16 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
+                
+                var user = await _usersRepository.GetEntityByIdAsync(dto.UserID);
+                if (user == null)
+                {
+                    result.Success = false;
+                    result.Message = "El usuario asociado no existe.";
+                    return result;
+                }
 
+                
                 if (dto.DateOfBirth == default || dto.Gender == '\0' || string.IsNullOrEmpty(dto.PhoneNumber))
                 {
                     result.Success = false;
@@ -258,9 +267,10 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-
+                
                 var patient = new Patients
                 {
+                    Id = dto.UserID,
                     DateOfBirth = dto.DateOfBirth,
                     Gender = dto.Gender,
                     PhoneNumber = dto.PhoneNumber,
@@ -272,13 +282,11 @@ namespace MedCore.Application.Services.users
                     InsuranceProviderID = dto.InsuranceProviderID
                 };
 
-
+               
                 var saveResult = await _patientsRepository.SaveEntityAsync(patient);
                 if (!saveResult.Success)
                 {
-                    result.Success = false;
-                    result.Message = $"Error al guardar el paciente: {saveResult.Message}";
-                    return result;
+                    return saveResult; 
                 }
 
                 result.Success = true;
@@ -298,73 +306,46 @@ namespace MedCore.Application.Services.users
         {
             var result = new OperationResult();
 
+            if (dto == null || dto.PatientID <= 0)
+            {
+                result.Success = false;
+                result.Message = "Datos inválidos para la actualización.";
+                return result;
+            }
+
             try
             {
-                // Validar que el DTO no sea nulo
-                if (dto == null)
-                {
-                    result.Success = false;
-                    result.Message = "El DTO no puede ser nulo.";
-                    return result;
-                }
-
-                // Validar que el PatientID sea válido
-                if (dto.PatientID <= 0)
-                {
-                    result.Success = false;
-                    result.Message = "El ID del paciente no es válido.";
-                    return result;
-                }
-
-                // Validar campos obligatorios
-                if (dto.DateOfBirth == default || dto.Gender == '\0' || string.IsNullOrEmpty(dto.PhoneNumber))
-                {
-                    result.Success = false;
-                    result.Message = "Fecha de nacimiento, género y número de teléfono son campos obligatorios.";
-                    return result;
-                }
-
-                // Obtener el paciente existente
-                var existingPatient = await _patientsRepository.GetEntityByIdAsync(dto.PatientID);
-                if (existingPatient == null)
+                var existing = await _patientsRepository.GetEntityByIdAsync(dto.PatientID);
+                if (existing == null)
                 {
                     result.Success = false;
                     result.Message = "Paciente no encontrado.";
                     return result;
                 }
 
-                // Actualizar los campos del paciente
-                existingPatient.DateOfBirth = dto.DateOfBirth;
-                existingPatient.Gender = dto.Gender;
-                existingPatient.PhoneNumber = dto.PhoneNumber;
-                existingPatient.Address = dto.Address;
-                existingPatient.EmergencyContactName = dto.EmergencyContactName;
-                existingPatient.EmergencyContactPhone = dto.EmergencyContactPhone;
-                existingPatient.BloodType = dto.BloodType;
-                existingPatient.Allergies = dto.Allergies;
-                existingPatient.InsuranceProviderID = dto.InsuranceProviderID;
 
-                // Guardar los cambios en la base de datos
-                var updateResult = await _patientsRepository.UpdateEntityAsync(dto.PatientID, existingPatient);
-                if (!updateResult.Success)
-                {
-                    result.Success = false;
-                    result.Message = $"Error al actualizar el paciente: {updateResult.Message}";
-                    return result;
-                }
 
-                result.Success = true;
-                result.Message = "Paciente actualizado correctamente.";
-                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+                // Actualización condicional IDÉNTICA al ejemplo de Appointments
+                if (dto.DateOfBirth.HasValue) existing.DateOfBirth = dto.DateOfBirth.Value;
+                if (dto.Gender.HasValue) existing.Gender = dto.Gender.Value;
+                if (dto.PhoneNumber != null) existing.PhoneNumber = dto.PhoneNumber;
+                if (dto.Address != null) existing.Address = dto.Address;
+                if (dto.EmergencyContactName != null) existing.EmergencyContactName = dto.EmergencyContactName;
+                if (dto.EmergencyContactPhone != null) existing.EmergencyContactPhone = dto.EmergencyContactPhone;
+                if (dto.BloodType != null) existing.BloodType = dto.BloodType;
+                if (dto.Allergies != null) existing.Allergies = dto.Allergies;
+                if (dto.InsuranceProviderID.HasValue) existing.InsuranceProviderID = dto.InsuranceProviderID.Value;
+
+                existing.UpdatedAt = DateTime.UtcNow;
+
+                return await _patientsRepository.UpdateEntityAsync(dto.PatientID, existing);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar el paciente.");
                 result.Success = false;
-                result.Message = $"Error inesperado al actualizar el paciente: {ex.Message}";
+                result.Message = "Error al actualizar el paciente: " + ex.Message;
+                return result;
             }
-
-            return result;
         }
 
         public async Task<OperationResult> UpdateEmergencyContactAsync(int patientId, string contactName, string contactPhone)
@@ -373,7 +354,7 @@ namespace MedCore.Application.Services.users
 
             try
             {
-                // Validar que el ID del paciente sea válido
+                
                 if (patientId <= 0)
                 {
                     result.Success = false;
@@ -381,7 +362,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Validar que el nombre y el teléfono no estén vacíos
+                
                 if (string.IsNullOrEmpty(contactName) || string.IsNullOrEmpty(contactPhone))
                 {
                     result.Success = false;
@@ -389,7 +370,7 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Obtener el paciente existente
+                
                 var existingPatient = await _patientsRepository.GetEntityByIdAsync(patientId);
                 if (existingPatient == null)
                 {
@@ -398,11 +379,11 @@ namespace MedCore.Application.Services.users
                     return result;
                 }
 
-                // Actualizar el contacto de emergencia
+                
                 existingPatient.EmergencyContactName = contactName;
                 existingPatient.EmergencyContactPhone = contactPhone;
 
-                // Guardar los cambios en la base de datos
+                
                 var updateResult = await _patientsRepository.UpdateEntityAsync(patientId, existingPatient);
                 if (!updateResult.Success)
                 {
@@ -413,7 +394,7 @@ namespace MedCore.Application.Services.users
 
                 result.Success = true;
                 result.Message = "Contacto de emergencia actualizado correctamente.";
-                result.Data = existingPatient; // Opcional: devolver el paciente actualizado
+                result.Data = existingPatient; 
             }
             catch (Exception ex)
             {

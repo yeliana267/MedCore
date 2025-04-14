@@ -1,169 +1,161 @@
-﻿using MedCore.Application.Interfaces.appointments;
-using MedCore.Domain.Base;
-using MedCore.Domain.Entities.appointments;
+﻿using MedCore.Web.Interfaces.appointments.appointment;
+using MedCore.Web.Interfaces.appointments.doctorAvailability;
 using MedCore.Web.Models.appointments;
 using MedCore.Web.Models.doctorAvailability;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
 
-namespace MedCore.Web.Controllers.DoctorAvailability
+namespace MedCore.Web.Controllers.Appointments
 {
     public class DoctorAvailabilityController : Controller
     {
-        public IDoctorAvailabilityService _doctorAvailabilityService;
+        private readonly IDoctorAvailabilityWeb _Availability;
+        private readonly ILogger<DoctorAvailabilityController> _logger;
 
-        public DoctorAvailabilityController(IDoctorAvailabilityService doctorAvailabilityService)
+        public DoctorAvailabilityController(
+            IDoctorAvailabilityWeb availabilityWeb,
+            ILogger<DoctorAvailabilityController> logger)
         {
-            _doctorAvailabilityService = doctorAvailabilityService;
+            _Availability = availabilityWeb;
+            _logger = logger;
         }
 
-        // GET: DoctorAvailabilityController
         public async Task<IActionResult> Index()
         {
-            List<DoctorAvailabilityModel> doctorAvailability = new List<DoctorAvailabilityModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("DoctorAvailability/GetDoctorAvailability");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctorAvailability = JsonConvert.DeserializeObject<List<DoctorAvailabilityModel>>(result.Data.ToString());
-                    return View(doctorAvailability);
-                }
+                var Availability = await _Availability.GetAllAsync();
+                return View(Availability);
             }
-
-            return View(new List<DoctorAvailabilityModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener lista");
+                ViewBag.ErrorMessage = "Error al cargar . Por favor intente nuevamente.";
+                return View(new List<DoctorAvailabilityModel>());
+            }
         }
 
-        // GET: DoctorAvailabilityController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            DoctorAvailabilityModel doctorAvailability = new DoctorAvailabilityModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctorAvailability = JsonConvert.DeserializeObject<DoctorAvailabilityModel>(result.Data.ToString());
-                    return View(doctorAvailability);
-                }
+                var Availability = await _Availability.GetByIdAsync(id);
+                return View(Availability);
             }
-
-            return View(doctorAvailability);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener detalles con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // GET: DoctorAvailabilityController/Create
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
             return View();
         }
 
-        // POST: DoctorAvailabilityController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(IFormCollection collection)
+        public async Task<IActionResult> Create(CreateDoctorAvailabilityModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _Availability.CreateAsync(model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al crear";
+                return View(model);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, "Error al crear");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
         }
 
-        // GET: DoctorAvailabilityController/Edit/5
         public async Task<IActionResult> Edit(int id)
         {
-            DoctorAvailabilityModel doctorAvailability = new DoctorAvailabilityModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctorAvailability = JsonConvert.DeserializeObject<DoctorAvailabilityModel>(result.Data.ToString());
-                    return View(doctorAvailability);
-                }
-            }
-
-            return View(doctorAvailability);
-        }
-        
-
-        // POST: DoctorAvailabilityController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Edit(int id, IFormCollection collection)
-        {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var Availability = await _Availability.GetEditModelByIdAsync(id);
+                return View(Availability);
             }
-            catch
+            catch (Exception ex)
             {
-                return View();
+                _logger.LogError(ex, $"Error al cargar disponibilidad para edición con ID {id}");
+                return RedirectToAction(nameof(Index));
             }
         }
 
-        // GET: DoctorAvailabilityController/Delete/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, EditDoctorAvailabilityModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            try
+            {
+                var success = await _Availability.UpdateAsync(id, model);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al actualizar la disponibilidad.";
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al actualizar disponibilidad con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
+            }
+        }
+
         public async Task<IActionResult> Delete(int id)
         {
-            DoctorAvailabilityModel doctorAvailability = new DoctorAvailabilityModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"DoctorAvailability/GetDoctorAvailabilityById?id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctorAvailability = JsonConvert.DeserializeObject<DoctorAvailabilityModel>(result.Data.ToString());
-                    return View(doctorAvailability);
-                }
+                var Availability = await _Availability.GetByIdAsync(id);
+                return View(Availability);
             }
-
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar disponibilidad para eliminación con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-
-        // POST: DoctorAvailabilityController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public ActionResult Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _Availability.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar la disponibilidad.";
+                return View();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error al eliminar disponibilidad con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
                 return View();
             }
         }

@@ -1,206 +1,181 @@
-﻿using MedCore.Application.Dtos.users.Doctors;
-using MedCore.Application.Interfaces.users;
-using MedCore.Domain.Base;
+﻿
+using MedCore.Web.Interfaces.users;
 using MedCore.Web.Models.users.Doctors;
 using Microsoft.AspNetCore.Mvc;
-using Newtonsoft.Json;
+using DoctorsModel = MedCore.Model.Models.users.DoctorsModel;
+
 
 namespace MedCore.Web.Controllers.usersController
 {
     public class DoctorsController : Controller
     {
-        private readonly IDoctorsService _doctorsService;
+        private readonly IDoctorsWeb _doctorsWeb;
+        private readonly ILogger<DoctorsController> _logger;
 
-        public DoctorsController(IDoctorsService doctorsService)
+        public DoctorsController(
+            IDoctorsWeb doctorsWeb,
+            ILogger<DoctorsController> logger)
         {
-            _doctorsService = doctorsService;
+            _doctorsWeb = doctorsWeb;
+            _logger = logger;
         }
-        // GET: DoctorsController
+
         public async Task<IActionResult> Index()
         {
-            List<DoctorsModel> doctors = new List<DoctorsModel>();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync("Doctors/GetDoctors");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctors = JsonConvert.DeserializeObject<List<DoctorsModel>>(result.Data.ToString());
-                    return View(doctors);
-                }
+                var doctors = await _doctorsWeb.GetAllAsync();
+                return View(doctors);
             }
-
-            return View(new List<DoctorsModel>());
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al obtener lista de doctores");
+                ViewBag.ErrorMessage = "Error al cargar los doctores. Por favor intente nuevamente.";
+                return View(new List<DoctorsModel>());
+            }
         }
 
-        // GET: DoctorsController/Details/5
         public async Task<IActionResult> Details(int id)
         {
-            DoctorsModel doctors = new DoctorsModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Doctors/GetDoctorByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctors = JsonConvert.DeserializeObject<DoctorsModel>(result.Data.ToString());
-                    return View(doctors);
-                }
+                var doctor = await _doctorsWeb.GetByIdAsync(id);
+                return View(doctor);
             }
-
-            return View(doctors);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al obtener detalles de doctor con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // GET: DoctorsController/Create
         public async Task<IActionResult> Create()
         {
-            return View();
+            try
+            {
+                var model = new CreateDoctorsModel
+                {
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow
+                };
+
+                return View(model);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al cargar la vista de creación de doctor");
+                ViewBag.ErrorMessage = "Error al inicializar el formulario de doctor";
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: DoctorsController/Create
+            [HttpPost]
+            [ValidateAntiForgeryToken]
+            public async Task<IActionResult> Create(CreateDoctorsModel model)
+            {
+                if (!ModelState.IsValid)
+                {
+                    return View(model);
+                }
+
+                try
+                {
+                    var success = await _doctorsWeb.CreateAsync(model);
+                    if (success)
+                    {
+                        return RedirectToAction(nameof(Index));
+                    }
+
+                    ViewBag.Message = "Error al crear el doctor.";
+                    return View(model);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Error al crear doctor");
+                    ViewBag.Message = $"Error inesperado: {ex.Message}";
+                    return View(model);
+                }
+            }
+        
+
+        public async Task<IActionResult> Edit(int id)
+        {
+            try
+            {
+                var doctor = await _doctorsWeb.GetEditModelByIdAsync(id);
+                return View(doctor);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar doctor para edición con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(CreateDoctorsModel model)
+        public async Task<IActionResult> Edit(int id, EditDoctorsModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
             try
             {
-                using var client = new HttpClient();
-                client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-                var dto = new SaveDoctorsDto
+                var success = await _doctorsWeb.UpdateAsync(id, model);
+                if (success)
                 {
-                    SpecialtyID = model.SpecialtyID,
-                    LicenseNumber = model.LicenseNumber,
-                    PhoneNumber = model.PhoneNumber,
-                    YearsOfExperience = model.YearsOfExperience,
-                    Education = model.Education,
-                    Bio = model.Bio,
-                    ConsultationFee = model.ConsultationFee,
-                    ClinicAddress = model.ClinicAddress,
-                    AvailabilityModeId = model.AvailabilityModeId,
-                    LicenseExpirationDate = model.LicenseExpirationDate,
-                    IsActive = true
-                };
-
-
-                var response = await client.PostAsJsonAsync("Doctors/Save", dto);
-
-                if (response.IsSuccessStatusCode)
-                {
-                    var result = await response.Content.ReadFromJsonAsync<OperationResult>();
-
-                    if (result != null && result.Success)
-                    {
-                        return RedirectToAction(nameof(Index));
-                    }
-
-                    ViewBag.Message = result?.Message ?? "Error desconocido al crear el doctor.";
+                    return RedirectToAction(nameof(Index));
                 }
-                else
-                {
-                    ViewBag.Message = "Error al conectar con la API.";
-                }
+
+                ViewBag.Message = "Error al actualizar el doctor.";
+                return View(model);
             }
             catch (Exception ex)
             {
-                ViewBag.Message = "Error inesperado: " + ex.Message;
-            }
-            return View(model);
-        }
-
-        // GET: DoctorsController/Edit/5
-        public async Task<IActionResult> Edit(int id)
-        {
-            EditDoctorsModel doctor = new EditDoctorsModel();
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Doctors/GetDoctorByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
-            {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctor = JsonConvert.DeserializeObject<EditDoctorsModel>(result.Data.ToString());
-                    return View(doctor);
-                }
-            }
-
-            return View(doctor);
-        }
-
-        // POST: DoctorsController/Edit/5
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, IFormCollection collection)
-        {
-            try
-            {
-                return RedirectToAction(nameof(Index));
-            }
-            catch
-            {
-                return View();
+                _logger.LogError(ex, $"Error al actualizar doctor con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
+                return View(model);
             }
         }
 
-        // GET: DoctorsController/Delete/5
         public async Task<IActionResult> Delete(int id)
         {
-            DoctorsModel doctors = new DoctorsModel();
-
-            using var client = new HttpClient();
-            client.BaseAddress = new Uri("http://localhost:5266/api/");
-
-            var response = await client.GetAsync($"Doctors/GetDoctorByID?Id={id}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var data = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.DeserializeObject<OperationResult>(data);
-
-                if (result != null && result.Success && result.Data != null)
-                {
-                    doctors = JsonConvert.DeserializeObject<DoctorsModel>(result.Data.ToString());
-                    return View(doctors);
-                }
+                var doctor = await _doctorsWeb.GetByIdAsync(id);
+                return View(doctor);
             }
-
-            return NotFound();
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, $"Error al cargar doctor para eliminación con ID {id}");
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: DoctorsController/Delete/5
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Delete(int id, IFormCollection collection)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             try
             {
-                return RedirectToAction(nameof(Index));
+                var success = await _doctorsWeb.DeleteAsync(id);
+                if (success)
+                {
+                    return RedirectToAction(nameof(Index));
+                }
+
+                ViewBag.Message = "Error al eliminar el doctor.";
+                return View();
             }
-            catch
+            catch (Exception ex)
             {
+                _logger.LogError(ex, $"Error al eliminar doctor con ID {id}");
+                ViewBag.Message = $"Error inesperado: {ex.Message}";
                 return View();
             }
         }
     }
 }
+

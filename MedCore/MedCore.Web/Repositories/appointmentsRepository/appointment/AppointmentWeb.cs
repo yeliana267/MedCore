@@ -1,12 +1,10 @@
 ﻿using MedCore.Application.Dtos.appointments.Appointments;
 using MedCore.Domain.Base;
 using MedCore.Web.Interfaces;
-using MedCore.Web.Interfaces.appointments;
+using MedCore.Web.Interfaces.appointments.appointment;
 using MedCore.Web.Models.appointments;
-using MedCore.Web.Repositories;
-using MedCore.Web.Repositories.appointmentWeb;
 
-namespace MedCore.Web.Repositories.appointments
+namespace MedCore.Web.Repositories.appointmentsRepository.appointment
 {
     public class AppointmentWeb : IAppointmentWeb
     {
@@ -38,7 +36,7 @@ namespace MedCore.Web.Repositories.appointments
         {
             try
             {
-     
+
 
                 return await _apiClient.GetAsync<AppointmentModel>($"Appointments/GetAppointmentsById?Id={id}")
                     ?? new AppointmentModel();

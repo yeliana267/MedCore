@@ -1,6 +1,6 @@
 ﻿using MedCore.Web.Models.appointments;
 
-namespace MedCore.Web.Interfaces.appointments
+namespace MedCore.Web.Interfaces.appointments.appointment
 {
     public interface IAppointmentWeb
     {

@@ -4,6 +4,7 @@ namespace MedCore.Web.Models.users.Patients
 {
     public class CreatePatientsModel
     {
+        public int UserID { get; set; }
         public DateTime DateOfBirth { get; set; }
         public char Gender { get; set; }
         public string PhoneNumber { get; set; }
